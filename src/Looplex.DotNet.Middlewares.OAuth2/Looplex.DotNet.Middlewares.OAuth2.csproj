@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+	<IsPackable>true</IsPackable>
+	<PackageId>Looplex.DotNet.Middlewares.OAuth2</PackageId>
+	<Authors>Guilherme Câmara</Authors>
+	<Company>Looplex</Company>
+	<PackageTags>Looplex;Middleware;OAuth2;</PackageTags>
+	<Description>
+		Contains a helper for loading classes that implements IPlugin from assemblies.
+	</Description>
+	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+	<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+  </PropertyGroup>
+	
+  <Target Name="PostPackNugetDeploy" AfterTargets="Pack" Condition="'$(Configuration)' == 'Debug'">
+    <Exec Command="nuget add &quot;$(OutputPath)$(PackageId).$(PackageVersion).nupkg&quot; -source C:\local-nuget-feed" />
+  </Target>
+
+  <ItemGroup>
+	<PackageReference Include="AutoMapper" Version="13.0.1" />
+	<PackageReference Include="Looplex.DotNet.Core.Application" Version="1.0.0" />
+	<PackageReference Include="Looplex.DotNet.Core.WebAPI" Version="1.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Protocols" Version="7.6.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="7.6.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.6.0" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.34928.147
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{FD844EE8-C48B-4FFD-BC9E-4408AAC41332}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4610E867-1D15-49E3-B24E-22DB4B747B03}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Looplex.DotNet.Middlewares.OAuth2", "src\Looplex.DotNet.Middlewares.OAuth2\Looplex.DotNet.Middlewares.OAuth2.csproj", "{CCCBC9BF-D889-440B-AD5F-D81A7B8FB176}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Looplex.DotNet.Middlewares.OAuth2.Storages.InMemory", "src\Looplex.DotNet.Middlewares.OAuth2.Storages.InMemory\Looplex.DotNet.Middlewares.OAuth2.Storages.InMemory.csproj", "{E2901E04-BBE7-4F46-8463-C0B8B3A6680A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Looplex.DotNet.Middlewares.OAuth2.UnitTests", "test\Looplex.DotNet.Middlewares.OAuth2.UnitTests\Looplex.DotNet.Middlewares.OAuth2.UnitTests.csproj", "{443E2FAA-4414-4FC3-B198-5B87E83C6A52}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CCCBC9BF-D889-440B-AD5F-D81A7B8FB176}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCCBC9BF-D889-440B-AD5F-D81A7B8FB176}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCCBC9BF-D889-440B-AD5F-D81A7B8FB176}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCCBC9BF-D889-440B-AD5F-D81A7B8FB176}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E2901E04-BBE7-4F46-8463-C0B8B3A6680A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2901E04-BBE7-4F46-8463-C0B8B3A6680A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2901E04-BBE7-4F46-8463-C0B8B3A6680A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2901E04-BBE7-4F46-8463-C0B8B3A6680A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{443E2FAA-4414-4FC3-B198-5B87E83C6A52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{443E2FAA-4414-4FC3-B198-5B87E83C6A52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{443E2FAA-4414-4FC3-B198-5B87E83C6A52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{443E2FAA-4414-4FC3-B198-5B87E83C6A52}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{CCCBC9BF-D889-440B-AD5F-D81A7B8FB176} = {4610E867-1D15-49E3-B24E-22DB4B747B03}
+		{E2901E04-BBE7-4F46-8463-C0B8B3A6680A} = {4610E867-1D15-49E3-B24E-22DB4B747B03}
+		{443E2FAA-4414-4FC3-B198-5B87E83C6A52} = {FD844EE8-C48B-4FFD-BC9E-4408AAC41332}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {6DFDACD8-69B4-4E60-9A29-C0394A838A4F}
+	EndGlobalSection
+EndGlobal
