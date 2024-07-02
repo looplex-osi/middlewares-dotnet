@@ -12,11 +12,11 @@ namespace Looplex.DotNet.Middlewares.OAuth2.Services
 {
     public class AuthorizationService(
         IConfiguration configuration,
-        IClientCredentialService clientStorageService,
+        IClientService clientService,
         IIdTokenService idTokenService) : IAuthorizationService
     {
         private readonly IConfiguration _configuration = configuration;
-        private readonly IClientCredentialService _clientStorageService = clientStorageService;
+        private readonly IClientService _clientService = clientService;
         private readonly IIdTokenService _idTokenService = idTokenService;
 
         public async Task CreateAccessToken(IDefaultContext context)
@@ -95,7 +95,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.Services
 
             if (clientId != adminClientId || clientSecret != adminClientSecret)
             { 
-                var client = await _clientStorageService.GetByIdAndSecretOrDefaultAsync(clientId, clientSecret);
+                var client = await _clientService.GetByIdAndSecretOrDefaultAsync(clientId, clientSecret);
                 if (client == default)
                 {
                     throw new HttpRequestException("Invalid clientId or clientSecret.", null, HttpStatusCode.Unauthorized);

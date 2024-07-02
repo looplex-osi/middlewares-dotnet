@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Looplex.DotNet.Middlewares.OAuth2.DTOs
+namespace Looplex.DotNet.Middlewares.Clients.DTOs
 {
     public class ClientDTO
     {

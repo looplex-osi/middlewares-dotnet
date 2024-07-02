@@ -15,7 +15,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
     public class AuthorizationServiceTests
     {
         private IConfiguration _mockConfiguration = null!;
-        private IClientCredentialService _mockClientCredentialService = null!;
+        private IClientService _mockClientService = null!;
         private IServiceProvider _mockServiceProvider = null!;
         private DefaultHttpContext _httpContext = null!;
 
@@ -23,7 +23,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
         public void Setup()
         {
             _mockConfiguration = Substitute.For<IConfiguration>();
-            _mockClientCredentialService = Substitute.For<IClientCredentialService>();
+            _mockClientService = Substitute.For<IClientService>();
             _mockServiceProvider = Substitute.For<IServiceProvider>();
             _httpContext = new DefaultHttpContext();
 
@@ -46,7 +46,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
             var context = DefaultContext.Create([], _mockServiceProvider);
             context.State.Authorization = authorization;
             context.State.ClientCredentialsDTO = clientCredentials;
-            var service = new AuthorizationService(_mockConfiguration, _mockClientCredentialService, _mockIdTokenService);
+            var service = new AuthorizationService(_mockConfiguration, _mockClientService, _mockIdTokenService);
 
             // Act & Assert
             var exception = await Assert.ThrowsExceptionAsync<HttpRequestException>(() => service.CreateAccessToken(context));
@@ -68,7 +68,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
             var context = DefaultContext.Create([], _mockServiceProvider);
             context.State.Authorization = authorization;
             context.State.ClientCredentialsDTO = clientCredentials;
-            var service = new AuthorizationService(_mockConfiguration, _mockClientCredentialService, _mockIdTokenService);
+            var service = new AuthorizationService(_mockConfiguration, _mockClientService, _mockIdTokenService);
 
             // Act & Assert
             var exception = await Assert.ThrowsExceptionAsync<HttpRequestException>(() => service.CreateAccessToken(context));
@@ -109,7 +109,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
             var context = DefaultContext.Create([], _mockServiceProvider);
             context.State.Authorization = authorization;
             context.State.ClientCredentialsDTO = clientCredentials;
-            var service = new AuthorizationService(_mockConfiguration, _mockClientCredentialService, _mockIdTokenService);
+            var service = new AuthorizationService(_mockConfiguration, _mockClientService, _mockIdTokenService);
 
             // Act
             await service.CreateAccessToken(context);
@@ -150,12 +150,12 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
                 return true;
             });
 
-            _mockClientCredentialService.GetByIdAndSecretOrDefaultAsync(Arg.Any<Guid>(), Arg.Any<string>()).Returns(default(Client?));
+            _mockClientService.GetByIdAndSecretOrDefaultAsync(Arg.Any<Guid>(), Arg.Any<string>()).Returns((IClient?)null);
 
             var context = DefaultContext.Create([], _mockServiceProvider);
             context.State.Authorization = authorization;
             context.State.ClientCredentialsDTO = clientCredentials;
-            var service = new AuthorizationService(_mockConfiguration, _mockClientCredentialService, _mockIdTokenService);
+            var service = new AuthorizationService(_mockConfiguration, _mockClientService, _mockIdTokenService);
 
             // Act & Assert
             var exception = await Assert.ThrowsExceptionAsync<HttpRequestException>(() => service.CreateAccessToken(context));
@@ -194,12 +194,12 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
                 return true;
             });
 
-            _mockClientCredentialService.GetByIdAndSecretOrDefaultAsync(Arg.Any<Guid>(), Arg.Any<string>()).Returns(default(Client?));
+            _mockClientService.GetByIdAndSecretOrDefaultAsync(Arg.Any<Guid>(), Arg.Any<string>()).Returns((IClient?)null);
 
             var context = DefaultContext.Create([], _mockServiceProvider);
             context.State.Authorization = authorization;
             context.State.ClientCredentialsDTO = clientCredentials;
-            var service = new AuthorizationService(_mockConfiguration, _mockClientCredentialService, _mockIdTokenService);
+            var service = new AuthorizationService(_mockConfiguration, _mockClientService, _mockIdTokenService);
             
             // Act & Assert
             var exception = await Assert.ThrowsExceptionAsync<HttpRequestException>(() => service.CreateAccessToken(context));
@@ -243,14 +243,14 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
                 return true;
             });
 
-            _mockClientCredentialService.GetByIdAndSecretOrDefaultAsync(clientId, clientSecret).Returns(new Client
-            {
-                ClientId = clientId.ToString(),
-                DisplayName = "client",
-                Secret = clientSecret,
-                NotBefore = DateTime.UtcNow.AddMinutes(-1),
-                ExpirationTime = DateTime.UtcNow.AddMinutes(1)
-            });
+            var client = Substitute.For<IClient>();
+            client.Id.Returns(clientId.ToString());
+            client.DisplayName.Returns("client");
+            client.Secret.Returns(clientSecret);
+            client.NotBefore.Returns(DateTime.UtcNow.AddMinutes(-1));
+            client.ExpirationTime.Returns(DateTime.UtcNow.AddMinutes(1));
+
+            _mockClientService.GetByIdAndSecretOrDefaultAsync(clientId, clientSecret).Returns(client);
 
             _httpContext.Request.Headers.Authorization = "Bearer " + Convert.ToBase64String(Encoding.UTF8.GetBytes(clientId + ":" + clientSecret));
             _httpContext.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(clientCredentialsDTO)));
@@ -258,7 +258,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
             var context = DefaultContext.Create([], _mockServiceProvider);
             context.State.Authorization = authorization;
             context.State.ClientCredentialsDTO = clientCredentials;
-            var service = new AuthorizationService(_mockConfiguration, _mockClientCredentialService, _mockIdTokenService);
+            var service = new AuthorizationService(_mockConfiguration, _mockClientService, _mockIdTokenService);
 
             // Act
             await service.CreateAccessToken(context);
@@ -303,14 +303,15 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
                 return false;
             });
 
-            _mockClientCredentialService.GetByIdAndSecretOrDefaultAsync(clientId, clientSecret).Returns(new Client
-            {
-                ClientId = clientId.ToString(),
-                DisplayName = "client",
-                Secret = clientSecret,
-                NotBefore = DateTime.UtcNow.AddMinutes(-1),
-                ExpirationTime = DateTime.UtcNow.AddMinutes(1)
-            });
+
+            var client = Substitute.For<IClient>();
+            client.Id.Returns(clientId.ToString());
+            client.DisplayName.Returns("client");
+            client.Secret.Returns(clientSecret);
+            client.NotBefore.Returns(DateTime.UtcNow.AddMinutes(1));
+            client.ExpirationTime.Returns(DateTime.UtcNow.AddMinutes(1));
+
+            _mockClientService.GetByIdAndSecretOrDefaultAsync(clientId, clientSecret).Returns(client);
 
             _httpContext.Request.Headers.Authorization = "Bearer " + Convert.ToBase64String(Encoding.UTF8.GetBytes(clientId + ":" + clientSecret));
             _httpContext.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(clientCredentialsDTO)));
@@ -318,7 +319,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
             var context = DefaultContext.Create([], _mockServiceProvider);
             context.State.Authorization = authorization;
             context.State.ClientCredentialsDTO = clientCredentials;
-            var service = new AuthorizationService(_mockConfiguration, _mockClientCredentialService, _mockIdTokenService);
+            var service = new AuthorizationService(_mockConfiguration, _mockClientService, _mockIdTokenService);
 
             // Act & Assert
             var exception = await Assert.ThrowsExceptionAsync<HttpRequestException>(() => service.CreateAccessToken(context));
@@ -344,7 +345,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
             var context = DefaultContext.Create([], _mockServiceProvider);
             context.State.Authorization = authorization;
             context.State.ClientCredentialsDTO = clientCredentials;
-            var service = new AuthorizationService(_mockConfiguration, _mockClientCredentialService, _mockIdTokenService);
+            var service = new AuthorizationService(_mockConfiguration, _mockClientService, _mockIdTokenService);
 
             // Act & Assert
             await Assert.ThrowsExceptionAsync<HttpRequestException>(() => service.CreateAccessToken(context));

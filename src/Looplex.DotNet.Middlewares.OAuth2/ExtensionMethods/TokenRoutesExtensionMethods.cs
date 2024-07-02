@@ -4,7 +4,6 @@ using Looplex.DotNet.Core.Middlewares;
 using Looplex.DotNet.Core.WebAPI.Routes;
 using Looplex.DotNet.Middlewares.OAuth2.DTOs;
 using Looplex.DotNet.Middlewares.OAuth2.Services;
-using Looplex.OpenForExtension.Context;
 using Looplex.OpenForExtension.Plugins;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -43,11 +42,9 @@ namespace Looplex.DotNet.Middlewares.OAuth2.ExtensionMethods
 
         public static void UseTokenRoute(this IEndpointRouteBuilder app, IList<IPlugin> plugins)
         {
-            var context = DefaultContext.Create(plugins, app.ServiceProvider);
-            
             app.MapPost(
                 RESOURCE,
-                context,
+                plugins,
                 [
                     CoreMiddlewares.ExceptionMiddleware,
                     TokenMiddleware

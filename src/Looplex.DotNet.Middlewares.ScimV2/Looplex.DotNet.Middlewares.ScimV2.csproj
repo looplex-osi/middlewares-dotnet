@@ -5,12 +5,12 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 	<IsPackable>true</IsPackable>
-	<PackageId>Looplex.DotNet.Middlewares.OAuth2</PackageId>
+	<PackageId>Looplex.DotNet.Middlewares.ScimV2</PackageId>
 	<Authors>Guilherme Câmara</Authors>
 	<Company>Looplex</Company>
-	<PackageTags>Looplex;Middleware;OAuth2;</PackageTags>
+	<PackageTags>Looplex;Middleware;ScimV2;</PackageTags>
 	<Description>
-		Defines an /token endpoint for AccessToken generation and a middleware for authentication.
+		Defines SCIM v2 apis for the User and Groups resource types.
 	</Description>
 	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
@@ -25,11 +25,12 @@
 	<PackageReference Include="AutoMapper" Version="13.0.1" />
 	<PackageReference Include="Looplex.DotNet.Core.Application" Version="1.0.1" />
 	<PackageReference Include="Looplex.DotNet.Core.WebAPI" Version="1.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
-    <PackageReference Include="Microsoft.IdentityModel.Protocols" Version="7.6.0" />
-    <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="7.6.0" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.6.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+    <PackageReference Include="System.Text.Json" Version="8.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Looplex.DotNet.Middlewares.OAuth2\Looplex.DotNet.Middlewares.OAuth2.csproj" />
   </ItemGroup>
 
 </Project>
