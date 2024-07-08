@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.0.4"></a>
+## [1.0.4](https://www.github.com/looplex-osi/middlewares-dotnet/releases/tag/v1.0.4) (2024-07-08)
+
+### Bug Fixes
+
+* fix build error ([ef0031c](https://www.github.com/looplex-osi/middlewares-dotnet/commit/ef0031c238779a6c46967b2020be896b4feb852a))
+
 <a name="1.0.3"></a>
 ## [1.0.3](https://www.github.com/looplex-osi/middlewares-dotnet/releases/tag/v1.0.3) (2024-07-08)
 
