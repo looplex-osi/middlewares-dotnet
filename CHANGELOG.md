@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.0.5"></a>
+## [1.0.5](https://www.github.com/looplex-osi/middlewares-dotnet/releases/tag/v1.0.5) (2024-07-08)
+
+### Bug Fixes
+
+* **clientroutesextensionmethods:** fixed name of use method ([70fc2ed](https://www.github.com/looplex-osi/middlewares-dotnet/commit/70fc2ed51f26df8d9c7120eb2f090ad976246d1f))
+
 <a name="1.0.4"></a>
 ## [1.0.4](https://www.github.com/looplex-osi/middlewares-dotnet/releases/tag/v1.0.4) (2024-07-08)
 
