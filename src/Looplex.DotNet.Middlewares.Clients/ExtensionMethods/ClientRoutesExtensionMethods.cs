@@ -9,7 +9,7 @@ namespace Looplex.DotNet.Middlewares.Clients.ExtensionMethods
 {
     public static class ClientRoutesExtensionMethods
     {
-        public static void UseUserRoutes(this IEndpointRouteBuilder app, IList<IPlugin> plugins)
+        public static void UseClientRoutes(this IEndpointRouteBuilder app, IList<IPlugin> plugins)
         {
             app.UseScimV2Routes<Client, ClientReadDTO, ClientWriteDTO, IClientService>(plugins);
         }
