@@ -114,7 +114,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.Services
         private string CreateAccessToken(string email)
         {
             var claims = new ClaimsIdentity([
-                new(ClaimTypes.Email, email!),
+                new Claim(ClaimTypes.Email, email!),
             ]);
 
             var audience = _configuration["Audience"]!;
