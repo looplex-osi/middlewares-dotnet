@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.0.9"></a>
+## [1.0.9](https://www.github.com/looplex-osi/middlewares-dotnet/releases/tag/v1.0.9) (2024-07-11)
+
+### Bug Fixes
+
+* **scimv2routes:** added a separeted list of services per action ([20675fa](https://www.github.com/looplex-osi/middlewares-dotnet/commit/20675faa0417387f20bd3a2c3d954dcfc21181da))
+
 <a name="1.0.8"></a>
 ## [1.0.8](https://www.github.com/looplex-osi/middlewares-dotnet/releases/tag/v1.0.8) (2024-07-11)
 
