@@ -7,12 +7,9 @@ namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods
 {
     public static class UserRoutesExtensionMethods
     {
-        public static void UseUserRoutes(this IEndpointRouteBuilder app, string[] services)
+        public static void UseUserRoutes(this IEndpointRouteBuilder app, ScimV2RouteOptions? options = null)
         {
-            app.UseScimV2Routes<User, UserReadDTO, UserWriteDTO, IUserService>(new ScimV2RouteOptions
-            {
-                Services = services
-            });
+            app.UseScimV2Routes<User, UserReadDTO, UserWriteDTO, IUserService>(options ?? new ScimV2RouteOptions());
         }
     }
 }

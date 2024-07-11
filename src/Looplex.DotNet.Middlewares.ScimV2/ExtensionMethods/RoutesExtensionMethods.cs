@@ -112,11 +112,11 @@ namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods
                 resource,
                 new RouteBuilderOptions
                 {
-                    Services = options.Services,
+                    Services = options.ServicesForGet,
                     Middlewares = [
                         AuthenticationMiddlewares.AuthenticateMiddleware,
                         CoreMiddlewares.PaginationMiddleware,
-                        GetMiddleware<R, RDTO, S>(options.GetCustomAction)
+                        GetMiddleware<R, RDTO, S>(options.CustomActionForGet)
                     ],
                     ProducesStatusCodes = [StatusCodes.Status401Unauthorized]
                 })
@@ -127,10 +127,10 @@ namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods
                 $"{resource}/{{id}}",
                 new RouteBuilderOptions
                 {
-                    Services = options.Services,
+                    Services = options.ServicesForGetById,
                     Middlewares = [
                         AuthenticationMiddlewares.AuthenticateMiddleware,
-                        GetByIdMiddleware<R, RDTO, S>(options.GetByIdCustomAction)
+                        GetByIdMiddleware<R, RDTO, S>(options.CustomActionForGetById)
                     ],
                     ProducesStatusCodes = [StatusCodes.Status401Unauthorized]
                 })
@@ -151,10 +151,10 @@ namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods
                 resource,
                 new RouteBuilderOptions
                 {
-                    Services = options.Services,
+                    Services = options.ServicesForPost,
                     Middlewares = [
                         AuthenticationMiddlewares.AuthenticateMiddleware,
-                        PostMiddleware<R, WDTO, S>(resource, options.PostCustomAction)
+                        PostMiddleware<R, WDTO, S>(resource, options.CustomActionForPost)
                     ],
                     ProducesStatusCodes = [StatusCodes.Status401Unauthorized]
                 })
@@ -166,10 +166,10 @@ namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods
                 $"{resource}/{{id}}",
                 new RouteBuilderOptions
                 {
-                    Services = options.Services,
+                    Services = options.ServicesForDelete,
                     Middlewares = [
                         AuthenticationMiddlewares.AuthenticateMiddleware,
-                        DeleteMiddleware<R, RDTO, S>(options.DeleteCustomAction)
+                        DeleteMiddleware<R, RDTO, S>(options.CustomActionForDelete)
                     ],
                     ProducesStatusCodes = [StatusCodes.Status401Unauthorized]
                 })

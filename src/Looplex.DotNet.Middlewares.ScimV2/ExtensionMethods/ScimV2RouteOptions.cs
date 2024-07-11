@@ -5,9 +5,15 @@ namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods;
 
 public class ScimV2RouteOptions
 {
-    public string[] Services { get; init; } = []; 
-    public Action<IDefaultContext, HttpContext>? GetCustomAction { get; init; }
-    public Action<IDefaultContext, HttpContext>? GetByIdCustomAction { get; init; }
-    public Action<IDefaultContext, HttpContext>? PostCustomAction { get; init; }
-    public Action<IDefaultContext, HttpContext>? DeleteCustomAction { get; init; }
+    public string[] ServicesForGet { get; init; } = []; 
+    public Action<IDefaultContext, HttpContext>? CustomActionForGet { get; init; }
+    
+    public string[] ServicesForGetById { get; init; } = []; 
+    public Action<IDefaultContext, HttpContext>? CustomActionForGetById { get; init; }
+    
+    public string[] ServicesForPost { get; init; } = [];
+    public Action<IDefaultContext, HttpContext>? CustomActionForPost { get; init; }
+    
+    public string[] ServicesForDelete { get; init; } = []; 
+    public Action<IDefaultContext, HttpContext>? CustomActionForDelete { get; init; }
 }

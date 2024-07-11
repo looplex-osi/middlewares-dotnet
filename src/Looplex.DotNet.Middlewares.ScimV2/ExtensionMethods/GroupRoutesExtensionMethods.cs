@@ -7,12 +7,9 @@ namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods
 {
     public static class GroupRoutesExtensionMethods
     {
-        public static void UseGroupRoutes(this IEndpointRouteBuilder app, string[] services)
+        public static void UseGroupRoutes(this IEndpointRouteBuilder app, ScimV2RouteOptions? options = null)
         {
-            app.UseScimV2Routes<Group, GroupReadDTO, GroupWriteDTO, IGroupService>(new ScimV2RouteOptions
-            {
-                Services = services
-            });
+            app.UseScimV2Routes<Group, GroupReadDTO, GroupWriteDTO, IGroupService>(options ?? new ScimV2RouteOptions());
         }
     }
 }
