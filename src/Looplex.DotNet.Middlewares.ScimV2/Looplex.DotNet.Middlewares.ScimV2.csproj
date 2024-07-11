@@ -23,8 +23,8 @@
 
   <ItemGroup>
 	<PackageReference Include="AutoMapper" Version="13.0.1" />
-	<PackageReference Include="Looplex.DotNet.Core.Application" Version="1.0.3" />
-	<PackageReference Include="Looplex.DotNet.Core.WebAPI" Version="1.0.3" />
+	<PackageReference Include="Looplex.DotNet.Core.Application" Version="1.0.4" />
+	<PackageReference Include="Looplex.DotNet.Core.WebAPI" Version="1.0.4" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
     <PackageReference Include="System.Text.Json" Version="8.0.3" />
   </ItemGroup>
