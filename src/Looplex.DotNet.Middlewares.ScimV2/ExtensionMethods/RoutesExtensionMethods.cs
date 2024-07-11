@@ -31,7 +31,7 @@ namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods
 
             customAction?.Invoke(context, httpContext);
 
-            await service.GetAll(context);
+            await service.GetAllAsync(context);
 
             var records = (PaginatedCollection<R>)context.Result;
             var data = mapper.Map<PaginatedCollection<R>, PaginatedCollectionDTO<DTO>>(records);
@@ -51,7 +51,7 @@ namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods
             context.State.Id = id;
             customAction?.Invoke(context, httpContext);
 
-            await service.GetAsync(context);
+            await service.GetByIdAsync(context);
 
             var client = (R)context.Result;
             var data = mapper.Map<R, DTO>(client);
