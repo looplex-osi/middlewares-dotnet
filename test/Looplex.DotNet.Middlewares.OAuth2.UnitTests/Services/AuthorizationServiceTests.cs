@@ -8,6 +8,7 @@ using NSubstitute;
 using System.Net;
 using System.Text;
 using System.Text.Json;
+using Looplex.DotNet.Core.WebAPI.Factories;
 
 namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
 {
@@ -17,6 +18,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
         private IConfiguration _mockConfiguration = null!;
         private IClientService _mockClientService = null!;
         private IServiceProvider _mockServiceProvider = null!;
+        private IContextFactory _mockContextFactory = null!;
         private DefaultHttpContext _httpContext = null!;
 
         [TestInitialize]
@@ -25,11 +27,14 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
             _mockConfiguration = Substitute.For<IConfiguration>();
             _mockClientService = Substitute.For<IClientService>();
             _mockServiceProvider = Substitute.For<IServiceProvider>();
+            _mockContextFactory = Substitute.For<IContextFactory>();
             _httpContext = new DefaultHttpContext();
 
             var configurationSection = Substitute.For<IConfigurationSection>();
             configurationSection.Value.Returns("20");
             _mockConfiguration.GetSection("TokenExpirationTimeInMinutes").Returns(configurationSection);
+
+            _mockServiceProvider.GetService(typeof(IContextFactory)).Returns(_mockContextFactory);
         }
 
         [TestMethod]
@@ -149,8 +154,16 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
                 x[4] = email;
                 return true;
             });
+            
+            _mockContextFactory.Create(Arg.Any<IEnumerable<string>>()).Returns(DefaultContext.Create(null, null));
 
-            _mockClientService.GetByIdAndSecretOrDefaultAsync(Arg.Any<Guid>(), Arg.Any<string>()).Returns((IClient?)null);
+            _mockClientService.GetByIdAndSecretOrDefaultAsync(Arg.Any<IDefaultContext>())
+                .Returns(call =>
+                {
+                    var context = call.Arg<IDefaultContext>();
+                    context.Result = (IClient?)null;
+                    return Task.CompletedTask;
+                });
 
             var context = DefaultContext.Create([], _mockServiceProvider);
             context.State.Authorization = authorization;
@@ -194,7 +207,14 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
                 return true;
             });
 
-            _mockClientService.GetByIdAndSecretOrDefaultAsync(Arg.Any<Guid>(), Arg.Any<string>()).Returns((IClient?)null);
+            _mockContextFactory.Create(Arg.Any<IEnumerable<string>>()).Returns(DefaultContext.Create(null, null));
+            _mockClientService.GetByIdAndSecretOrDefaultAsync(Arg.Any<IDefaultContext>())
+                .Returns(call =>
+                {
+                    var context = call.Arg<IDefaultContext>();
+                    context.Result = (IClient?)null;
+                    return Task.CompletedTask;
+                });
 
             var context = DefaultContext.Create([], _mockServiceProvider);
             context.State.Authorization = authorization;
@@ -243,6 +263,8 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
                 return true;
             });
 
+            _mockContextFactory.Create(Arg.Any<IEnumerable<string>>()).Returns(DefaultContext.Create(null, null));
+
             var client = Substitute.For<IClient>();
             client.Id.Returns(clientId.ToString());
             client.DisplayName.Returns("client");
@@ -250,7 +272,14 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
             client.NotBefore.Returns(DateTime.UtcNow.AddMinutes(-1));
             client.ExpirationTime.Returns(DateTime.UtcNow.AddMinutes(1));
 
-            _mockClientService.GetByIdAndSecretOrDefaultAsync(clientId, clientSecret).Returns(client);
+            _mockClientService.GetByIdAndSecretOrDefaultAsync(
+                Arg.Is<IDefaultContext>(c => AssertDefaultContextIsValid(c, clientId, clientSecret)))
+                .Returns(call =>
+                {
+                    var context = call.Arg<IDefaultContext>();
+                    context.Result = (IClient?)client;
+                    return Task.CompletedTask;
+                });
 
             _httpContext.Request.Headers.Authorization = "Bearer " + Convert.ToBase64String(Encoding.UTF8.GetBytes(clientId + ":" + clientSecret));
             _httpContext.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(clientCredentialsDTO)));
@@ -267,6 +296,12 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
             Assert.AreEqual(StatusCodes.Status200OK, _httpContext.Response.StatusCode);
             Assert.IsNotNull(context.Result);
             Assert.IsInstanceOfType(context.Result, typeof(string));
+        }
+
+        private bool AssertDefaultContextIsValid(IDefaultContext c, Guid clientId, string clientSecret)
+        {
+            return c.State.ClientId == clientId
+                   && c.State.ClientSecret == clientSecret;
         }
 
         [TestMethod]
@@ -311,7 +346,14 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
             client.NotBefore.Returns(DateTime.UtcNow.AddMinutes(1));
             client.ExpirationTime.Returns(DateTime.UtcNow.AddMinutes(1));
 
-            _mockClientService.GetByIdAndSecretOrDefaultAsync(clientId, clientSecret).Returns(client);
+            _mockClientService.GetByIdAndSecretOrDefaultAsync(
+                    Arg.Is<IDefaultContext>(c => AssertDefaultContextIsValid(c, clientId, clientSecret)))
+                .Returns(call =>
+                {
+                    var context = call.Arg<IDefaultContext>();
+                    context.Result = (IClient?)client;
+                    return Task.CompletedTask;
+                });
 
             _httpContext.Request.Headers.Authorization = "Bearer " + Convert.ToBase64String(Encoding.UTF8.GetBytes(clientId + ":" + clientSecret));
             _httpContext.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(clientCredentialsDTO)));

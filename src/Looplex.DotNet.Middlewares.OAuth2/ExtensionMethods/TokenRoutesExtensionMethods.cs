@@ -40,15 +40,18 @@ namespace Looplex.DotNet.Middlewares.OAuth2.ExtensionMethods
             });
         });
 
-        public static void UseTokenRoute(this IEndpointRouteBuilder app, IList<IPlugin> plugins)
+        public static void UseTokenRoute(this IEndpointRouteBuilder app, string[] services)
         {
             app.MapPost(
                 RESOURCE,
-                plugins,
-                [
-                    CoreMiddlewares.ExceptionMiddleware,
-                    TokenMiddleware
-                ])
+                new RouteBuilderOptions
+                {
+                    Services = services,
+                    Middlewares = [
+                        CoreMiddlewares.ExceptionMiddleware,
+                        TokenMiddleware
+                    ]
+                })
             .WithTags(TAG)
             .Accepts<ClientCredentialsDTO>(JsonUtils.JsonContentTypeWithCharset)
             .Produces<AccessTokenDTO>(StatusCodes.Status200OK);

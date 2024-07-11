@@ -9,7 +9,6 @@ using Looplex.DotNet.Core.WebAPI.Routes;
 using Looplex.DotNet.Middlewares.OAuth2;
 using Looplex.DotNet.Middlewares.ScimV2.Entities;
 using Looplex.OpenForExtension.Context;
-using Looplex.OpenForExtension.Plugins;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -99,40 +98,42 @@ namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods
 
         public static void UseScimV2Routes<R, RDTO, WDTO, S>(
             this IEndpointRouteBuilder app,
-            IList<IPlugin> plugins,
-            Action<IDefaultContext, HttpContext>? getCustomAction = null,
-            Action<IDefaultContext, HttpContext>? getByIdCustomAction = null,
-            Action<IDefaultContext, HttpContext>? postCustomAction = null,
-            Action<IDefaultContext, HttpContext>? deleteCustomAction = null)
+            ScimV2RouteOptions options)
             where R : Resource
             where RDTO : notnull
             where WDTO : notnull
             where S : ICrudService
         {
             var resourceType = typeof(R).Name;
-            string resource = resourceType[0].ToString().ToLower() + resourceType[1..];
-            string tag = resourceType;
+            var resource = resourceType[0].ToString().ToLower() + resourceType[1..];
+            var tag = resourceType;
 
             app.MapGet(
                 resource,
-                plugins,
-                [
-                    AuthenticationMiddlewares.AuthenticateMiddleware,
-                    CoreMiddlewares.PaginationMiddleware,
-                    GetMiddleware<R, RDTO, S>(getCustomAction)
-                ],
-                [StatusCodes.Status401Unauthorized])
+                new RouteBuilderOptions
+                {
+                    Services = options.Services,
+                    Middlewares = [
+                        AuthenticationMiddlewares.AuthenticateMiddleware,
+                        CoreMiddlewares.PaginationMiddleware,
+                        GetMiddleware<R, RDTO, S>(options.GetCustomAction)
+                    ],
+                    ProducesStatusCodes = [StatusCodes.Status401Unauthorized]
+                })
             .WithTags(tag)
             .Produces<PaginatedCollectionDTO<RDTO>>(StatusCodes.Status200OK, JsonUtils.JsonContentTypeWithCharset);
 
             app.MapGet(
                 $"{resource}/{{id}}",
-                plugins,
-                [
-                    AuthenticationMiddlewares.AuthenticateMiddleware,
-                    GetByIdMiddleware<R, RDTO, S>(getByIdCustomAction)
-                ],
-                [StatusCodes.Status401Unauthorized])
+                new RouteBuilderOptions
+                {
+                    Services = options.Services,
+                    Middlewares = [
+                        AuthenticationMiddlewares.AuthenticateMiddleware,
+                        GetByIdMiddleware<R, RDTO, S>(options.GetByIdCustomAction)
+                    ],
+                    ProducesStatusCodes = [StatusCodes.Status401Unauthorized]
+                })
             .WithTags(tag)
             .WithOpenApi(o =>
             {
@@ -148,24 +149,30 @@ namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods
 
             app.MapPost(
                 resource,
-                plugins,
-                [
-                    AuthenticationMiddlewares.AuthenticateMiddleware,
-                    PostMiddleware<R, WDTO, S>(resource, postCustomAction)
-                ],
-                [StatusCodes.Status401Unauthorized])
+                new RouteBuilderOptions
+                {
+                    Services = options.Services,
+                    Middlewares = [
+                        AuthenticationMiddlewares.AuthenticateMiddleware,
+                        PostMiddleware<R, WDTO, S>(resource, options.PostCustomAction)
+                    ],
+                    ProducesStatusCodes = [StatusCodes.Status401Unauthorized]
+                })
             .WithTags(tag)
             .Accepts<WDTO>(JsonUtils.JsonContentTypeWithCharset)
             .Produces(StatusCodes.Status201Created);
 
             app.MapDelete(
                 $"{resource}/{{id}}",
-                plugins,
-                [
-                    AuthenticationMiddlewares.AuthenticateMiddleware,
-                    DeleteMiddleware<R, RDTO, S>(deleteCustomAction)
-                ],
-                [StatusCodes.Status401Unauthorized])
+                new RouteBuilderOptions
+                {
+                    Services = options.Services,
+                    Middlewares = [
+                        AuthenticationMiddlewares.AuthenticateMiddleware,
+                        DeleteMiddleware<R, RDTO, S>(options.DeleteCustomAction)
+                    ],
+                    ProducesStatusCodes = [StatusCodes.Status401Unauthorized]
+                })
             .WithTags(tag)
             .WithOpenApi(o =>
             {
