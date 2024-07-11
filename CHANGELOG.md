@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.0.6"></a>
+## [1.0.6](https://www.github.com/looplex-osi/middlewares-dotnet/releases/tag/v1.0.6) (2024-07-11)
+
+### Bug Fixes
+
+* improved plugin service subscription ([d9d4d86](https://www.github.com/looplex-osi/middlewares-dotnet/commit/d9d4d8612f07c2b30ac9c88287a6a41a380b9c6f))
+
 <a name="1.0.5"></a>
 ## [1.0.5](https://www.github.com/looplex-osi/middlewares-dotnet/releases/tag/v1.0.5) (2024-07-08)
 
