@@ -1,5 +1,5 @@
 ﻿using AutoMapper;
-using Looplex.DotNet.Middlewares.Clients.DTOs;
+using Looplex.DotNet.Middlewares.Clients.Dtos;
 using Looplex.DotNet.Middlewares.Clients.Entities;
 
 namespace Looplex.DotNet.Middlewares.Clients.Profiles
@@ -8,11 +8,11 @@ namespace Looplex.DotNet.Middlewares.Clients.Profiles
     {
         public ClientsProfile()
         {
-            CreateMap<Client, ClientDTO>()
+            CreateMap<Client, ClientDto>()
                 .ReverseMap();
-            CreateMap<Client, ClientReadDTO>()
+            CreateMap<Client, ClientReadDto>()
                 .ReverseMap();
-            CreateMap<Client, ClientWriteDTO>()
+            CreateMap<Client, ClientWriteDto>()
                 .ReverseMap();
         }
     }

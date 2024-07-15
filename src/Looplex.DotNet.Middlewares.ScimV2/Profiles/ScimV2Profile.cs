@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using Looplex.DotNet.Middlewares.ScimV2.DTOs.Groups;
-using Looplex.DotNet.Middlewares.ScimV2.DTOs.Users;
+using Looplex.DotNet.Middlewares.ScimV2.Dtos.Groups;
+using Looplex.DotNet.Middlewares.ScimV2.Dtos.Users;
 using Looplex.DotNet.Middlewares.ScimV2.Entities.Groups;
 using Looplex.DotNet.Middlewares.ScimV2.Entities.Users;
 
@@ -10,29 +10,29 @@ namespace Looplex.DotNet.Middlewares.ScimV2.Profiles
     {
         public ScimV2Profile()
         {
-            CreateMap<Address, AddressDTO>()
+            CreateMap<Address, AddressDto>()
                 .ReverseMap();
-            CreateMap<Email, EmailDTO>()
+            CreateMap<Email, EmailDto>()
                 .ReverseMap();
-            CreateMap<Entitlement, EntitlementDTO>()
+            CreateMap<Entitlement, EntitlementDto>()
                 .ReverseMap();
-            CreateMap<UserGroup, UserGroupDTO>()
+            CreateMap<UserGroup, UserGroupDto>()
                 .ReverseMap();
-            CreateMap<IM, IMDTO>()
+            CreateMap<InstantMessaging, InstantMessagingDto>()
                 .ReverseMap();
-            CreateMap<Name, NameDTO>()
+            CreateMap<Name, NameDto>()
                 .ReverseMap();
-            CreateMap<PhoneNumber, PhoneNumberDTO>()
+            CreateMap<PhoneNumber, PhoneNumberDto>()
                 .ReverseMap();
-            CreateMap<Photo, PhotoDTO>()
+            CreateMap<Photo, PhotoDto>()
                 .ReverseMap();
-            CreateMap<Role, RoleDTO>()
+            CreateMap<Role, RoleDto>()
                 .ReverseMap();
-            CreateMap<User, UserDTO>()
+            CreateMap<User, UserDto>()
                 .ReverseMap();
-            CreateMap<Group, GroupDTO>()
+            CreateMap<Group, GroupDto>()
                 .ReverseMap();
-            CreateMap<Member, MemberDTO>()
+            CreateMap<Member, MemberDto>()
                 .ReverseMap();
         }
     }

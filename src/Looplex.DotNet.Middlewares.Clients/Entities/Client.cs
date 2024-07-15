@@ -18,5 +18,10 @@ namespace Looplex.DotNet.Middlewares.Clients.Entities
         [Required(ErrorMessage = "NotBefore is required.")]
         [DataType(DataType.DateTime, ErrorMessage = "NotBefore must be a valid date.")]
         public required DateTime NotBefore { get; init; }
+
+        public override bool IsValid(List<ValidationResult> validationResults)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -14,5 +14,11 @@ namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods
         {
             
         }
+        
+        public static IServiceCollection AddScimV2Localization(this IServiceCollection services)
+        {
+            services.AddLocalization(options => options.ResourcesPath = "Resources/ScimV2");
+            return services;
+        }
     }
 }

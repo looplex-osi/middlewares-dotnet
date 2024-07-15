@@ -1,4 +1,4 @@
-﻿using Looplex.DotNet.Middlewares.Clients.DTOs;
+﻿using Looplex.DotNet.Middlewares.Clients.Dtos;
 using Looplex.DotNet.Middlewares.Clients.Entities;
 using Looplex.DotNet.Middlewares.OAuth2.Services;
 using Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods;
@@ -10,7 +10,7 @@ namespace Looplex.DotNet.Middlewares.Clients.ExtensionMethods
     {
         public static void UseClientRoutes(this IEndpointRouteBuilder app, ScimV2RouteOptions? options = null)
         {
-            app.UseScimV2Routes<Client, ClientReadDTO, ClientWriteDTO, IClientService>(options ?? new ScimV2RouteOptions());
+            app.UseScimV2Routes<Client, ClientReadDto, ClientWriteDto, IClientService>(options ?? new ScimV2RouteOptions());
         }
     }
 }

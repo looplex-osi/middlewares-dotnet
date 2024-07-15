@@ -1,49 +1,98 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using Looplex.DotNet.Middlewares.ScimV2.Entities.Validations;
+using Microsoft.Extensions.Localization;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.Entities.Users
 {
-    public class User : Resource
+    /// <summary>
+    /// SCIM provides a resource type for "User" resources.  The core schema
+    /// for "User" is identified using the following schema URI:
+    /// "urn:ietf:params:scim:schemas:core:2.0:User". 
+    /// </summary>
+    /// <see cref="https://datatracker.ietf.org/doc/html/rfc7643#section-4.1"/>
+    /// <param name="localizer"></param>
+    public class User(IStringLocalizer<User> localizer) : Resource
     {
-        [Required(ErrorMessage = "UserName is required.")]
-        public string UserName { get; set; }
+        private readonly IStringLocalizer<User> _localizer = localizer;
+        
+        [Required(ErrorMessageResourceType = typeof(Resources.ScimV2.Common), ErrorMessageResourceName = "PropertyIsRequired", AllowEmptyStrings = false)]
+        [MinLength(8, ErrorMessageResourceType = typeof(Resources.ScimV2.Common), ErrorMessageResourceName = "StringDoesNotHaveMinLength")]
+        public required string UserName { get; set; }
 
-        public Name Name { get; set; }
+        [Required(ErrorMessageResourceType = typeof(Resources.ScimV2.Common), ErrorMessageResourceName = "PropertyIsRequired")]
+        [Valid(ErrorMessageResourceType = typeof(Resources.ScimV2.Common), ErrorMessageResourceName = "PropertyIsInvalid")]
+        public required Name Name { get; set; }
 
-        public string DisplayName { get; set; }
+        [NullOrNotEmpty(ErrorMessageResourceType = typeof(Resources.ScimV2.Common), ErrorMessageResourceName = "StringCannotBeEmpty")]
+        public string? DisplayName { get; set; }
 
-        public string NickName { get; set; }
+        [NullOrNotEmpty(ErrorMessageResourceType = typeof(Resources.ScimV2.Common), ErrorMessageResourceName = "StringCannotBeEmpty")]
+        public string? NickName { get; set; }
 
-        [Url(ErrorMessage = "Profile URL must be a valid URL.")]
-        public string ProfileUrl { get; set; }
+        [Url(ErrorMessageResourceType = typeof(Resources.ScimV2.Common), ErrorMessageResourceName = "PropertyIsInvalid")]
+        public string? ProfileUrl { get; set; }
 
-        public string Title { get; set; }
+        [NullOrNotEmpty(ErrorMessageResourceType = typeof(Resources.ScimV2.Common), ErrorMessageResourceName = "StringCannotBeEmpty")]
+        public string? Title { get; set; }
 
-        public string UserType { get; set; }
+        [NullOrNotEmpty(ErrorMessageResourceType = typeof(Resources.ScimV2.Common), ErrorMessageResourceName = "StringCannotBeEmpty")]
+        public string? UserType { get; set; }
 
-        public string PreferredLanguage { get; set; }
+        /// <summary>
+        /// The format of the value is the same as the HTTP Accept-Language
+        /// header field (not including "Accept-Language:") and is specified
+        /// in Section 5.3.5 of [RFC7231].
+        /// <see cref="https://datatracker.ietf.org/doc/html/rfc7231#section-5.3.5"/>
+        /// </summary>
+        [AcceptedLanguage(ErrorMessageResourceType = typeof(Resources.ScimV2.Common), ErrorMessageResourceName = "PropertyIsInvalid")]
+        public string? PreferredLanguage { get; set; }
 
-        public string Locale { get; set; }
+        /// <summary>
+        /// A valid value is a language tag as defined in [RFC5646]
+        /// <see cref="https://datatracker.ietf.org/doc/html/rfc5646"/>
+        /// </summary>
+        [LanguageTag(ErrorMessageResourceType = typeof(Resources.ScimV2.Common), ErrorMessageResourceName = "PropertyIsInvalid")]
+        public string? Locale { get; set; }
 
-        public string Timezone { get; set; }
+        /// <summary>
+        /// Must be in IANA Time Zone database format [RFC6557]
+        /// </summary>
+        /// <see cref="https://datatracker.ietf.org/doc/html/rfc6557"/>
+        [IanaTimezone(ErrorMessageResourceType = typeof(Resources.ScimV2.Common), ErrorMessageResourceName = "PropertyIsInvalid")]
+        public string? Timezone { get; set; }
 
         public bool Active { get; set; } = true;
 
-        public string Password { get; set; }
+        [Valid(ErrorMessageResourceType = typeof(Resources.ScimV2.Common), ErrorMessageResourceName = "PropertyIsInvalid")]
+        public List<Email> Emails { get; set; }= [];
 
-        public List<Email> Emails { get; set; }
+        [Valid(ErrorMessageResourceType = typeof(Resources.ScimV2.Common), ErrorMessageResourceName = "PropertyIsInvalid")]
+        public List<PhoneNumber> PhoneNumbers { get; set; } = [];
 
-        public List<PhoneNumber> PhoneNumbers { get; set; }
+        [Valid(ErrorMessageResourceType = typeof(Resources.ScimV2.Common), ErrorMessageResourceName = "PropertyIsInvalid")]
+        public List<InstantMessaging> InstantMessagings { get; set; } = [];
 
-        public List<IM> Ims { get; set; }
+        [Valid(ErrorMessageResourceType = typeof(Resources.ScimV2.Common), ErrorMessageResourceName = "PropertyIsInvalid")]
+        public List<Photo> Photos { get; set; } = [];
+        
+        [Valid(ErrorMessageResourceType = typeof(Resources.ScimV2.Common), ErrorMessageResourceName = "PropertyIsInvalid")]
+        public List<Address> Addresses { get; set; } = [];
 
-        public List<Photo> Photos { get; set; }
+        [ReadOnly(true)]
+        public List<UserGroup> Groups { get; set; } = [];
 
-        public List<Address> Addresses { get; set; }
+        [Valid(ErrorMessageResourceType = typeof(Resources.ScimV2.Common), ErrorMessageResourceName = "PropertyIsInvalid")]
+        public List<Entitlement> Entitlements { get; set; } = [];
+        
+        [Valid(ErrorMessageResourceType = typeof(Resources.ScimV2.Common), ErrorMessageResourceName = "PropertyIsInvalid")]
+        public List<Role> Roles { get; set; } = [];
 
-        public List<UserGroup> Groups { get; set; }
-
-        public List<Entitlement> Entitlements { get; set; }
-
-        public List<Role> Roles { get; set; }
+        public override bool IsValid(List<ValidationResult> validationResults)
+        {
+            // TODO validate unique username ??
+            
+            throw new NotImplementedException();
+        }
     }
 }

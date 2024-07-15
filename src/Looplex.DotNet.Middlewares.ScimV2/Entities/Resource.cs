@@ -2,17 +2,30 @@
 
 namespace Looplex.DotNet.Middlewares.ScimV2.Entities
 {
-    public class Resource
+    public abstract class Resource
     {
-        #region Common
-
         [Required(ErrorMessage = "Id is required.")]
-        public string Id { get; set; }
+        public required string Id { get; set; }
 
-        public string ExternalId { get; set; }
+        public string? ExternalId { get; set; }
 
-        public Meta Meta { get; set; }
+        public required Meta Meta { get; set; }
 
-        #endregion
+        public bool IsValid(out List<ValidationResult> validationResults)
+        {
+            validationResults = [];
+            var context = new ValidationContext(this, null, null);
+            Validator.TryValidateObject(this, context, validationResults, true);
+            
+            var isValid = validationResults.Count == 0;
+            if (isValid)
+            {
+                isValid = IsValid(validationResults);
+            }
+            
+            return isValid;
+        }
+
+        public abstract bool IsValid(List<ValidationResult> validationResults);
     }
 }
