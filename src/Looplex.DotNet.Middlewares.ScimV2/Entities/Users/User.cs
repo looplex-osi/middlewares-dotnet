@@ -57,8 +57,8 @@ namespace Looplex.DotNet.Middlewares.ScimV2.Entities.Users
 
         /// <summary>
         /// Must be in IANA Time Zone database format [RFC6557]
-        /// </summary>
         /// <see cref="https://datatracker.ietf.org/doc/html/rfc6557"/>
+        /// </summary>
         [IanaTimezone(ErrorMessageResourceType = typeof(Resources.ScimV2.Common), ErrorMessageResourceName = "PropertyIsInvalid")]
         public string? Timezone { get; set; }
 
