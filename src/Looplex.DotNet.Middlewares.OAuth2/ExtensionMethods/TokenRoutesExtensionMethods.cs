@@ -4,7 +4,6 @@ using Looplex.DotNet.Core.Middlewares;
 using Looplex.DotNet.Core.WebAPI.Routes;
 using Looplex.DotNet.Middlewares.OAuth2.DTOs;
 using Looplex.DotNet.Middlewares.OAuth2.Services;
-using Looplex.OpenForExtension.Plugins;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;

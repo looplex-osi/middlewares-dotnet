@@ -1,15 +1,17 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Looplex.DotNet.Middlewares.ScimV2.Entities.Users.Enums;
+using Looplex.DotNet.Middlewares.ScimV2.Entities.Validations;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.Entities.Users
 {
     public class UserGroup
     {
+        [LooplexRequired]
         public required string Value { get; set; }
 
-        [Url(ErrorMessage = "Ref must be a valid URL.")]
+        [LooplexUrl]
         public string? Ref { get; set; }
 
-        [RegularExpression("direct|indirect", ErrorMessage = "Type must be either 'direct' or 'indirect'.")]
+        [LooplexEnumDataType(typeof(UserGroupType))]
         public string? Type { get; set; }
     }
 }

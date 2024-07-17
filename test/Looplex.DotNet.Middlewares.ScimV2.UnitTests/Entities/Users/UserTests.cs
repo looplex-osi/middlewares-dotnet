@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Looplex.DotNet.Middlewares.ScimV2.Entities;
 using Looplex.DotNet.Middlewares.ScimV2.Entities.Users;
-using Microsoft.Extensions.Localization;
+using Looplex.DotNet.Middlewares.ScimV2.Services;
 using NSubstitute;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.Entities.Users
@@ -9,18 +9,18 @@ namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.Entities.Users
     [TestClass]
     public class UserTests
     {
-        private IStringLocalizer<User> _localizer;
+        private IUserService _userService;
 
         [TestInitialize]
         public void Setup()
         {
-            _localizer = Substitute.For<IStringLocalizer<User>>();
+            _userService = Substitute.For<IUserService>();
         }
 
         [TestMethod]
         public void UserName_ShouldBeRequired()
         {
-            var user = new User(_localizer)
+            var user = new User(_userService)
             {
                 Id = "",
                 Meta = Substitute.For<Meta>(),
@@ -43,7 +43,7 @@ namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.Entities.Users
         [TestMethod]
         public void UserName_ShouldHaveMinLength()
         {
-            var user = new User(_localizer)
+            var user = new User(_userService)
             {
                 Id = "",
                 Meta = Substitute.For<Meta>(),
@@ -58,7 +58,7 @@ namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.Entities.Users
         [TestMethod]
         public void UserName_Valid()
         {
-            var user = new User(_localizer)
+            var user = new User(_userService)
             {
                 Id = "",
                 Meta = Substitute.For<Meta>(),
@@ -72,7 +72,7 @@ namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.Entities.Users
         [TestMethod]
         public void Name_ShouldBeRequired()
         {
-            var user = new User(_localizer)
+            var user = new User(_userService)
             {
                 Id = "",
                 Meta = Substitute.For<Meta>(),
@@ -87,7 +87,7 @@ namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.Entities.Users
         [TestMethod]
         public void Name_Valid()
         {
-            var user = new User(_localizer)
+            var user = new User(_userService)
             {
                 Id = "",
                 Meta = Substitute.For<Meta>(),
@@ -108,7 +108,7 @@ namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.Entities.Users
         [TestMethod]
         public void DisplayName_CannotBeEmpty()
         {
-            var user = new User(_localizer)
+            var user = new User(_userService)
             {
                 Id = "",
                 Meta = Substitute.For<Meta>(),
@@ -126,7 +126,7 @@ namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.Entities.Users
         [DataRow("jonh d")]
         public void DisplayName_Valid(string? value)
         {
-            var user = new User(_localizer)
+            var user = new User(_userService)
             {
                 Id = "",
                 Meta = Substitute.For<Meta>(),
@@ -141,7 +141,7 @@ namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.Entities.Users
         [TestMethod]
         public void NickName_CannotBeEmpty()
         {
-            var user = new User(_localizer)
+            var user = new User(_userService)
             {
                 Id = "",
                 Meta = Substitute.For<Meta>(),
@@ -159,7 +159,7 @@ namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.Entities.Users
         [DataRow("jonny")]
         public void NickName_Valid(string? value)
         {
-            var user = new User(_localizer)
+            var user = new User(_userService)
             {
                 Id = "",
                 Meta = Substitute.For<Meta>(),
@@ -174,7 +174,7 @@ namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.Entities.Users
         [TestMethod]
         public void ProfileUrl_ShouldBeValidUrl()
         {
-            var user = new User(_localizer)
+            var user = new User(_userService)
             {
                 Id = "",
                 Meta = Substitute.For<Meta>(),
@@ -192,7 +192,7 @@ namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.Entities.Users
         [DataRow("https://jonghdoe.profile.com")]
         public void ProfileUrl_Valid(string? value)
         {
-            var user = new User(_localizer)
+            var user = new User(_userService)
             {
                 Id = "",
                 Meta = Substitute.For<Meta>(),
@@ -207,7 +207,7 @@ namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.Entities.Users
         [TestMethod]
         public void Title_CannotBeEmpty()
         {
-            var user = new User(_localizer)
+            var user = new User(_userService)
             {
                 Id = "",
                 Meta = Substitute.For<Meta>(),
@@ -225,7 +225,7 @@ namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.Entities.Users
         [DataRow("Mr.")]
         public void Title_Valid(string? value)
         {
-            var user = new User(_localizer)
+            var user = new User(_userService)
             {
                 Id = "",
                 Meta = Substitute.For<Meta>(),
@@ -240,7 +240,7 @@ namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.Entities.Users
         [TestMethod]
         public void UserType_CannotBeEmpty()
         {
-            var user = new User(_localizer)
+            var user = new User(_userService)
             {
                 Id = "",
                 Meta = Substitute.For<Meta>(),
@@ -258,7 +258,7 @@ namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.Entities.Users
         [DataRow("admin")]
         public void UserType_Valid(string? value)
         {
-            var user = new User(_localizer)
+            var user = new User(_userService)
             {
                 Id = "",
                 Meta = Substitute.For<Meta>(),
@@ -273,7 +273,7 @@ namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.Entities.Users
         [TestMethod]
         public void PreferredLanguage_ShouldBeValid()
         {
-            var user = new User(_localizer)
+            var user = new User(_userService)
             {
                 Id = "",
                 Meta = Substitute.For<Meta>(),
@@ -291,7 +291,7 @@ namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.Entities.Users
         [DataRow("da, en-gb;q=0.8, en;q=0.7")]
         public void PreferredLanguage_Valid(string? value)
         {
-            var user = new User(_localizer)
+            var user = new User(_userService)
             {
                 Id = "",
                 Meta = Substitute.For<Meta>(),
@@ -306,7 +306,7 @@ namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.Entities.Users
         [TestMethod]
         public void Locale_ShouldBeValid()
         {
-            var user = new User(_localizer)
+            var user = new User(_userService)
             {
                 Id = "",
                 Meta = Substitute.For<Meta>(),
@@ -324,7 +324,7 @@ namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.Entities.Users
         [DataRow("en-US, pt-BR, de")]
         public void Locale_Valid(string? value)
         {
-            var user = new User(_localizer)
+            var user = new User(_userService)
             {
                 Id = "",
                 Meta = Substitute.For<Meta>(),
@@ -339,7 +339,7 @@ namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.Entities.Users
         [TestMethod]
         public void Timezone_ShouldBeValid()
         {
-            var user = new User(_localizer)
+            var user = new User(_userService)
             {
                 Id = "",
                 Meta = Substitute.For<Meta>(),
@@ -358,7 +358,7 @@ namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.Entities.Users
         [DataRow("Asia/Shanghai")]
         public void Timezone_Valid(string? value)
         {
-            var user = new User(_localizer)
+            var user = new User(_userService)
             {
                 Id = "",
                 Meta = Substitute.For<Meta>(),

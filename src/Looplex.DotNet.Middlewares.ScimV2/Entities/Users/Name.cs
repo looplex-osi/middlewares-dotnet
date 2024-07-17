@@ -7,21 +7,21 @@ namespace Looplex.DotNet.Middlewares.ScimV2.Entities.Users
     {
         public string Formatted => $"{HonorificPrefix} {GivenName} {MiddleName} {FamilyName}, {HonorificSuffix}";
 
-        [Required(ErrorMessageResourceType = typeof(Resources.ScimV2.Common), ErrorMessageResourceName = "StringCannotBeEmpty", AllowEmptyStrings = false)]
-        [MinLength(2, ErrorMessageResourceType = typeof(Resources.ScimV2.Common), ErrorMessageResourceName = "StringDoesNotHaveMinLength")]
+        [LooplexRequired]
+        [LooplexMinLength(2)]
         public required string FamilyName { get; set; }
         
-        [Required(ErrorMessageResourceType = typeof(Resources.ScimV2.Common), ErrorMessageResourceName = "StringCannotBeEmpty", AllowEmptyStrings = false)]
-        [MinLength(2, ErrorMessageResourceType = typeof(Resources.ScimV2.Common), ErrorMessageResourceName = "StringDoesNotHaveMinLength")]
+        [LooplexRequired]
+        [LooplexMinLength(2)]
         public required string GivenName { get; set; }
         
-        [NullOrNotEmpty(ErrorMessageResourceType = typeof(Resources.ScimV2.Common), ErrorMessageResourceName = "StringCannotBeEmpty")]
+        [LooplexNullOrNotEmpty]
         public string? MiddleName { get; set; }
 
-        [NullOrNotEmpty(ErrorMessageResourceType = typeof(Resources.ScimV2.Common), ErrorMessageResourceName = "StringCannotBeEmpty")]
+        [LooplexNullOrNotEmpty]
         public string? HonorificPrefix { get; set; }
 
-        [NullOrNotEmpty(ErrorMessageResourceType = typeof(Resources.ScimV2.Common), ErrorMessageResourceName = "StringCannotBeEmpty")]
+        [LooplexNullOrNotEmpty]
         public string? HonorificSuffix { get; set; }
     }
 }

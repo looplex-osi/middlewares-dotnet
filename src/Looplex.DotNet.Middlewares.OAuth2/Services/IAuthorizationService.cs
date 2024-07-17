@@ -1,5 +1,4 @@
-﻿using Looplex.DotNet.Middlewares.OAuth2.DTOs;
-using Looplex.OpenForExtension.Context;
+﻿using Looplex.OpenForExtension.Context;
 
 namespace Looplex.DotNet.Middlewares.OAuth2.Services
 {
