@@ -27,5 +27,11 @@
   <ItemGroup>
     <ProjectReference Include="..\Looplex.DotNet.Middlewares.ScimV2\Looplex.DotNet.Middlewares.ScimV2.csproj" />
   </ItemGroup>
+    
+  <ItemGroup>
+    <None Update="Entities\Schemas\Client.1.0.schema.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
 </Project>

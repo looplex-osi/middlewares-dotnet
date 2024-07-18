@@ -25,4 +25,13 @@
       <ProjectReference Include="..\..\src\Looplex.DotNet.Middlewares.ScimV2\Looplex.DotNet.Middlewares.ScimV2.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="Entities\Users\Mocks\ValidUser.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Entities\Groups\Mocks\ValidGroup.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>

@@ -5,7 +5,7 @@
         string DisplayName { get; }
         string Id { get; }
         string Secret { get; }
-        DateTime ExpirationTime { get; }
-        DateTime NotBefore { get; }
+        DateTimeOffset ExpirationTime { get; }
+        DateTimeOffset NotBefore { get; }
     }
 }

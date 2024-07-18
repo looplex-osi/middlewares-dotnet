@@ -26,10 +26,13 @@
     
   <ItemGroup>
 	<PackageReference Include="AutoMapper" Version="13.0.1" />
+	<PackageReference Include="FluentAssertions" Version="6.12.0" />
 	<PackageReference Include="Looplex.DotNet.Core.Application" Version="1.0.6" />
 	<PackageReference Include="Looplex.DotNet.Core.WebAPI" Version="1.0.6" />
+	<PackageReference Include="MiniValidation" Version="0.9.1" />
+	<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+	<PackageReference Include="Newtonsoft.Json.Schema" Version="4.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
-    <PackageReference Include="System.Text.Json" Version="8.0.4" />
   </ItemGroup>
 
   <ItemGroup>
@@ -44,18 +47,15 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>User.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Update="Resources\ScimV2\Common.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Common.Designer.cs</LastGenOutput>
-    </EmbeddedResource>
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Resources\ScimV2\Common.Designer.cs">
-      <DesignTime>True</DesignTime>
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Common.resx</DependentUpon>
-    </Compile>
+    <None Update="Entities\Schemas\User.1.0.schema.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Entities\Schemas\Group.1.0.schema.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

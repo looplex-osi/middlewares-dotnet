@@ -1,19 +1,30 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Looplex.DotNet.Middlewares.ScimV2.Dtos.Groups;
+﻿using System.Globalization;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 
-namespace Looplex.DotNet.Middlewares.ScimV2.Entities.Groups
+namespace Looplex.DotNet.Middlewares.ScimV2.Entities.Groups;
+
+public partial class Group
 {
-    public class Group : Resource
+    internal static class Converter
     {
-        [Required(ErrorMessage = "DisplayName is required.")]
-        public required string DisplayName { get; set; }
-
-        [Required(ErrorMessage = "Members are required.")]
-        public List<MemberDto> Members { get; set; } = [];
-
-        public override bool IsValid(List<ValidationResult> validationResults)
+        public static readonly JsonSerializerSettings Settings = new()
         {
-            throw new NotImplementedException();
-        }
+            MetadataPropertyHandling = MetadataPropertyHandling.Ignore,
+            DateParseHandling = DateParseHandling.None,
+            Converters =
+            {
+                MemberElement.GroupTypeConverter.Singleton,
+                new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AssumeUniversal }
+            }
+        };
+    }
+}
+
+public static class Serialize
+{
+    public static string ToJson(this Group self)
+    {
+        return JsonConvert.SerializeObject(self, Group.Converter.Settings);
     }
 }

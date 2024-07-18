@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
 using Looplex.DotNet.Middlewares.Clients.Dtos;
-using Looplex.DotNet.Middlewares.Clients.Entities;
+using Looplex.DotNet.Middlewares.Clients.Entities.Clients;
 
 namespace Looplex.DotNet.Middlewares.Clients.Profiles
 {

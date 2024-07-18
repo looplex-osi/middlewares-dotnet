@@ -1,31 +1,23 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Looplex.DotNet.Middlewares.ScimV2.Entities.Schemas;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Schema;
 
-namespace Looplex.DotNet.Middlewares.ScimV2.Entities
+namespace Looplex.DotNet.Middlewares.ScimV2.Entities;
+
+public abstract partial class Resource
 {
-    public abstract class Resource
+    public static T FromJson<T>(string json, out IList<string> messages)
     {
-        [Required(ErrorMessage = "Id is required.")]
-        public required string Id { get; set; }
+        JsonTextReader reader = new(new StringReader(json));
 
-        public string? ExternalId { get; set; }
+        JSchemaValidatingReader validatingReader = new(reader);
+        validatingReader.Schema = JSchema.Parse(Schema.Schemas[typeof(T)]);
 
-        public required Meta Meta { get; set; }
+        IList<string> localMessages = [];
+        validatingReader.ValidationEventHandler += (o, a) => localMessages.Add(a.Message);
+        messages = localMessages;
 
-        public bool IsValid(out List<ValidationResult> validationResults)
-        {
-            validationResults = [];
-            var context = new ValidationContext(this, null, null);
-            Validator.TryValidateObject(this, context, validationResults, true);
-            
-            var isValid = validationResults.Count == 0;
-            if (isValid)
-            {
-                isValid = IsValid(validationResults);
-            }
-            
-            return isValid;
-        }
-
-        public abstract bool IsValid(List<ValidationResult> validationResults);
+        JsonSerializer serializer = new();
+        return serializer.Deserialize<T>(validatingReader)!;
     }
 }

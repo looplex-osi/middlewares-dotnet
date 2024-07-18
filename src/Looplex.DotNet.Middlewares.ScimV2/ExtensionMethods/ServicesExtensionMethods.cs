@@ -1,4 +1,7 @@
-﻿using Looplex.DotNet.Middlewares.ScimV2.Profiles;
+﻿using Looplex.DotNet.Middlewares.ScimV2.Entities.Groups;
+using Looplex.DotNet.Middlewares.ScimV2.Entities.Schemas;
+using Looplex.DotNet.Middlewares.ScimV2.Entities.Users;
+using Looplex.DotNet.Middlewares.ScimV2.Profiles;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods
@@ -12,13 +15,13 @@ namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods
 
         public static void AddScimV2Services(this IServiceCollection services)
         {
-            
+
         }
-        
-        public static IServiceCollection AddScimV2Localization(this IServiceCollection services)
+
+        public static void AddScimV2Schemas()
         {
-            services.AddLocalization(options => options.ResourcesPath = "Resources/ScimV2");
-            return services;
+            Schema.Add<User>(File.ReadAllText("./Entities/Schemas/User.1.0.schema.json"));
+            Schema.Add<Group>(File.ReadAllText("./Entities/Schemas/Group.1.0.schema.json"));
         }
     }
 }

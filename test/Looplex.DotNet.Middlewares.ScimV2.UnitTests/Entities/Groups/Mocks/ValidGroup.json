@@ -1,0 +1,19 @@
+{
+  "id": "group123",
+  "externalId": "external456",
+  "meta": {
+    "resourceType": "Group",
+    "created": "2023-07-17T12:34:56Z",
+    "lastModified": "2024-07-17T12:34:56Z",
+    "location": "https://example.com/scim/v2/Groups/group123",
+    "version": "W/\"456\""
+  },
+  "displayName": "Engineering Group",
+  "members": [
+    {
+      "value": "user789",
+      "$ref": "https://example.com/scim/v2/Users/user789",
+      "type": "User"
+    }
+  ]
+}

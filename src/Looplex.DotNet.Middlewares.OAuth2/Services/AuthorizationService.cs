@@ -135,11 +135,11 @@ namespace Looplex.DotNet.Middlewares.OAuth2.Services
             {
                 throw new HttpRequestException("Invalid clientId or clientSecret.", null, HttpStatusCode.Unauthorized);
             }
-            if (client.NotBefore > DateTime.UtcNow)
+            if (client.NotBefore > DateTimeOffset.UtcNow)
             {
                 throw new HttpRequestException("Client access not allowed.", null, HttpStatusCode.Unauthorized);
             }
-            if (client.ExpirationTime <= DateTime.UtcNow)
+            if (client.ExpirationTime <= DateTimeOffset.UtcNow)
             {
                 throw new HttpRequestException("Client access is expired.", null, HttpStatusCode.Unauthorized);
             }
