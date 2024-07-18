@@ -1,5 +1,4 @@
-﻿using Looplex.DotNet.Core.Common.Middlewares;
-using Looplex.DotNet.Core.Common.Utils;
+﻿using Looplex.DotNet.Core.Common.Utils;
 using Looplex.DotNet.Core.Middlewares;
 using Looplex.DotNet.Core.WebAPI.Routes;
 using Looplex.DotNet.Middlewares.OAuth2.DTOs;
@@ -9,6 +8,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
+using Looplex.DotNet.Core.WebAPI.Middlewares;
 
 namespace Looplex.DotNet.Middlewares.OAuth2.ExtensionMethods
 {

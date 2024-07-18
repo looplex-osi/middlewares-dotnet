@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
-using Looplex.DotNet.Core.Application.Abstractions.Pagination;
 using Looplex.DotNet.Core.Application.Abstractions.Services;
-using Looplex.DotNet.Core.Common.Middlewares;
 using Looplex.DotNet.Core.Common.Utils;
 using Looplex.DotNet.Core.Domain;
 using Looplex.DotNet.Core.Middlewares;
@@ -16,6 +14,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using System.Net;
 using System.Text.Json;
+using Looplex.DotNet.Core.Application.Abstractions.DTOs;
+using Looplex.DotNet.Core.WebAPI.Middlewares;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods
 {
