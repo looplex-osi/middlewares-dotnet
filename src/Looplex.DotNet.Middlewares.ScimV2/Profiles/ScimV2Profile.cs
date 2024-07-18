@@ -10,29 +10,29 @@ namespace Looplex.DotNet.Middlewares.ScimV2.Profiles
     {
         public ScimV2Profile()
         {
-            CreateMap<Address, AddressDto>()
+            CreateMap<AddressElement, AddressDto>()
                 .ReverseMap();
-            CreateMap<Email, EmailDto>()
+            CreateMap<EmailElement, EmailDto>()
                 .ReverseMap();
-            CreateMap<Entitlement, EntitlementDto>()
+            CreateMap<EntitlementElement, EntitlementDto>()
                 .ReverseMap();
-            CreateMap<UserGroup, UserGroupDto>()
+            CreateMap<GroupElement, UserGroupDto>()
                 .ReverseMap();
-            CreateMap<InstantMessaging, InstantMessagingDto>()
+            CreateMap<ImElement, InstantMessagingDto>()
                 .ReverseMap();
             CreateMap<Name, NameDto>()
                 .ReverseMap();
-            CreateMap<PhoneNumber, PhoneNumberDto>()
+            CreateMap<PhoneNumberElement, PhoneNumberDto>()
                 .ReverseMap();
-            CreateMap<Photo, PhotoDto>()
+            CreateMap<PhotoElement, PhotoDto>()
                 .ReverseMap();
-            CreateMap<Role, RoleDto>()
+            CreateMap<RoleElement, RoleDto>()
                 .ReverseMap();
             CreateMap<User, UserDto>()
                 .ReverseMap();
             CreateMap<Group, GroupDto>()
                 .ReverseMap();
-            CreateMap<Member, MemberDto>()
+            CreateMap<MemberElement, MemberDto>()
                 .ReverseMap();
         }
     }

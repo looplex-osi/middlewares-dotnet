@@ -11,9 +11,9 @@ namespace Looplex.DotNet.Middlewares.Clients.Dtos
         public required string Secret { get; init; }
 
         [JsonPropertyName("expiration_time")]
-        public required DateTime ExpirationTime { get; init; }
+        public required DateTimeOffset ExpirationTime { get; init; }
 
         [JsonPropertyName("not_before")]
-        public required DateTime NotBefore { get; init; }
+        public required DateTimeOffset NotBefore { get; init; }
     }
 }

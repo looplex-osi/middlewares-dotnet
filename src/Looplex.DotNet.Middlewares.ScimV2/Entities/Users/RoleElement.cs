@@ -1,5 +1,5 @@
 ﻿namespace Looplex.DotNet.Middlewares.ScimV2.Entities.Users;
 
-public partial class Name
+public partial class RoleElement
 {
 }

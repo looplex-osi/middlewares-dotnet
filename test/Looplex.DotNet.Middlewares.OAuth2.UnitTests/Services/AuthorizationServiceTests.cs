@@ -269,8 +269,8 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
             client.Id.Returns(clientId.ToString());
             client.DisplayName.Returns("client");
             client.Secret.Returns(clientSecret);
-            client.NotBefore.Returns(DateTime.UtcNow.AddMinutes(-1));
-            client.ExpirationTime.Returns(DateTime.UtcNow.AddMinutes(1));
+            client.NotBefore.Returns(DateTimeOffset.UtcNow.AddMinutes(-1));
+            client.ExpirationTime.Returns(DateTimeOffset.UtcNow.AddMinutes(1));
 
             _mockClientService.GetByIdAndSecretOrDefaultAsync(
                 Arg.Is<IDefaultContext>(c => AssertDefaultContextIsValid(c, clientId, clientSecret)))
@@ -343,8 +343,8 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
             client.Id.Returns(clientId.ToString());
             client.DisplayName.Returns("client");
             client.Secret.Returns(clientSecret);
-            client.NotBefore.Returns(DateTime.UtcNow.AddMinutes(1));
-            client.ExpirationTime.Returns(DateTime.UtcNow.AddMinutes(1));
+            client.NotBefore.Returns(DateTimeOffset.UtcNow.AddMinutes(1));
+            client.ExpirationTime.Returns(DateTimeOffset.UtcNow.AddMinutes(1));
 
             _mockClientService.GetByIdAndSecretOrDefaultAsync(
                     Arg.Is<IDefaultContext>(c => AssertDefaultContextIsValid(c, clientId, clientSecret)))

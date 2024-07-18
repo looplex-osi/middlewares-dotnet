@@ -1,0 +1,90 @@
+{
+  "id": "123456",
+  "userName": "johndoe",
+  "externalId": "78910",
+  "meta": {
+    "resourceType": "User",
+    "created": "2023-07-17T12:34:56Z",
+    "lastModified": "2024-07-17T12:34:56Z",
+    "location": "https://example.com/scim/v2/Users/123456",
+    "version": "W/\"123\""
+  },
+  "name": {
+    "formatted": "Mr. John Doe",
+    "familyName": "Doe",
+    "givenName": "John",
+    "middleName": "Middle",
+    "honorificPrefix": "Mr.",
+    "honorificSuffix": "Jr."
+  },
+  "displayName": "John Doe",
+  "nickName": "Johnny",
+  "profileUrl": "https://example.com/users/johndoe",
+  "title": "Software Engineer",
+  "userType": "Employee",
+  "preferredLanguage": "en_US",
+  "locale": "en_US",
+  "timezone": "America/Los_Angeles",
+  "active": true,
+  "password": "securepassword",
+  "emails": [
+    {
+      "value": "johndoe@example.com",
+      "type": "work",
+      "primary": true
+    }
+  ],
+  "phoneNumbers": [
+    {
+      "value": "+1-555-555-5555",
+      "type": "mobile",
+      "primary": true
+    }
+  ],
+  "ims": [
+    {
+      "value": "john.doe",
+      "type": "gtalk",
+      "primary": true
+    }
+  ],
+  "photos": [
+    {
+      "value": "https://example.com/photos/johndoe.jpg",
+      "type": "photo",
+      "primary": true
+    }
+  ],
+  "addresses": [
+    {
+      "formatted": "123 Main St, Anytown, CA 12345, USA",
+      "streetAddress": "123 Main St",
+      "locality": "Anytown",
+      "region": "CA",
+      "postalCode": "12345",
+      "country": "US",
+      "type": "work"
+    }
+  ],
+  "groups": [
+    {
+      "value": "group1",
+      "$ref": "https://example.com/scim/v2/Groups/group1",
+      "type": "direct"
+    }
+  ],
+  "entitlements": [
+    {
+      "value": "entitlement1",
+      "type": "type1",
+      "primary": true
+    }
+  ],
+  "roles": [
+    {
+      "value": "role1",
+      "type": "type1",
+      "primary": true
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 ﻿using Looplex.DotNet.Middlewares.Clients.Dtos;
-using Looplex.DotNet.Middlewares.Clients.Entities;
+using Looplex.DotNet.Middlewares.Clients.Entities.Clients;
 using Looplex.DotNet.Middlewares.OAuth2.Services;
 using Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods;
 using Microsoft.AspNetCore.Routing;
