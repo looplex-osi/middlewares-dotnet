@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.0.17"></a>
+## 1.0.17 (2024-07-19)
+
+### Bug Fixes
+
+* entities json converters are public now
+
 <a name="1.0.16"></a>
 ## 1.0.16 (2024-07-19)
 
