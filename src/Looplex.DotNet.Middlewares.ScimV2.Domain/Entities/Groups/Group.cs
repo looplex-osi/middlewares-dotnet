@@ -6,7 +6,7 @@ namespace Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Groups;
 
 public partial class Group
 {
-    internal static class Converter
+    public static class Converter
     {
         public static readonly JsonSerializerSettings Settings = new()
         {
