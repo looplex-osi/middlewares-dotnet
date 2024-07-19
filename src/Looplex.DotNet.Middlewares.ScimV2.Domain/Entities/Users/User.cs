@@ -12,7 +12,7 @@ namespace Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Users;
 /// </summary>
 public partial class User
 {
-    internal static class Converter
+    public static class Converter
     {
         public static readonly JsonSerializerSettings Settings = new()
         {
