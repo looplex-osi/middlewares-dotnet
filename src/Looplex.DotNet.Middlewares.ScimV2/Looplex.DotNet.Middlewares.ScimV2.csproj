@@ -27,8 +27,8 @@
   <ItemGroup>
 	<PackageReference Include="AutoMapper" Version="13.0.1" />
 	<PackageReference Include="FluentAssertions" Version="6.12.0" />
-	<PackageReference Include="Looplex.DotNet.Core.Application" Version="1.0.7" />
-	<PackageReference Include="Looplex.DotNet.Core.WebAPI" Version="1.0.7" />
+	<PackageReference Include="Looplex.DotNet.Core.Application" Version="1.0.8" />
+	<PackageReference Include="Looplex.DotNet.Core.WebAPI" Version="1.0.8" />
 	<PackageReference Include="MiniValidation" Version="0.9.1" />
 	<PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
 	<PackageReference Include="Newtonsoft.Json.Schema" Version="4.0.1" />

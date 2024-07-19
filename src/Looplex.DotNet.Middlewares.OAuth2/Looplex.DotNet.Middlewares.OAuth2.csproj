@@ -26,8 +26,8 @@
 
   <ItemGroup>
 	<PackageReference Include="AutoMapper" Version="13.0.1" />
-	<PackageReference Include="Looplex.DotNet.Core.Application" Version="1.0.7" />
-	<PackageReference Include="Looplex.DotNet.Core.WebAPI" Version="1.0.7" />
+	<PackageReference Include="Looplex.DotNet.Core.Application" Version="1.0.8" />
+	<PackageReference Include="Looplex.DotNet.Core.WebAPI" Version="1.0.8" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
     <PackageReference Include="Microsoft.IdentityModel.Protocols" Version="7.6.0" />
     <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="7.6.0" />

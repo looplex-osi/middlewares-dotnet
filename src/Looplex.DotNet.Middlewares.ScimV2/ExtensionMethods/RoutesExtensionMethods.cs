@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using System.Net;
-using Looplex.DotNet.Core.Application.Abstractions.DTOs;
+using Looplex.DotNet.Core.Application.Abstractions.Dtos;
 using Looplex.DotNet.Core.WebAPI.Middlewares;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods
@@ -108,7 +108,7 @@ namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods
                     ProducesStatusCodes = [StatusCodes.Status401Unauthorized]
                 })
             .WithTags(tag)
-            .Produces<PaginatedCollectionDTO<TReadDto>>(StatusCodes.Status200OK, JsonUtils.JsonContentTypeWithCharset);
+            .Produces<PaginatedCollectionDto<TReadDto>>(StatusCodes.Status200OK, JsonUtils.JsonContentTypeWithCharset);
 
             app.MapGet(
                 $"{resource}/{{id}}",
