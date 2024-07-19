@@ -15,8 +15,10 @@ public static class TokenRoutesExtensionMethods
     private const string Resource = "/token";
     private const string Tag = "Authentication";
 
-    private static readonly MiddlewareDelegate TokenMiddleware = new(async (context, _) =>
+    private static readonly MiddlewareDelegate TokenMiddleware = new(async (context, cancellationToken, _) =>
     {
+        cancellationToken.ThrowIfCancellationRequested();
+        
         IAuthorizationService service = context.Services.GetRequiredService<IAuthorizationService>();
 
         HttpContext httpContext = context.State.HttpContext;

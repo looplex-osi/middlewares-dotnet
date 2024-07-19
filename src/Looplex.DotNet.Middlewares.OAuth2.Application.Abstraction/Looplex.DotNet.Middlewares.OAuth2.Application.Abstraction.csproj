@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Looplex.OpenForExtension" Version="1.0.9" />
+      <PackageReference Include="Looplex.OpenForExtension" Version="1.0.10" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 

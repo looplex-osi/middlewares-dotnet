@@ -10,8 +10,10 @@ namespace Looplex.DotNet.Middlewares.OAuth2;
 
 public static partial class AuthenticationMiddlewares
 {
-    public static readonly MiddlewareDelegate AuthenticateMiddleware = new(async (context, next) =>
+    public static readonly MiddlewareDelegate AuthenticateMiddleware = new(async (context, cancellationToken, next) =>
     {
+        cancellationToken.ThrowIfCancellationRequested();
+        
         var configuration = context.Services.GetService<IConfiguration>()!;
         var audience = configuration["Audience"]!;
         var issuer = configuration["Issuer"]!;
