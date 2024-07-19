@@ -27,10 +27,10 @@ namespace Looplex.DotNet.Middlewares.OAuth2.ExtensionMethods
             string? authorization = httpContext.Request.Headers.Authorization;
 
             using StreamReader reader = new(httpContext.Request.Body);
-            var clientCredentialsDTO = JsonSerializer.Deserialize<ClientCredentialsDto>(await reader.ReadToEndAsync(), JsonUtils.HttpBodyConverter())!;
+            var clientCredentialsDto = JsonSerializer.Deserialize<ClientCredentialsDto>(await reader.ReadToEndAsync(), JsonUtils.HttpBodyConverter())!;
 
             context.State.Authorization = authorization;
-            context.State.ClientCredentialsDTO = clientCredentialsDTO;
+            context.State.ClientCredentialsDto = clientCredentialsDto;
             await service.CreateAccessToken(context);
 
             await httpContext.Response.WriteAsJsonAsync(new AccessTokenDto

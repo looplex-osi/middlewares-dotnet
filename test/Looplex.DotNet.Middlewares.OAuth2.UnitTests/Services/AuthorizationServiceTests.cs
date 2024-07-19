@@ -50,7 +50,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
             };
             var context = DefaultContext.Create([], _mockServiceProvider);
             context.State.Authorization = authorization;
-            context.State.ClientCredentialsDTO = clientCredentials;
+            context.State.ClientCredentialsDto = clientCredentials;
             var service = new AuthorizationService(_mockConfiguration, _mockClientService, _mockIdTokenService);
 
             // Act & Assert
@@ -72,7 +72,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
             };
             var context = DefaultContext.Create([], _mockServiceProvider);
             context.State.Authorization = authorization;
-            context.State.ClientCredentialsDTO = clientCredentials;
+            context.State.ClientCredentialsDto = clientCredentials;
             var service = new AuthorizationService(_mockConfiguration, _mockClientService, _mockIdTokenService);
 
             // Act & Assert
@@ -113,7 +113,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
 
             var context = DefaultContext.Create([], _mockServiceProvider);
             context.State.Authorization = authorization;
-            context.State.ClientCredentialsDTO = clientCredentials;
+            context.State.ClientCredentialsDto = clientCredentials;
             var service = new AuthorizationService(_mockConfiguration, _mockClientService, _mockIdTokenService);
 
             // Act
@@ -167,7 +167,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
 
             var context = DefaultContext.Create([], _mockServiceProvider);
             context.State.Authorization = authorization;
-            context.State.ClientCredentialsDTO = clientCredentials;
+            context.State.ClientCredentialsDto = clientCredentials;
             var service = new AuthorizationService(_mockConfiguration, _mockClientService, _mockIdTokenService);
 
             // Act & Assert
@@ -218,7 +218,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
 
             var context = DefaultContext.Create([], _mockServiceProvider);
             context.State.Authorization = authorization;
-            context.State.ClientCredentialsDTO = clientCredentials;
+            context.State.ClientCredentialsDto = clientCredentials;
             var service = new AuthorizationService(_mockConfiguration, _mockClientService, _mockIdTokenService);
             
             // Act & Assert
@@ -236,7 +236,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
             var clientId = Guid.NewGuid();
             var clientId1 = Guid.NewGuid();
             var clientSecret = "clientSecret";
-            var clientCredentialsDTO = new ClientCredentialsDto
+            var clientCredentialsDto = new ClientCredentialsDto
             {
                 IdToken = "validIdToken",
                 GrantType = "client_credentials"
@@ -282,11 +282,11 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
                 });
 
             _httpContext.Request.Headers.Authorization = "Bearer " + Convert.ToBase64String(Encoding.UTF8.GetBytes(clientId + ":" + clientSecret));
-            _httpContext.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(clientCredentialsDTO)));
+            _httpContext.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(clientCredentialsDto)));
 
             var context = DefaultContext.Create([], _mockServiceProvider);
             context.State.Authorization = authorization;
-            context.State.ClientCredentialsDTO = clientCredentials;
+            context.State.ClientCredentialsDto = clientCredentials;
             var service = new AuthorizationService(_mockConfiguration, _mockClientService, _mockIdTokenService);
 
             // Act
@@ -311,7 +311,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
             var _mockIdTokenService = Substitute.For<IIdTokenService>();
             var clientId = Guid.NewGuid();
             var clientSecret = "clientSecret";
-            var clientCredentialsDTO = new ClientCredentialsDto
+            var clientCredentialsDto = new ClientCredentialsDto
             {
                 IdToken = "validIdToken",
                 GrantType = "client_credentials"
@@ -356,11 +356,11 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
                 });
 
             _httpContext.Request.Headers.Authorization = "Bearer " + Convert.ToBase64String(Encoding.UTF8.GetBytes(clientId + ":" + clientSecret));
-            _httpContext.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(clientCredentialsDTO)));
+            _httpContext.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(clientCredentialsDto)));
 
             var context = DefaultContext.Create([], _mockServiceProvider);
             context.State.Authorization = authorization;
-            context.State.ClientCredentialsDTO = clientCredentials;
+            context.State.ClientCredentialsDto = clientCredentials;
             var service = new AuthorizationService(_mockConfiguration, _mockClientService, _mockIdTokenService);
 
             // Act & Assert
@@ -386,7 +386,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
 
             var context = DefaultContext.Create([], _mockServiceProvider);
             context.State.Authorization = authorization;
-            context.State.ClientCredentialsDTO = clientCredentials;
+            context.State.ClientCredentialsDto = clientCredentials;
             var service = new AuthorizationService(_mockConfiguration, _mockClientService, _mockIdTokenService);
 
             // Act & Assert

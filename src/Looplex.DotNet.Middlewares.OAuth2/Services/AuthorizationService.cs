@@ -26,12 +26,12 @@ namespace Looplex.DotNet.Middlewares.OAuth2.Services
         {
             context.Plugins.Execute<IHandleInput>(context);
             string authorization = context.GetRequiredValue<string>("Authorization");
-            var clientCredentialsDTO = context.GetRequiredValue<ClientCredentialsDto>("ClientCredentialsDto");
+            var clientCredentialsDto = context.GetRequiredValue<ClientCredentialsDto>("ClientCredentialsDto");
 
             context.Plugins.Execute<IValidateInput>(context);
             ValidateAuthorizationHeader(authorization);
-            ValidateGrantType(clientCredentialsDTO);
-            string? email = ValidateIdToken(clientCredentialsDTO);
+            ValidateGrantType(clientCredentialsDto);
+            string? email = ValidateIdToken(clientCredentialsDto);
             await ValidateClientCredentials(authorization![7..], context);
 
             context.Plugins.Execute<IDefineActors>(context);
@@ -60,21 +60,21 @@ namespace Looplex.DotNet.Middlewares.OAuth2.Services
             }
         }
 
-        private static void ValidateGrantType(ClientCredentialsDto clientCredentialsDTO)
+        private static void ValidateGrantType(ClientCredentialsDto clientCredentialsDto)
         {
-            if (clientCredentialsDTO.GrantType != "client_credentials")
+            if (clientCredentialsDto.GrantType != "client_credentials")
             {
                 throw new HttpRequestException("grant_type is invalid.", null, HttpStatusCode.Unauthorized);
             }
         }
 
-        private string ValidateIdToken(ClientCredentialsDto clientCredentialsDTO)
+        private string ValidateIdToken(ClientCredentialsDto clientCredentialsDto)
         {
             var oicdAudience = _configuration["OicdAudience"]!;
             var oicdIssuer = _configuration["OicdIssuer"]!;
             var oicdTenantId = _configuration["OicdTenantId"]!;
 
-            if (!_idTokenService.ValidateIdToken(oicdIssuer, oicdTenantId, oicdAudience, clientCredentialsDTO.IdToken, out string? email))
+            if (!_idTokenService.ValidateIdToken(oicdIssuer, oicdTenantId, oicdAudience, clientCredentialsDto.IdToken, out string? email))
             {
                 throw new HttpRequestException("IdToken is invalid.", null, HttpStatusCode.Unauthorized);
             }
