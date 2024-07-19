@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Looplex.DotNet.Middlewares.OAuth2.Application.Abstraction.Dtos;
+namespace Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.Dtos;
 
 public class ClientCredentialsDto
 {

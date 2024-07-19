@@ -1,4 +1,4 @@
-﻿namespace Looplex.DotNet.Middlewares.OAuth2.Application.Abstraction.Services;
+﻿namespace Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.Services;
 
 public interface IIdTokenService
 {

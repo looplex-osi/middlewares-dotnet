@@ -5,12 +5,12 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <IsPackable>true</IsPackable>
-        <PackageId>Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions</PackageId>
+        <PackageId>Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions</PackageId>
         <Authors>Guilherme Câmara</Authors>
         <Company>Looplex</Company>
-        <PackageTags>Looplex;Middleware;ScimV2;Domain;</PackageTags>
+        <PackageTags>Looplex;Middleware;OAuth2;Application;</PackageTags>
         <Description>
-            Defines domain interfaces for SCIM v2 resources and also the services interfaces for User and Groups resource types entities.
+            Defines the domain interfaces and services for using OAuth2 authentication.
         </Description>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
@@ -25,7 +25,8 @@
     </Target>
     
     <ItemGroup>
-      <PackageReference Include="Looplex.DotNet.Core.Application.Abstractions" Version="1.0.13" />
+      <PackageReference Include="Looplex.OpenForExtension" Version="1.0.10" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 
 </Project>

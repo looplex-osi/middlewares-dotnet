@@ -1,4 +1,4 @@
-﻿using Looplex.DotNet.Middlewares.OAuth2.Application.Abstraction.Services;
+﻿using Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.Services;
 using Looplex.DotNet.Middlewares.OAuth2.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 

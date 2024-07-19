@@ -4,11 +4,29 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <IsPackable>true</IsPackable>
+        <PackageId>Looplex.DotNet.Middlewares.OAuth2.Application</PackageId>
+        <Authors>Guilherme Câmara</Authors>
+        <Company>Looplex</Company>
+        <PackageTags>Looplex;Middleware;OAuth2;Application;</PackageTags>
+        <Description>
+            Defines the domain rules and services implementations for using OAuth2 authentication.
+        </Description>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     </PropertyGroup>
 
+    <Target Name="PostPackNugetDeploy" AfterTargets="Pack" Condition="'$(Configuration)' == 'Debug' And '$(OS)' == 'Windows_NT'">
+        <Exec Command="nuget add &quot;$(OutputPath)$(PackageId).$(PackageVersion).nupkg&quot; -source C:\local-nuget-feed" />
+    </Target>
+    <Target Name="PostPackNugetDeploy" AfterTargets="Pack" Condition="'$(Configuration)' == 'Debug' And '$(OS)' == 'Unix'">
+        <Exec Command="dotnet nuget push &quot;$(OutputPath)$(PackageId).$(PackageVersion).nupkg&quot; --source ~/.aspnet/local-nuget-feed" />
+    </Target>
+    
     <ItemGroup>
       <ProjectReference Include="..\Looplex.DotNet.Middlewares.Clients.Application.Abstractions\Looplex.DotNet.Middlewares.Clients.Application.Abstractions.csproj" />
-      <ProjectReference Include="..\Looplex.DotNet.Middlewares.OAuth2.Application.Abstraction\Looplex.DotNet.Middlewares.OAuth2.Application.Abstraction.csproj" />
+      <ProjectReference Include="..\Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions\Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.csproj" />
       <ProjectReference Include="..\Looplex.DotNet.Middlewares.OAuth2.Domain\Looplex.DotNet.Middlewares.OAuth2.Domain.csproj" />
     </ItemGroup>
 

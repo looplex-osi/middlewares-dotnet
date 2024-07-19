@@ -2,8 +2,8 @@
 using Looplex.DotNet.Core.Middlewares;
 using Looplex.DotNet.Core.WebAPI.Middlewares;
 using Looplex.DotNet.Core.WebAPI.Routes;
-using Looplex.DotNet.Middlewares.OAuth2.Application.Abstraction.Dtos;
-using Looplex.DotNet.Middlewares.OAuth2.Application.Abstraction.Services;
+using Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.Dtos;
+using Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;

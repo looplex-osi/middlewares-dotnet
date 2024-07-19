@@ -1,6 +1,6 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using Looplex.DotNet.Middlewares.OAuth2.Application.Abstraction.Services;
+using Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.Services;
 using Microsoft.IdentityModel.Protocols;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Microsoft.IdentityModel.Tokens;

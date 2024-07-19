@@ -31,7 +31,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Looplex.DotNet.Middlewares.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Looplex.DotNet.Middlewares.OAuth2.Application", "src\Looplex.DotNet.Middlewares.OAuth2.Application\Looplex.DotNet.Middlewares.OAuth2.Application.csproj", "{6E8D8747-0DD7-48A8-9786-2C431C262C49}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Looplex.DotNet.Middlewares.OAuth2.Application.Abstraction", "src\Looplex.DotNet.Middlewares.OAuth2.Application.Abstraction\Looplex.DotNet.Middlewares.OAuth2.Application.Abstraction.csproj", "{8C07F296-D37C-4497-85C4-5ADC416E3A65}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions", "src\Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions\Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.csproj", "{8C07F296-D37C-4497-85C4-5ADC416E3A65}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

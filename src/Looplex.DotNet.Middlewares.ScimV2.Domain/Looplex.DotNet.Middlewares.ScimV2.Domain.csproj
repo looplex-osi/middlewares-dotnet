@@ -4,8 +4,26 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <IsPackable>true</IsPackable>
+        <PackageId>Looplex.DotNet.Middlewares.ScimV2.Domain</PackageId>
+        <Authors>Guilherme Câmara</Authors>
+        <Company>Looplex</Company>
+        <PackageTags>Looplex;Middleware;ScimV2;Domain;</PackageTags>
+        <Description>
+            Defines domain entities for SCIM v2 resources and also the User and Groups resource types entities.
+        </Description>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     </PropertyGroup>
 
+    <Target Name="PostPackNugetDeploy" AfterTargets="Pack" Condition="'$(Configuration)' == 'Debug' And '$(OS)' == 'Windows_NT'">
+        <Exec Command="nuget add &quot;$(OutputPath)$(PackageId).$(PackageVersion).nupkg&quot; -source C:\local-nuget-feed" />
+    </Target>
+    <Target Name="PostPackNugetDeploy" AfterTargets="Pack" Condition="'$(Configuration)' == 'Debug' And '$(OS)' == 'Unix'">
+        <Exec Command="dotnet nuget push &quot;$(OutputPath)$(PackageId).$(PackageVersion).nupkg&quot; --source ~/.aspnet/local-nuget-feed" />
+    </Target>
+    
     <ItemGroup>
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
       <PackageReference Include="Newtonsoft.Json.Schema" Version="4.0.1" />
