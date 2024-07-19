@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.0.15"></a>
+## 1.0.15 (2024-07-19)
+
+### Bug Fixes
+
+* more clear separation of layers for middlewares
+* removed open api
+* upgrade core to 1.0.9
+
 <a name="1.0.14"></a>
 ## 1.0.14 (2024-07-18)
 
