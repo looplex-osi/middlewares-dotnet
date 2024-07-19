@@ -24,19 +24,19 @@ public partial class Meta
     ///     `Content-Location` HTTP response header (see Section 3.1.4.2 of [RFC7231]).
     /// </summary>
     [JsonProperty("location", NullValueHandling = NullValueHandling.Ignore)]
-    public Uri Location { get; set; }
+    public Uri? Location { get; set; }
 
     /// <summary>
     ///     The name of the resource type of the resource.  This attribute has a mutability of
     ///     `readOnly` and `caseExact` as `true`.
     /// </summary>
     [JsonProperty("resourceType", NullValueHandling = NullValueHandling.Ignore)]
-    public string ResourceType { get; set; }
+    public string? ResourceType { get; set; }
 
     /// <summary>
     ///     The version of the resource being returned.  This value must be the same as the
     ///     entity-tag (ETag) HTTP response header (see Sections 2.1 and 2.3 of [RFC7232]).
     /// </summary>
     [JsonProperty("version", NullValueHandling = NullValueHandling.Ignore)]
-    public string Version { get; set; }
+    public string? Version { get; set; }
 }

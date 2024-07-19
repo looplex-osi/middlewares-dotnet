@@ -16,11 +16,11 @@ public partial class ImElement
     ///     A label indicating the attribute's function, e.g., 'aim', 'gtalk', 'xmpp'.
     /// </summary>
     [JsonProperty("type", NullValueHandling = NullValueHandling.Ignore)]
-    public string Type { get; set; }
+    public string? Type { get; set; }
 
     /// <summary>
     ///     Instant messaging address for the User.
     /// </summary>
     [JsonProperty("value", NullValueHandling = NullValueHandling.Ignore)]
-    public string Value { get; set; }
+    public string? Value { get; set; }
 }

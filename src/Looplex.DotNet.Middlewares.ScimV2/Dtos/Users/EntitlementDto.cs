@@ -5,10 +5,10 @@ namespace Looplex.DotNet.Middlewares.ScimV2.Dtos.Users
     public class EntitlementDto
     {
         [JsonPropertyName("value")]
-        public string Value { get; set; }
+        public string? Value { get; set; }
 
         [JsonPropertyName("type")]
-        public string Type { get; set; }
+        public string? Type { get; set; }
 
         [JsonPropertyName("primary")]
         public bool Primary { get; set; }

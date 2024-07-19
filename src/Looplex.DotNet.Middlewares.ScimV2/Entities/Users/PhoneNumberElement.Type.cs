@@ -22,5 +22,5 @@ public partial class PhoneNumberElement
     ///     Phone number of the User.
     /// </summary>
     [JsonProperty("value", NullValueHandling = NullValueHandling.Ignore)]
-    public string Value { get; set; }
+    public string? Value { get; set; }
 }

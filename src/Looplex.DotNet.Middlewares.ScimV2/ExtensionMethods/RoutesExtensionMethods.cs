@@ -1,7 +1,5 @@
-﻿using AutoMapper;
-using Looplex.DotNet.Core.Application.Abstractions.Services;
+﻿using Looplex.DotNet.Core.Application.Abstractions.Services;
 using Looplex.DotNet.Core.Common.Utils;
-using Looplex.DotNet.Core.Domain;
 using Looplex.DotNet.Core.Middlewares;
 using Looplex.DotNet.Core.WebAPI.Routes;
 using Looplex.DotNet.Middlewares.OAuth2;
@@ -13,7 +11,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using System.Net;
-using System.Text.Json;
 using Looplex.DotNet.Core.Application.Abstractions.DTOs;
 using Looplex.DotNet.Core.WebAPI.Middlewares;
 
@@ -21,31 +18,26 @@ namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods
 {
     public static class RoutesExtensionMethods
     {
-        private static MiddlewareDelegate GetMiddleware<R, DTO, S>(
+        private static MiddlewareDelegate GetMiddleware<TService>(
             Action<IDefaultContext, HttpContext>? customAction = null)
-            where S : ICrudService => new(async (context, next) =>
+            where TService : ICrudService => new(async (context, _) =>
         {
             HttpContext httpContext = context.State.HttpContext;
-            IMapper mapper = httpContext.RequestServices.GetRequiredService<IMapper>();
-            S service = httpContext.RequestServices.GetRequiredService<S>();
+            var service = httpContext.RequestServices.GetRequiredService<TService>();
 
             customAction?.Invoke(context, httpContext);
 
             await service.GetAllAsync(context);
 
-            var records = (PaginatedCollection<R>)context.Result;
-            var data = mapper.Map<PaginatedCollection<R>, PaginatedCollectionDTO<DTO>>(records);
-
-            await httpContext.Response.WriteAsJsonAsync(data);
+            await httpContext.Response.WriteAsJsonAsync(context.Result);
         });
 
-        private static MiddlewareDelegate GetByIdMiddleware<R, DTO, S>(
+        private static MiddlewareDelegate GetByIdMiddleware<TService>(
             Action<IDefaultContext, HttpContext>? customAction = null)
-            where S : ICrudService => new(async (context, next) =>
+            where TService : ICrudService => new(async (context, _) =>
         {
             HttpContext httpContext = context.State.HttpContext;
-            IMapper mapper = httpContext.RequestServices.GetRequiredService<IMapper>();
-            S service = httpContext.RequestServices.GetRequiredService<S>();
+            var service = httpContext.RequestServices.GetRequiredService<TService>();
 
             var id = (string)httpContext.Request.RouteValues["id"]!;
             context.State.Id = id;
@@ -53,24 +45,19 @@ namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods
 
             await service.GetByIdAsync(context);
 
-            var client = (R)context.Result;
-            var data = mapper.Map<R, DTO>(client);
-            await httpContext.Response.WriteAsJsonAsync(data);
+            await httpContext.Response.WriteAsJsonAsync(context.Result);
         });
 
-        private static MiddlewareDelegate PostMiddleware<R, DTO, S>(
+        private static MiddlewareDelegate PostMiddleware<TService>(
             string resource,
             Action<IDefaultContext, HttpContext>? customAction = null)
-            where S : ICrudService => new(async (context, next) =>
+            where TService : ICrudService => new(async (context, _) =>
         {
             HttpContext httpContext = context.State.HttpContext;
-            IMapper mapper = httpContext.RequestServices.GetRequiredService<IMapper>();
-            S service = httpContext.RequestServices.GetRequiredService<S>();
+            var service = httpContext.RequestServices.GetRequiredService<TService>();
 
             using StreamReader reader = new(httpContext.Request.Body);
-            var clientWriteDTO = JsonSerializer.Deserialize<DTO>(await reader.ReadToEndAsync(), JsonUtils.HttpBodyConverter())!;
-            var client = mapper.Map<DTO, R>(clientWriteDTO);
-            context.State.Resource = client;
+            context.State.Resource = await reader.ReadToEndAsync();
 
             customAction?.Invoke(context, httpContext);
             await service.CreateAsync(context);
@@ -80,12 +67,12 @@ namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods
             httpContext.Response.Headers.Location = $"{resource}/{id}";
         });
 
-        private static MiddlewareDelegate DeleteMiddleware<R, DTO, S>(
+        private static MiddlewareDelegate DeleteMiddleware<TService>(
             Action<IDefaultContext, HttpContext>? customAction = null)
-            where S : ICrudService => new(async (context, next) =>
+            where TService : ICrudService => new(async (context, _) =>
         {
             HttpContext httpContext = context.State.HttpContext;
-            S service = httpContext.RequestServices.GetRequiredService<S>();
+            var service = httpContext.RequestServices.GetRequiredService<TService>();
 
             var id = (string)httpContext.Request.RouteValues["id"]!;
             context.State.Id = id;
@@ -96,15 +83,15 @@ namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods
             httpContext.Response.StatusCode = (int)HttpStatusCode.NoContent;
         });
 
-        public static void UseScimV2Routes<R, RDTO, WDTO, S>(
+        public static void UseScimV2Routes<TResource, TReadDto, TWriteDto, TService>(
             this IEndpointRouteBuilder app,
             ScimV2RouteOptions options)
-            where R : Resource
-            where RDTO : notnull
-            where WDTO : notnull
-            where S : ICrudService
+            where TResource : Resource
+            where TReadDto : notnull
+            where TWriteDto : notnull
+            where TService : ICrudService
         {
-            var resourceType = typeof(R).Name;
+            var resourceType = typeof(TResource).Name;
             var resource = resourceType[0].ToString().ToLower() + resourceType[1..];
             var tag = resourceType;
 
@@ -116,12 +103,12 @@ namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods
                     Middlewares = [
                         AuthenticationMiddlewares.AuthenticateMiddleware,
                         CoreMiddlewares.PaginationMiddleware,
-                        GetMiddleware<R, RDTO, S>(options.CustomActionForGet)
+                        GetMiddleware<TService>(options.CustomActionForGet)
                     ],
                     ProducesStatusCodes = [StatusCodes.Status401Unauthorized]
                 })
             .WithTags(tag)
-            .Produces<PaginatedCollectionDTO<RDTO>>(StatusCodes.Status200OK, JsonUtils.JsonContentTypeWithCharset);
+            .Produces<PaginatedCollectionDTO<TReadDto>>(StatusCodes.Status200OK, JsonUtils.JsonContentTypeWithCharset);
 
             app.MapGet(
                 $"{resource}/{{id}}",
@@ -130,7 +117,7 @@ namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods
                     Services = options.ServicesForGetById,
                     Middlewares = [
                         AuthenticationMiddlewares.AuthenticateMiddleware,
-                        GetByIdMiddleware<R, RDTO, S>(options.CustomActionForGetById)
+                        GetByIdMiddleware<TService>(options.CustomActionForGetById)
                     ],
                     ProducesStatusCodes = [StatusCodes.Status401Unauthorized]
                 })
@@ -145,7 +132,7 @@ namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods
                 });
                 return o;
             })
-            .Produces<RDTO>(StatusCodes.Status200OK, JsonUtils.JsonContentTypeWithCharset);
+            .Produces<TReadDto>(StatusCodes.Status200OK, JsonUtils.JsonContentTypeWithCharset);
 
             app.MapPost(
                 resource,
@@ -154,12 +141,12 @@ namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods
                     Services = options.ServicesForPost,
                     Middlewares = [
                         AuthenticationMiddlewares.AuthenticateMiddleware,
-                        PostMiddleware<R, WDTO, S>(resource, options.CustomActionForPost)
+                        PostMiddleware<TService>(resource, options.CustomActionForPost)
                     ],
                     ProducesStatusCodes = [StatusCodes.Status401Unauthorized]
                 })
             .WithTags(tag)
-            .Accepts<WDTO>(JsonUtils.JsonContentTypeWithCharset)
+            .Accepts<TWriteDto>(JsonUtils.JsonContentTypeWithCharset)
             .Produces(StatusCodes.Status201Created);
 
             app.MapDelete(
@@ -169,7 +156,7 @@ namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods
                     Services = options.ServicesForDelete,
                     Middlewares = [
                         AuthenticationMiddlewares.AuthenticateMiddleware,
-                        DeleteMiddleware<R, RDTO, S>(options.CustomActionForDelete)
+                        DeleteMiddleware<TService>(options.CustomActionForDelete)
                     ],
                     ProducesStatusCodes = [StatusCodes.Status401Unauthorized]
                 })

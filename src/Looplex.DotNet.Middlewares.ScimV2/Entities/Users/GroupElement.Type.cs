@@ -8,7 +8,7 @@ public partial class GroupElement
     ///     The URI of the corresponding 'Group' resource to which the user belongs.
     /// </summary>
     [JsonProperty("$ref", NullValueHandling = NullValueHandling.Ignore)]
-    public Uri Ref { get; set; }
+    public Uri? Ref { get; set; }
 
     /// <summary>
     ///     A label indicating the attribute's function, e.g., 'direct' or 'indirect'.
@@ -20,5 +20,5 @@ public partial class GroupElement
     ///     The identifier of the User's group.
     /// </summary>
     [JsonProperty("value", NullValueHandling = NullValueHandling.Ignore)]
-    public string Value { get; set; }
+    public string? Value { get; set; }
 }

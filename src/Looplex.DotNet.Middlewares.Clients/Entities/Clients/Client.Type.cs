@@ -7,7 +7,7 @@ namespace Looplex.DotNet.Middlewares.Clients.Entities.Clients;
 public partial class Client : Resource, IClient
 {
     [JsonProperty("displayName")]
-    public string DisplayName { get; set; }
+    public required string DisplayName { get; set; }
 
     [JsonProperty("expirationTime")]
     public DateTimeOffset ExpirationTime { get; set; }
@@ -16,5 +16,5 @@ public partial class Client : Resource, IClient
     public DateTimeOffset NotBefore { get; set; }
 
     [JsonProperty("secret")]
-    public string Secret { get; set; }
+    public required string Secret { get; set; }
 }

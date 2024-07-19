@@ -22,5 +22,5 @@ public partial class PhotoElement
     ///     URL of a photo of the User.
     /// </summary>
     [JsonProperty("value", NullValueHandling = NullValueHandling.Ignore)]
-    public Uri Value { get; set; }
+    public Uri? Value { get; set; }
 }

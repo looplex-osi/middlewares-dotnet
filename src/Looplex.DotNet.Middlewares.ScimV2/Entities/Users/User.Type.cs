@@ -20,20 +20,20 @@ public partial class User : Resource
     ///     A physical mailing address for this user.
     /// </summary>
     [JsonProperty("addresses", NullValueHandling = NullValueHandling.Ignore)]
-    public List<AddressElement> Addresses { get; set; }
+    public List<AddressElement> Addresses { get; set; } = [];
 
     /// <summary>
     ///     The name of the User, suitable for display to end-users.  The name SHOULD be the full
     ///     name of the User being described, if known.
     /// </summary>
     [JsonProperty("displayName", NullValueHandling = NullValueHandling.Ignore)]
-    public string DisplayName { get; set; }
+    public string? DisplayName { get; set; }
 
     /// <summary>
     ///     Email addresses for the User.  The value SHOULD be specified according to [RFC5321].
     /// </summary>
     [JsonProperty("emails", NullValueHandling = NullValueHandling.Ignore)]
-    public List<EmailElement> Emails { get; set; }
+    public List<EmailElement> Emails { get; set; } = [];
 
     /// <summary>
     ///     A list of entitlements for the user that represent a thing the user has.  An entitlement
@@ -44,14 +44,14 @@ public partial class User : Resource
     ///     entitlements.
     /// </summary>
     [JsonProperty("entitlements", NullValueHandling = NullValueHandling.Ignore)]
-    public List<EntitlementElement> Entitlements { get; set; }
+    public List<EntitlementElement> Entitlements { get; set; } = [];
 
     /// <summary>
     ///     A list of groups to which the user belongs, either through direct membership, through
     ///     nested groups, or dynamically calculated.
     /// </summary>
     [JsonProperty("groups", NullValueHandling = NullValueHandling.Ignore)]
-    public List<GroupElement> Groups { get; set; }
+    public List<GroupElement> Groups { get; set; } = [];
 
 
     /// <summary>
@@ -60,7 +60,7 @@ public partial class User : Resource
     ///     whitespace and convert the address to lowercase.
     /// </summary>
     [JsonProperty("ims", NullValueHandling = NullValueHandling.Ignore)]
-    public List<ImElement> Ims { get; set; }
+    public List<ImElement> Ims { get; set; } = [];
 
     /// <summary>
     ///     Used to indicate the User's default location for purposes of localizing items such as
@@ -68,14 +68,14 @@ public partial class User : Resource
     ///     tag as defined in [RFC5646].
     /// </summary>
     [JsonProperty("locale", NullValueHandling = NullValueHandling.Ignore)]
-    public string Locale { get; set; }
+    public string? Locale { get; set; }
 
     /// <summary>
     ///     The full name, including all middle names, titles, and suffixes as appropriate, formatted
     ///     for display (e.g., 'Ms. Barbara J Jensen, III').
     /// </summary>
     [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
-    public Name Name { get; set; }
+    public Name? Name { get; set; }
 
     /// <summary>
     ///     The casual way to address the user in real life, e.g., 'Bob' or 'Bobby' instead of
@@ -83,7 +83,7 @@ public partial class User : Resource
     ///     'bjensen' or 'mpepperidge').
     /// </summary>
     [JsonProperty("nickName", NullValueHandling = NullValueHandling.Ignore)]
-    public string NickName { get; set; }
+    public string? NickName { get; set; }
 
     /// <summary>
     ///     The User's cleartext password.  This attribute is intended to be used as a means to
@@ -91,21 +91,21 @@ public partial class User : Resource
     ///     password.
     /// </summary>
     [JsonProperty("password", NullValueHandling = NullValueHandling.Ignore)]
-    public string Password { get; set; }
+    public string? Password { get; set; }
 
     /// <summary>
     ///     Phone numbers for the user.  The value SHOULD be specified according to the format
     ///     defined in [RFC3966]
     /// </summary>
     [JsonProperty("phoneNumbers", NullValueHandling = NullValueHandling.Ignore)]
-    public List<PhoneNumberElement> PhoneNumbers { get; set; }
+    public List<PhoneNumberElement> PhoneNumbers { get; set; } = [];
 
     /// <summary>
     ///     A URI that is a uniform resource locator (as defined in Section 1.1.3 of [RFC3986]) that
     ///     points to a resource location representing the user's image.
     /// </summary>
     [JsonProperty("photos", NullValueHandling = NullValueHandling.Ignore)]
-    public List<PhotoElement> Photos { get; set; }
+    public List<PhotoElement> Photos { get; set; } = [];
 
     /// <summary>
     ///     Indicates the User's preferred written or spoken language.  Generally used for selecting
@@ -113,32 +113,32 @@ public partial class User : Resource
     ///     defined in [RFC7231].
     /// </summary>
     [JsonProperty("preferredLanguage", NullValueHandling = NullValueHandling.Ignore)]
-    public string PreferredLanguage { get; set; }
+    public string? PreferredLanguage { get; set; }
 
     /// <summary>
     ///     A fully qualified URL pointing to a page representing the User's online profile.
     /// </summary>
     [JsonProperty("profileUrl", NullValueHandling = NullValueHandling.Ignore)]
-    public string ProfileUrl { get; set; }
+    public string? ProfileUrl { get; set; }
 
     /// <summary>
     ///     A list of roles for the user that collectively represent who the user is, e.g.,
     ///     'Student', 'Faculty'.
     /// </summary>
     [JsonProperty("roles", NullValueHandling = NullValueHandling.Ignore)]
-    public List<RoleElement> Roles { get; set; }
+    public List<RoleElement> Roles { get; set; } = [];
 
     /// <summary>
     ///     The User's time zone, in IANA Time Zone database format [RFC6557].
     /// </summary>
     [JsonProperty("timezone", NullValueHandling = NullValueHandling.Ignore)]
-    public string Timezone { get; set; }
+    public string? Timezone { get; set; }
 
     /// <summary>
     ///     The user's title, such as 'Vice President.'
     /// </summary>
     [JsonProperty("title", NullValueHandling = NullValueHandling.Ignore)]
-    public string Title { get; set; }
+    public string? Title { get; set; }
 
     /// <summary>
     ///     Unique identifier for the User, typically used by the user to directly authenticate to
@@ -146,7 +146,7 @@ public partial class User : Resource
     ///     MUST be unique across the service provider's entire set of Users. REQUIRED.
     /// </summary>
     [JsonProperty("userName")]
-    public string UserName { get; set; }
+    public string? UserName { get; set; }
 
     /// <summary>
     ///     Used to identify the relationship between the organization and the user.  Typical values
@@ -154,5 +154,5 @@ public partial class User : Resource
     ///     any value may be used.
     /// </summary>
     [JsonProperty("userType", NullValueHandling = NullValueHandling.Ignore)]
-    public string UserType { get; set; }
+    public string? UserType { get; set; }
 }

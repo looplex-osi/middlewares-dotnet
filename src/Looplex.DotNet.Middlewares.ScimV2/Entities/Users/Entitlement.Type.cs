@@ -15,11 +15,11 @@ public partial class EntitlementElement
     ///     A label indicating the attribute's function.
     /// </summary>
     [JsonProperty("type", NullValueHandling = NullValueHandling.Ignore)]
-    public string Type { get; set; }
+    public string? Type { get; set; }
 
     /// <summary>
     ///     The value of an entitlement.
     /// </summary>
     [JsonProperty("value", NullValueHandling = NullValueHandling.Ignore)]
-    public string Value { get; set; }
+    public string? Value { get; set; }
 }

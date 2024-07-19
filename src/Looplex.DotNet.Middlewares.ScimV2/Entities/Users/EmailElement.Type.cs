@@ -24,5 +24,5 @@ public partial class EmailElement
     ///     'work', 'home', and 'other'.
     /// </summary>
     [JsonProperty("value", NullValueHandling = NullValueHandling.Ignore)]
-    public string Value { get; set; }
+    public string? Value { get; set; }
 }

@@ -39,7 +39,7 @@ namespace Looplex.DotNet.Middlewares.ScimV2.Dtos.Users
         public string? Timezone { get; set; }
 
         [JsonPropertyName("active")]
-        public bool Active { get; set; } = true;
+        public bool? Active { get; set; }
 
         [JsonPropertyName("emails")]
         public List<EmailDto> Emails { get; set; } = [];
@@ -48,7 +48,7 @@ namespace Looplex.DotNet.Middlewares.ScimV2.Dtos.Users
         public List<PhoneNumberDto> PhoneNumbers { get; set; } = [];
 
         [JsonPropertyName("ims")]
-        public List<InstantMessagingDto> InstantMessagings { get; set; } = [];
+        public List<InstantMessagingDto> Ims { get; set; } = [];
 
         [JsonPropertyName("photos")]
         public List<PhotoDto> Photos { get; set; } = [];
