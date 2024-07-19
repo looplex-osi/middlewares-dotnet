@@ -1,125 +1,122 @@
-﻿using Looplex.DotNet.Core.Application.Abstractions.Services;
-using Looplex.DotNet.Core.Common.Utils;
-using Looplex.DotNet.Core.Middlewares;
-using Looplex.DotNet.Core.WebAPI.Routes;
-using Looplex.DotNet.Middlewares.OAuth2;
-using Looplex.DotNet.Middlewares.ScimV2.Entities;
-using Looplex.OpenForExtension.Context;
+﻿using Looplex.DotNet.Middlewares.OAuth2;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 using System.Net;
-using Looplex.DotNet.Core.Application.Abstractions.Dtos;
+using Looplex.DotNet.Core.Application.Abstractions.Services;
+using Looplex.DotNet.Core.Middlewares;
 using Looplex.DotNet.Core.WebAPI.Middlewares;
+using Looplex.DotNet.Core.WebAPI.Routes;
+using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities;
+using Looplex.OpenForExtension.Context;
 
-namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods
+namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods;
+
+public static class RoutesExtensionMethods
 {
-    public static class RoutesExtensionMethods
+    private static MiddlewareDelegate GetMiddleware<TService>(
+        Action<IDefaultContext, HttpContext>? customAction = null)
+        where TService : ICrudService => new(async (context, _) =>
     {
-        private static MiddlewareDelegate GetMiddleware<TService>(
-            Action<IDefaultContext, HttpContext>? customAction = null)
-            where TService : ICrudService => new(async (context, _) =>
-        {
-            HttpContext httpContext = context.State.HttpContext;
-            var service = httpContext.RequestServices.GetRequiredService<TService>();
+        HttpContext httpContext = context.State.HttpContext;
+        var service = httpContext.RequestServices.GetRequiredService<TService>();
 
-            customAction?.Invoke(context, httpContext);
+        customAction?.Invoke(context, httpContext);
 
-            await service.GetAllAsync(context);
+        await service.GetAllAsync(context);
 
-            await httpContext.Response.WriteAsJsonAsync(context.Result);
-        });
+        await httpContext.Response.WriteAsJsonAsync(context.Result);
+    });
 
-        private static MiddlewareDelegate GetByIdMiddleware<TService>(
-            Action<IDefaultContext, HttpContext>? customAction = null)
-            where TService : ICrudService => new(async (context, _) =>
-        {
-            HttpContext httpContext = context.State.HttpContext;
-            var service = httpContext.RequestServices.GetRequiredService<TService>();
+    private static MiddlewareDelegate GetByIdMiddleware<TService>(
+        Action<IDefaultContext, HttpContext>? customAction = null)
+        where TService : ICrudService => new(async (context, _) =>
+    {
+        HttpContext httpContext = context.State.HttpContext;
+        var service = httpContext.RequestServices.GetRequiredService<TService>();
 
-            var id = (string)httpContext.Request.RouteValues["id"]!;
-            context.State.Id = id;
-            customAction?.Invoke(context, httpContext);
+        var id = (string)httpContext.Request.RouteValues["id"]!;
+        context.State.Id = id;
+        customAction?.Invoke(context, httpContext);
 
-            await service.GetByIdAsync(context);
+        await service.GetByIdAsync(context);
 
-            await httpContext.Response.WriteAsJsonAsync(context.Result);
-        });
+        await httpContext.Response.WriteAsJsonAsync(context.Result);
+    });
 
-        private static MiddlewareDelegate PostMiddleware<TService>(
-            string resource,
-            Action<IDefaultContext, HttpContext>? customAction = null)
-            where TService : ICrudService => new(async (context, _) =>
-        {
-            HttpContext httpContext = context.State.HttpContext;
-            var service = httpContext.RequestServices.GetRequiredService<TService>();
+    private static MiddlewareDelegate PostMiddleware<TService>(
+        string resource,
+        Action<IDefaultContext, HttpContext>? customAction = null)
+        where TService : ICrudService => new(async (context, _) =>
+    {
+        HttpContext httpContext = context.State.HttpContext;
+        var service = httpContext.RequestServices.GetRequiredService<TService>();
 
-            using StreamReader reader = new(httpContext.Request.Body);
-            context.State.Resource = await reader.ReadToEndAsync();
+        using StreamReader reader = new(httpContext.Request.Body);
+        context.State.Resource = await reader.ReadToEndAsync();
 
-            customAction?.Invoke(context, httpContext);
-            await service.CreateAsync(context);
-            var id = context.Result;
+        customAction?.Invoke(context, httpContext);
+        await service.CreateAsync(context);
+        var id = context.Result;
 
-            httpContext.Response.StatusCode = (int)HttpStatusCode.Created;
-            httpContext.Response.Headers.Location = $"{resource}/{id}";
-        });
+        httpContext.Response.StatusCode = (int)HttpStatusCode.Created;
+        httpContext.Response.Headers.Location = $"{resource}/{id}";
+    });
 
-        private static MiddlewareDelegate DeleteMiddleware<TService>(
-            Action<IDefaultContext, HttpContext>? customAction = null)
-            where TService : ICrudService => new(async (context, _) =>
-        {
-            HttpContext httpContext = context.State.HttpContext;
-            var service = httpContext.RequestServices.GetRequiredService<TService>();
+    private static MiddlewareDelegate DeleteMiddleware<TService>(
+        Action<IDefaultContext, HttpContext>? customAction = null)
+        where TService : ICrudService => new(async (context, _) =>
+    {
+        HttpContext httpContext = context.State.HttpContext;
+        var service = httpContext.RequestServices.GetRequiredService<TService>();
 
-            var id = (string)httpContext.Request.RouteValues["id"]!;
-            context.State.Id = id;
-            customAction?.Invoke(context, httpContext);
+        var id = (string)httpContext.Request.RouteValues["id"]!;
+        context.State.Id = id;
+        customAction?.Invoke(context, httpContext);
 
-            await service.DeleteAsync(context);
+        await service.DeleteAsync(context);
 
-            httpContext.Response.StatusCode = (int)HttpStatusCode.NoContent;
-        });
+        httpContext.Response.StatusCode = (int)HttpStatusCode.NoContent;
+    });
 
-        public static void UseScimV2Routes<TResource, TReadDto, TWriteDto, TService>(
-            this IEndpointRouteBuilder app,
-            ScimV2RouteOptions options)
-            where TResource : Resource
-            where TReadDto : notnull
-            where TWriteDto : notnull
-            where TService : ICrudService
-        {
-            var resourceType = typeof(TResource).Name;
-            var resource = resourceType[0].ToString().ToLower() + resourceType[1..];
-            var tag = resourceType;
+    public static void UseScimV2Routes<TResource, TService>(
+        this IEndpointRouteBuilder app,
+        ScimV2RouteOptions options)
+        where TResource : Resource
+        where TService : ICrudService
+    {
+        var resourceType = typeof(TResource).Name;
+        var resource = resourceType[0].ToString().ToLower() + resourceType[1..];
+        var tag = resourceType;
 
-            app.MapGet(
+        var getBuiler = app.MapGet(
                 resource,
                 new RouteBuilderOptions
                 {
-                    Services = options.ServicesForGet,
-                    Middlewares = [
+                    Services = options.OptionsForGet.Services,
+                    Middlewares =
+                    [
                         AuthenticationMiddlewares.AuthenticateMiddleware,
                         CoreMiddlewares.PaginationMiddleware,
-                        GetMiddleware<TService>(options.CustomActionForGet)
-                    ],
-                    ProducesStatusCodes = [StatusCodes.Status401Unauthorized]
+                        GetMiddleware<TService>(options.OptionsForGet.CustomAction)
+                    ]
                 })
-            .WithTags(tag)
-            .Produces<PaginatedCollectionDto<TReadDto>>(StatusCodes.Status200OK, JsonUtils.JsonContentTypeWithCharset);
+            .Produces(StatusCodes.Status401Unauthorized)
+            .WithTags(tag);
+        options.OptionsForGet.AfterMapAction?.Invoke(getBuiler);
 
-            app.MapGet(
+        var getByIdBuilder = app.MapGet(
                 $"{resource}/{{id}}",
                 new RouteBuilderOptions
                 {
-                    Services = options.ServicesForGetById,
-                    Middlewares = [
+                    Services = options.OptionsForGetById.Services,
+                    Middlewares =
+                    [
                         AuthenticationMiddlewares.AuthenticateMiddleware,
-                        GetByIdMiddleware<TService>(options.CustomActionForGetById)
-                    ],
-                    ProducesStatusCodes = [StatusCodes.Status401Unauthorized]
+                        GetByIdMiddleware<TService>(options.OptionsForGetById.CustomAction)
+                    ]
                 })
             .WithTags(tag)
             .WithOpenApi(o =>
@@ -132,33 +129,33 @@ namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods
                 });
                 return o;
             })
-            .Produces<TReadDto>(StatusCodes.Status200OK, JsonUtils.JsonContentTypeWithCharset);
+            .Produces(StatusCodes.Status401Unauthorized);
+        options.OptionsForGetById.AfterMapAction?.Invoke(getByIdBuilder);
 
-            app.MapPost(
+        var postBuilder = app.MapPost(
                 resource,
                 new RouteBuilderOptions
                 {
-                    Services = options.ServicesForPost,
+                    Services = options.OptionsForPost.Services,
                     Middlewares = [
                         AuthenticationMiddlewares.AuthenticateMiddleware,
-                        PostMiddleware<TService>(resource, options.CustomActionForPost)
-                    ],
-                    ProducesStatusCodes = [StatusCodes.Status401Unauthorized]
+                        PostMiddleware<TService>(resource, options.OptionsForPost.CustomAction)
+                    ]
                 })
             .WithTags(tag)
-            .Accepts<TWriteDto>(JsonUtils.JsonContentTypeWithCharset)
+            .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status201Created);
+        options.OptionsForPost.AfterMapAction?.Invoke(postBuilder);
 
-            app.MapDelete(
+        var deleteBuilder = app.MapDelete(
                 $"{resource}/{{id}}",
                 new RouteBuilderOptions
                 {
-                    Services = options.ServicesForDelete,
+                    Services = options.OptionsForDelete.Services,
                     Middlewares = [
                         AuthenticationMiddlewares.AuthenticateMiddleware,
-                        DeleteMiddleware<TService>(options.CustomActionForDelete)
-                    ],
-                    ProducesStatusCodes = [StatusCodes.Status401Unauthorized]
+                        DeleteMiddleware<TService>(options.OptionsForDelete.CustomAction)
+                    ]
                 })
             .WithTags(tag)
             .WithOpenApi(o =>
@@ -171,7 +168,9 @@ namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods
                 });
                 return o;
             })
+            .Produces(StatusCodes.Status401Unauthorized)
             .Produces(StatusCodes.Status204NoContent);
-        }
+        options.OptionsForDelete.AfterMapAction?.Invoke(deleteBuilder);
+
     }
 }

@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Looplex.DotNet.Middlewares.Clients.Application.Abstractions\Looplex.DotNet.Middlewares.Clients.Application.Abstractions.csproj" />
+      <ProjectReference Include="..\Looplex.DotNet.Middlewares.OAuth2.Application.Abstraction\Looplex.DotNet.Middlewares.OAuth2.Application.Abstraction.csproj" />
+      <ProjectReference Include="..\Looplex.DotNet.Middlewares.OAuth2.Domain\Looplex.DotNet.Middlewares.OAuth2.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Looplex.DotNet.Core.Application" Version="1.0.11" />
+      <PackageReference Include="Looplex.DotNet.Core.Common" Version="1.0.11" />
+      <PackageReference Include="Microsoft.IdentityModel.Protocols" Version="7.6.0" />
+      <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="7.6.0" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    </ItemGroup>
+
+</Project>

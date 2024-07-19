@@ -1,48 +1,39 @@
 ﻿using Looplex.DotNet.Core.Common.Utils;
 using Looplex.DotNet.Core.Middlewares;
+using Looplex.DotNet.Core.WebAPI.Middlewares;
 using Looplex.DotNet.Core.WebAPI.Routes;
-using Looplex.DotNet.Middlewares.OAuth2.Services;
+using Looplex.DotNet.Middlewares.OAuth2.Application.Abstraction.Dtos;
+using Looplex.DotNet.Middlewares.OAuth2.Application.Abstraction.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System.Text.Json;
-using Looplex.DotNet.Core.WebAPI.Middlewares;
-using Looplex.DotNet.Middlewares.OAuth2.Dtos;
 
-namespace Looplex.DotNet.Middlewares.OAuth2.ExtensionMethods
+namespace Looplex.DotNet.Middlewares.OAuth2.ExtensionMethods;
+
+public static class TokenRoutesExtensionMethods
 {
-    public static class TokenRoutesExtensionMethods
+    private const string Resource = "/token";
+    private const string Tag = "Authentication";
+
+    private static readonly MiddlewareDelegate TokenMiddleware = new(async (context, _) =>
     {
-        private const string RESOURCE = "/token";
-        private const string TAG = "Authentication";
+        IAuthorizationService service = context.Services.GetRequiredService<IAuthorizationService>();
 
-        internal readonly static MiddlewareDelegate TokenMiddleware = new(async (context, next) =>
-        {
-            IConfiguration configuration = context.Services.GetRequiredService<IConfiguration>();
-            IAuthorizationService service = context.Services.GetRequiredService<IAuthorizationService>();
-
-            HttpContext httpContext = context.State.HttpContext;
+        HttpContext httpContext = context.State.HttpContext;
+        context.State.Authorization = httpContext.Request.Headers.Authorization;
             
-            string? authorization = httpContext.Request.Headers.Authorization;
+        using StreamReader reader = new(httpContext.Request.Body);
+        context.State.Resource = await reader.ReadToEndAsync();
+            
+        await service.CreateAccessToken(context);
 
-            using StreamReader reader = new(httpContext.Request.Body);
-            var clientCredentialsDto = JsonSerializer.Deserialize<ClientCredentialsDto>(await reader.ReadToEndAsync(), JsonUtils.HttpBodyConverter())!;
+        await httpContext.Response.WriteAsJsonAsync(context.Result);
+    });
 
-            context.State.Authorization = authorization;
-            context.State.ClientCredentialsDto = clientCredentialsDto;
-            await service.CreateAccessToken(context);
-
-            await httpContext.Response.WriteAsJsonAsync(new AccessTokenDto
-            {
-                AccessToken = (string)context.Result,
-            });
-        });
-
-        public static void UseTokenRoute(this IEndpointRouteBuilder app, string[] services)
-        {
-            app.MapPost(
-                RESOURCE,
+    public static void UseTokenRoute(this IEndpointRouteBuilder app, string[] services)
+    {
+        app.MapPost(
+                Resource,
                 new RouteBuilderOptions
                 {
                     Services = services,
@@ -51,9 +42,8 @@ namespace Looplex.DotNet.Middlewares.OAuth2.ExtensionMethods
                         TokenMiddleware
                     ]
                 })
-            .WithTags(TAG)
+            .WithTags(Tag)
             .Accepts<ClientCredentialsDto>(JsonUtils.JsonContentTypeWithCharset)
             .Produces<AccessTokenDto>(StatusCodes.Status200OK);
-        }
     }
 }

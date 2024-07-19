@@ -9,15 +9,29 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{4610E867-1D1
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Looplex.DotNet.Middlewares.OAuth2", "src\Looplex.DotNet.Middlewares.OAuth2\Looplex.DotNet.Middlewares.OAuth2.csproj", "{CCCBC9BF-D889-440B-AD5F-D81A7B8FB176}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Looplex.DotNet.Middlewares.OAuth2.UnitTests", "test\Looplex.DotNet.Middlewares.OAuth2.UnitTests\Looplex.DotNet.Middlewares.OAuth2.UnitTests.csproj", "{443E2FAA-4414-4FC3-B198-5B87E83C6A52}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Looplex.DotNet.Middlewares.OAuth2.Application.UnitTests", "test\Looplex.DotNet.Middlewares.OAuth2.Application.UnitTests\Looplex.DotNet.Middlewares.OAuth2.Application.UnitTests.csproj", "{443E2FAA-4414-4FC3-B198-5B87E83C6A52}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Looplex.DotNet.Middlewares.ScimV2", "src\Looplex.DotNet.Middlewares.ScimV2\Looplex.DotNet.Middlewares.ScimV2.csproj", "{2562DFC4-97FA-4FC7-8BD3-9CE5E3AD86F4}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Looplex.DotNet.Middlewares.Clients", "src\Looplex.DotNet.Middlewares.Clients\Looplex.DotNet.Middlewares.Clients.csproj", "{011816E9-E1C4-4C0F-9B70-BD889935E428}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Looplex.DotNet.Middlewares.ScimV2.UnitTests", "test\Looplex.DotNet.Middlewares.ScimV2.UnitTests\Looplex.DotNet.Middlewares.ScimV2.UnitTests.csproj", "{23184F6D-7812-48CC-8DA5-E8127EBE5EAF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Looplex.DotNet.Middlewares.ScimV2.Domain.UnitTests", "test\Looplex.DotNet.Middlewares.ScimV2.Domain.UnitTests\Looplex.DotNet.Middlewares.ScimV2.Domain.UnitTests.csproj", "{23184F6D-7812-48CC-8DA5-E8127EBE5EAF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Looplex.DotNet.Middlewares.Clients.UnitTests", "test\Looplex.DotNet.Middlewares.Clients.UnitTests\Looplex.DotNet.Middlewares.Clients.UnitTests.csproj", "{8C603181-1121-4C80-B660-BDB1FD5AD5D0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Looplex.DotNet.Middlewares.Clients.Domain.UnitTests", "test\Looplex.DotNet.Middlewares.Clients.Domain.UnitTests\Looplex.DotNet.Middlewares.Clients.Domain.UnitTests.csproj", "{8C603181-1121-4C80-B660-BDB1FD5AD5D0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Looplex.DotNet.Middlewares.ScimV2.Domain", "src\Looplex.DotNet.Middlewares.ScimV2.Domain\Looplex.DotNet.Middlewares.ScimV2.Domain.csproj", "{10537CAA-E7C3-4F63-9F3C-ED8EAEB15DCA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Looplex.DotNet.Middlewares.Clients.Domain", "src\Looplex.DotNet.Middlewares.Clients.Domain\Looplex.DotNet.Middlewares.Clients.Domain.csproj", "{33213E94-C1DD-4137-A49C-891C8665AE3A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Looplex.DotNet.Middlewares.OAuth2.Domain", "src\Looplex.DotNet.Middlewares.OAuth2.Domain\Looplex.DotNet.Middlewares.OAuth2.Domain.csproj", "{2A4B3937-C85A-4EC9-ADFA-B3E6A36B8273}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Looplex.DotNet.Middlewares.Clients.Application.Abstractions", "src\Looplex.DotNet.Middlewares.Clients.Application.Abstractions\Looplex.DotNet.Middlewares.Clients.Application.Abstractions.csproj", "{3E6120EE-107A-45EB-B63A-32E4AB687A51}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions", "src\Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions\Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.csproj", "{AB514DE6-4E3D-449A-833A-57E191D8EEE1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Looplex.DotNet.Middlewares.OAuth2.Application", "src\Looplex.DotNet.Middlewares.OAuth2.Application\Looplex.DotNet.Middlewares.OAuth2.Application.csproj", "{6E8D8747-0DD7-48A8-9786-2C431C262C49}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Looplex.DotNet.Middlewares.OAuth2.Application.Abstraction", "src\Looplex.DotNet.Middlewares.OAuth2.Application.Abstraction\Looplex.DotNet.Middlewares.OAuth2.Application.Abstraction.csproj", "{8C07F296-D37C-4497-85C4-5ADC416E3A65}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,6 +63,34 @@ Global
 		{8C603181-1121-4C80-B660-BDB1FD5AD5D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8C603181-1121-4C80-B660-BDB1FD5AD5D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8C603181-1121-4C80-B660-BDB1FD5AD5D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10537CAA-E7C3-4F63-9F3C-ED8EAEB15DCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10537CAA-E7C3-4F63-9F3C-ED8EAEB15DCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10537CAA-E7C3-4F63-9F3C-ED8EAEB15DCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10537CAA-E7C3-4F63-9F3C-ED8EAEB15DCA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{33213E94-C1DD-4137-A49C-891C8665AE3A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{33213E94-C1DD-4137-A49C-891C8665AE3A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{33213E94-C1DD-4137-A49C-891C8665AE3A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{33213E94-C1DD-4137-A49C-891C8665AE3A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A4B3937-C85A-4EC9-ADFA-B3E6A36B8273}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A4B3937-C85A-4EC9-ADFA-B3E6A36B8273}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A4B3937-C85A-4EC9-ADFA-B3E6A36B8273}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A4B3937-C85A-4EC9-ADFA-B3E6A36B8273}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E6120EE-107A-45EB-B63A-32E4AB687A51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E6120EE-107A-45EB-B63A-32E4AB687A51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E6120EE-107A-45EB-B63A-32E4AB687A51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E6120EE-107A-45EB-B63A-32E4AB687A51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB514DE6-4E3D-449A-833A-57E191D8EEE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB514DE6-4E3D-449A-833A-57E191D8EEE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB514DE6-4E3D-449A-833A-57E191D8EEE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB514DE6-4E3D-449A-833A-57E191D8EEE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6E8D8747-0DD7-48A8-9786-2C431C262C49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6E8D8747-0DD7-48A8-9786-2C431C262C49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6E8D8747-0DD7-48A8-9786-2C431C262C49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6E8D8747-0DD7-48A8-9786-2C431C262C49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8C07F296-D37C-4497-85C4-5ADC416E3A65}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8C07F296-D37C-4497-85C4-5ADC416E3A65}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8C07F296-D37C-4497-85C4-5ADC416E3A65}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8C07F296-D37C-4497-85C4-5ADC416E3A65}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -60,6 +102,13 @@ Global
 		{011816E9-E1C4-4C0F-9B70-BD889935E428} = {4610E867-1D15-49E3-B24E-22DB4B747B03}
 		{23184F6D-7812-48CC-8DA5-E8127EBE5EAF} = {FD844EE8-C48B-4FFD-BC9E-4408AAC41332}
 		{8C603181-1121-4C80-B660-BDB1FD5AD5D0} = {FD844EE8-C48B-4FFD-BC9E-4408AAC41332}
+		{10537CAA-E7C3-4F63-9F3C-ED8EAEB15DCA} = {4610E867-1D15-49E3-B24E-22DB4B747B03}
+		{33213E94-C1DD-4137-A49C-891C8665AE3A} = {4610E867-1D15-49E3-B24E-22DB4B747B03}
+		{2A4B3937-C85A-4EC9-ADFA-B3E6A36B8273} = {4610E867-1D15-49E3-B24E-22DB4B747B03}
+		{3E6120EE-107A-45EB-B63A-32E4AB687A51} = {4610E867-1D15-49E3-B24E-22DB4B747B03}
+		{AB514DE6-4E3D-449A-833A-57E191D8EEE1} = {4610E867-1D15-49E3-B24E-22DB4B747B03}
+		{6E8D8747-0DD7-48A8-9786-2C431C262C49} = {4610E867-1D15-49E3-B24E-22DB4B747B03}
+		{8C07F296-D37C-4497-85C4-5ADC416E3A65} = {4610E867-1D15-49E3-B24E-22DB4B747B03}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6DFDACD8-69B4-4E60-9A29-C0394A838A4F}

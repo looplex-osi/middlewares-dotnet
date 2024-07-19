@@ -1,16 +1,14 @@
-﻿using Looplex.DotNet.Middlewares.Clients.Dtos;
-using Looplex.DotNet.Middlewares.Clients.Entities.Clients;
-using Looplex.DotNet.Middlewares.OAuth2.Services;
+﻿using Looplex.DotNet.Middlewares.Clients.Application.Abstractions.Services;
+using Looplex.DotNet.Middlewares.Clients.Domain.Entities.Clients;
 using Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods;
 using Microsoft.AspNetCore.Routing;
 
-namespace Looplex.DotNet.Middlewares.Clients.ExtensionMethods
+namespace Looplex.DotNet.Middlewares.Clients.ExtensionMethods;
+
+public static class ClientRoutesExtensionMethods
 {
-    public static class ClientRoutesExtensionMethods
+    public static void UseClientRoutes(this IEndpointRouteBuilder app, ScimV2RouteOptions? options = null)
     {
-        public static void UseClientRoutes(this IEndpointRouteBuilder app, ScimV2RouteOptions? options = null)
-        {
-            app.UseScimV2Routes<Client, ClientReadDto, ClientWriteDto, IClientService>(options ?? new ScimV2RouteOptions());
-        }
+        app.UseScimV2Routes<Client, IClientService>(options ?? new ScimV2RouteOptions());
     }
 }

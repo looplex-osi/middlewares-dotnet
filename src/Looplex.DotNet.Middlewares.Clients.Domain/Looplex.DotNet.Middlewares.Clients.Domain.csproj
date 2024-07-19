@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net8.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Looplex.DotNet.Middlewares.OAuth2.Domain\Looplex.DotNet.Middlewares.OAuth2.Domain.csproj" />
+      <ProjectReference Include="..\Looplex.DotNet.Middlewares.ScimV2.Domain\Looplex.DotNet.Middlewares.ScimV2.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="Entities\Schemas\Client.1.0.schema.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
+</Project>
