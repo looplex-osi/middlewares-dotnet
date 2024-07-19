@@ -1,5 +1,4 @@
 ﻿using Looplex.DotNet.Core.Common.Utils;
-using Looplex.DotNet.Middlewares.OAuth2.DTOs;
 using Looplex.OpenForExtension.Commands;
 using Looplex.OpenForExtension.Context;
 using Looplex.OpenForExtension.ExtensionMethods;
@@ -8,6 +7,7 @@ using System.Net;
 using System.Security.Claims;
 using Looplex.DotNet.Core.Application.ExtensionMethods;
 using Looplex.DotNet.Core.WebAPI.Factories;
+using Looplex.DotNet.Middlewares.OAuth2.Dtos;
 using Looplex.DotNet.Middlewares.OAuth2.Entities;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -26,7 +26,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.Services
         {
             context.Plugins.Execute<IHandleInput>(context);
             string authorization = context.GetRequiredValue<string>("Authorization");
-            var clientCredentialsDTO = context.GetRequiredValue<ClientCredentialsDTO>("ClientCredentialsDTO");
+            var clientCredentialsDTO = context.GetRequiredValue<ClientCredentialsDto>("ClientCredentialsDto");
 
             context.Plugins.Execute<IValidateInput>(context);
             ValidateAuthorizationHeader(authorization);
@@ -60,7 +60,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.Services
             }
         }
 
-        private static void ValidateGrantType(ClientCredentialsDTO clientCredentialsDTO)
+        private static void ValidateGrantType(ClientCredentialsDto clientCredentialsDTO)
         {
             if (clientCredentialsDTO.GrantType != "client_credentials")
             {
@@ -68,7 +68,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.Services
             }
         }
 
-        private string ValidateIdToken(ClientCredentialsDTO clientCredentialsDTO)
+        private string ValidateIdToken(ClientCredentialsDto clientCredentialsDTO)
         {
             var oicdAudience = _configuration["OicdAudience"]!;
             var oicdIssuer = _configuration["OicdIssuer"]!;

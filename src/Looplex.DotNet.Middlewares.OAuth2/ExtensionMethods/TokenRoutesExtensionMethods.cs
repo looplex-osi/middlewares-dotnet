@@ -1,7 +1,6 @@
 ﻿using Looplex.DotNet.Core.Common.Utils;
 using Looplex.DotNet.Core.Middlewares;
 using Looplex.DotNet.Core.WebAPI.Routes;
-using Looplex.DotNet.Middlewares.OAuth2.DTOs;
 using Looplex.DotNet.Middlewares.OAuth2.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -9,6 +8,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System.Text.Json;
 using Looplex.DotNet.Core.WebAPI.Middlewares;
+using Looplex.DotNet.Middlewares.OAuth2.Dtos;
 
 namespace Looplex.DotNet.Middlewares.OAuth2.ExtensionMethods
 {
@@ -27,13 +27,13 @@ namespace Looplex.DotNet.Middlewares.OAuth2.ExtensionMethods
             string? authorization = httpContext.Request.Headers.Authorization;
 
             using StreamReader reader = new(httpContext.Request.Body);
-            var clientCredentialsDTO = JsonSerializer.Deserialize<ClientCredentialsDTO>(await reader.ReadToEndAsync(), JsonUtils.HttpBodyConverter())!;
+            var clientCredentialsDTO = JsonSerializer.Deserialize<ClientCredentialsDto>(await reader.ReadToEndAsync(), JsonUtils.HttpBodyConverter())!;
 
             context.State.Authorization = authorization;
             context.State.ClientCredentialsDTO = clientCredentialsDTO;
             await service.CreateAccessToken(context);
 
-            await httpContext.Response.WriteAsJsonAsync(new AccessTokenDTO
+            await httpContext.Response.WriteAsJsonAsync(new AccessTokenDto
             {
                 AccessToken = (string)context.Result,
             });
@@ -52,8 +52,8 @@ namespace Looplex.DotNet.Middlewares.OAuth2.ExtensionMethods
                     ]
                 })
             .WithTags(TAG)
-            .Accepts<ClientCredentialsDTO>(JsonUtils.JsonContentTypeWithCharset)
-            .Produces<AccessTokenDTO>(StatusCodes.Status200OK);
+            .Accepts<ClientCredentialsDto>(JsonUtils.JsonContentTypeWithCharset)
+            .Produces<AccessTokenDto>(StatusCodes.Status200OK);
         }
     }
 }

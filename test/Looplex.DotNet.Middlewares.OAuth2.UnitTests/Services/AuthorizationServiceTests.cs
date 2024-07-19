@@ -1,4 +1,3 @@
-using Looplex.DotNet.Middlewares.OAuth2.DTOs;
 using Looplex.DotNet.Middlewares.OAuth2.Entities;
 using Looplex.DotNet.Middlewares.OAuth2.Services;
 using Looplex.OpenForExtension.Context;
@@ -9,6 +8,7 @@ using System.Net;
 using System.Text;
 using System.Text.Json;
 using Looplex.DotNet.Core.WebAPI.Factories;
+using Looplex.DotNet.Middlewares.OAuth2.Dtos;
 
 namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
 {
@@ -43,7 +43,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
             // Arrange
             var _mockIdTokenService = Substitute.For<IIdTokenService>();
             var authorization = "Basic xxxxxx";
-            var clientCredentials = new ClientCredentialsDTO
+            var clientCredentials = new ClientCredentialsDto
             {
                 GrantType = "client_credentials",
                 IdToken = "validToken"
@@ -65,7 +65,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
             // Arrange
             var _mockIdTokenService = Substitute.For<IIdTokenService>();
             var authorization = "Bearer xxxxxx";
-            var clientCredentials = new ClientCredentialsDTO
+            var clientCredentials = new ClientCredentialsDto
             {
                 GrantType = "invalid",
                 IdToken = "validToken"
@@ -99,7 +99,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
             _mockConfiguration["PrivateKey"].Returns(Convert.ToBase64String(Encoding.UTF8.GetBytes(RsaKeys.PrivateKey)));
 
             var authorization = "Bearer " + Convert.ToBase64String(Encoding.UTF8.GetBytes($"{clientId}:clientSecret"));
-            var clientCredentials = new ClientCredentialsDTO
+            var clientCredentials = new ClientCredentialsDto
             {
                 GrantType = "client_credentials",
                 IdToken = "validIdToken"
@@ -143,7 +143,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
             _mockConfiguration["PrivateKey"].Returns(Convert.ToBase64String(Encoding.UTF8.GetBytes(RsaKeys.PrivateKey)));
 
             var authorization = "Bearer " + Convert.ToBase64String(Encoding.UTF8.GetBytes($"{clientId}:clientSecretWrong"));
-            var clientCredentials = new ClientCredentialsDTO
+            var clientCredentials = new ClientCredentialsDto
             {
                 GrantType = "client_credentials",
                 IdToken = "validIdToken"
@@ -195,7 +195,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
             _mockConfiguration["PrivateKey"].Returns(Convert.ToBase64String(Encoding.UTF8.GetBytes(RsaKeys.PrivateKey)));
 
             var authorization = "Bearer " + Convert.ToBase64String(Encoding.UTF8.GetBytes($"{clientIdWrong}:clientSecret"));
-            var clientCredentials = new ClientCredentialsDTO
+            var clientCredentials = new ClientCredentialsDto
             {
                 GrantType = "client_credentials",
                 IdToken = "validIdToken"
@@ -236,7 +236,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
             var clientId = Guid.NewGuid();
             var clientId1 = Guid.NewGuid();
             var clientSecret = "clientSecret";
-            var clientCredentialsDTO = new ClientCredentialsDTO
+            var clientCredentialsDTO = new ClientCredentialsDto
             {
                 IdToken = "validIdToken",
                 GrantType = "client_credentials"
@@ -251,7 +251,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
             _mockConfiguration["PrivateKey"].Returns(Convert.ToBase64String(Encoding.UTF8.GetBytes(RsaKeys.PrivateKey)));
             
             var authorization = "Bearer " + Convert.ToBase64String(Encoding.UTF8.GetBytes($"{clientId}:clientSecret"));
-            var clientCredentials = new ClientCredentialsDTO
+            var clientCredentials = new ClientCredentialsDto
             {
                 GrantType = "client_credentials",
                 IdToken = "validIdToken"
@@ -311,7 +311,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
             var _mockIdTokenService = Substitute.For<IIdTokenService>();
             var clientId = Guid.NewGuid();
             var clientSecret = "clientSecret";
-            var clientCredentialsDTO = new ClientCredentialsDTO
+            var clientCredentialsDTO = new ClientCredentialsDto
             {
                 IdToken = "validIdToken",
                 GrantType = "client_credentials"
@@ -326,7 +326,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
             _mockConfiguration["PrivateKey"].Returns(Convert.ToBase64String(Encoding.UTF8.GetBytes(RsaKeys.PrivateKey)));
 
             var authorization = "Bearer " + Convert.ToBase64String(Encoding.UTF8.GetBytes($"{clientId}:clientSecret"));
-            var clientCredentials = new ClientCredentialsDTO
+            var clientCredentials = new ClientCredentialsDto
             {
                 GrantType = "client_credentials",
                 IdToken = "validIdToken"
@@ -378,7 +378,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Services
 
             Guid clientId = Guid.NewGuid();
             var authorization = "Bearer " + Convert.ToBase64String(Encoding.UTF8.GetBytes($"{clientId}:clientSecret"));
-            var clientCredentials = new ClientCredentialsDTO
+            var clientCredentials = new ClientCredentialsDto
             {
                 GrantType = "client_credentials",
                 IdToken = "validIdToken"

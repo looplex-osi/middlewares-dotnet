@@ -1,8 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Looplex.DotNet.Middlewares.OAuth2.DTOs
+namespace Looplex.DotNet.Middlewares.OAuth2.Dtos
 {
-    public class ClientCredentialsDTO
+    public class ClientCredentialsDto
     {
         [JsonPropertyName("grant_type")]
         public required string GrantType { get; init; }
