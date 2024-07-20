@@ -26,25 +26,27 @@ public class AuthorizationService(
     private readonly IClientService _clientService = clientService;
     private readonly IIdTokenService _idTokenService = idTokenService;
 
-    public async Task CreateAccessToken(IDefaultContext context)
+    public async Task CreateAccessToken(IDefaultContext context, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
+        
         string authorization = context.GetRequiredValue<string>("Authorization");
         var json = context.GetRequiredValue<string>("Resource");
         var clientCredentialsDto = JsonConvert.DeserializeObject<ClientCredentialsDto>(json)!;
-        context.Plugins.Execute<IHandleInput>(context);
+        context.Plugins.Execute<IHandleInput>(context, cancellationToken);
             
         ValidateAuthorizationHeader(authorization);
         ValidateGrantType(clientCredentialsDto);
         var email = ValidateIdToken(clientCredentialsDto);
-        await ValidateClientCredentials(authorization![7..], context);
-        context.Plugins.Execute<IValidateInput>(context);
+        await ValidateClientCredentials(authorization![7..], context, cancellationToken);
+        context.Plugins.Execute<IValidateInput>(context, cancellationToken);
 
         context.Actors["ClientCredentials"] = clientCredentialsDto;
-        context.Plugins.Execute<IDefineActors>(context);
+        context.Plugins.Execute<IDefineActors>(context, cancellationToken);
 
-        context.Plugins.Execute<IBind>(context);
+        context.Plugins.Execute<IBind>(context, cancellationToken);
 
-        context.Plugins.Execute<IBeforeAction>(context);
+        context.Plugins.Execute<IBeforeAction>(context, cancellationToken);
 
         if (!context.SkipDefaultAction)
         {
@@ -55,9 +57,9 @@ public class AuthorizationService(
             };
         }
 
-        context.Plugins.Execute<IAfterAction>(context);
+        context.Plugins.Execute<IAfterAction>(context, cancellationToken);
 
-        context.Plugins.Execute<IReleaseUnmanagedResources>(context);
+        context.Plugins.Execute<IReleaseUnmanagedResources>(context, cancellationToken);
     }
 
     private static void ValidateAuthorizationHeader(string? authorization)
@@ -89,7 +91,7 @@ public class AuthorizationService(
         return email!;
     }
 
-    private async Task ValidateClientCredentials(string credentials, IDefaultContext parentContext)
+    private async Task ValidateClientCredentials(string credentials, IDefaultContext parentContext, CancellationToken cancellationToken)
     {
         var (clientId, clientSecret) = DecodeCredentials(credentials);
 
@@ -103,7 +105,7 @@ public class AuthorizationService(
             context.State.ClientId = clientId;
             context.State.ClientSecret = clientSecret;
                 
-            await ValidateClientCredentialsDefaultAction(context);
+            await ValidateClientCredentialsDefaultAction(context, cancellationToken);
         }
     }
 
@@ -134,9 +136,9 @@ public class AuthorizationService(
         return isAdmin;
     }
 
-    private async Task ValidateClientCredentialsDefaultAction(IDefaultContext context)
+    private async Task ValidateClientCredentialsDefaultAction(IDefaultContext context, CancellationToken cancellationToken)
     {
-        await _clientService.GetByIdAndSecretOrDefaultAsync(context);
+        await _clientService.GetByIdAndSecretOrDefaultAsync(context, cancellationToken);
         var client = (IClient?) context.Result;
                 
         if (client == default)

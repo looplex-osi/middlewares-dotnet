@@ -57,7 +57,7 @@ public class AuthorizationServiceTests
         var service = new AuthorizationService(_mockConfiguration, _mockClientService, mockIdTokenService);
 
         // Act & Assert
-        var exception = await Assert.ThrowsExceptionAsync<HttpRequestException>(() => service.CreateAccessToken(context));
+        var exception = await Assert.ThrowsExceptionAsync<HttpRequestException>(() => service.CreateAccessToken(context, CancellationToken.None));
         Assert.AreEqual(exception.StatusCode, HttpStatusCode.Unauthorized);
         Assert.AreEqual(exception.Message, "Invalid authorization.");
     }
@@ -79,7 +79,7 @@ public class AuthorizationServiceTests
         var service = new AuthorizationService(_mockConfiguration, _mockClientService, mockIdTokenService);
 
         // Act & Assert
-        var exception = await Assert.ThrowsExceptionAsync<HttpRequestException>(() => service.CreateAccessToken(context));
+        var exception = await Assert.ThrowsExceptionAsync<HttpRequestException>(() => service.CreateAccessToken(context, CancellationToken.None));
         Assert.AreEqual(exception.StatusCode, HttpStatusCode.Unauthorized);
         Assert.AreEqual(exception.Message, "grant_type is invalid.");
     }
@@ -119,7 +119,7 @@ public class AuthorizationServiceTests
         var service = new AuthorizationService(_mockConfiguration, _mockClientService, mockIdTokenService);
 
         // Act
-        await service.CreateAccessToken(context);
+        await service.CreateAccessToken(context, CancellationToken.None);
 
         // Assert
         Assert.AreEqual(StatusCodes.Status200OK, _httpContext.Response.StatusCode);
@@ -158,7 +158,7 @@ public class AuthorizationServiceTests
             
         _mockContextFactory.Create(Arg.Any<IEnumerable<string>>()).Returns(DefaultContext.Create(null, null));
 
-        _mockClientService.GetByIdAndSecretOrDefaultAsync(Arg.Any<IDefaultContext>())
+        _mockClientService.GetByIdAndSecretOrDefaultAsync(Arg.Any<IDefaultContext>(), CancellationToken.None)
             .Returns(call =>
             {
                 var context = call.Arg<IDefaultContext>();
@@ -172,7 +172,7 @@ public class AuthorizationServiceTests
         var service = new AuthorizationService(_mockConfiguration, _mockClientService, mockIdTokenService);
 
         // Act & Assert
-        var exception = await Assert.ThrowsExceptionAsync<EntityInvalidException>(() => service.CreateAccessToken(context));
+        var exception = await Assert.ThrowsExceptionAsync<EntityInvalidException>(() => service.CreateAccessToken(context, CancellationToken.None));
         Assert.AreEqual(exception.ErrorMessages[0], "Invalid clientId or clientSecret.");
     }
 
@@ -207,7 +207,7 @@ public class AuthorizationServiceTests
         });
 
         _mockContextFactory.Create(Arg.Any<IEnumerable<string>>()).Returns(DefaultContext.Create(null, null));
-        _mockClientService.GetByIdAndSecretOrDefaultAsync(Arg.Any<IDefaultContext>())
+        _mockClientService.GetByIdAndSecretOrDefaultAsync(Arg.Any<IDefaultContext>(), CancellationToken.None)
             .Returns(call =>
             {
                 var context = call.Arg<IDefaultContext>();
@@ -221,7 +221,7 @@ public class AuthorizationServiceTests
         var service = new AuthorizationService(_mockConfiguration, _mockClientService, mockIdTokenService);
             
         // Act & Assert
-        var exception = await Assert.ThrowsExceptionAsync<EntityInvalidException>(() => service.CreateAccessToken(context));
+        var exception = await Assert.ThrowsExceptionAsync<EntityInvalidException>(() => service.CreateAccessToken(context, CancellationToken.None));
         Assert.AreEqual(exception.ErrorMessages[0], "Invalid clientId or clientSecret.");
     }
 
@@ -270,7 +270,8 @@ public class AuthorizationServiceTests
         client.ExpirationTime.Returns(DateTimeOffset.UtcNow.AddMinutes(1));
 
         _mockClientService.GetByIdAndSecretOrDefaultAsync(
-                Arg.Is<IDefaultContext>(c => AssertDefaultContextIsValid(c, clientId, clientSecret)))
+                Arg.Is<IDefaultContext>(c => AssertDefaultContextIsValid(c, clientId, clientSecret)),
+                CancellationToken.None)
             .Returns(call =>
             {
                 var context = call.Arg<IDefaultContext>();
@@ -287,7 +288,7 @@ public class AuthorizationServiceTests
         var service = new AuthorizationService(_mockConfiguration, _mockClientService, mockIdTokenService);
 
         // Act
-        await service.CreateAccessToken(context);
+        await service.CreateAccessToken(context, CancellationToken.None);
 
         // Assert
         Assert.AreEqual(StatusCodes.Status200OK, _httpContext.Response.StatusCode);
@@ -343,7 +344,8 @@ public class AuthorizationServiceTests
         client.ExpirationTime.Returns(DateTimeOffset.UtcNow.AddMinutes(1));
 
         _mockClientService.GetByIdAndSecretOrDefaultAsync(
-                Arg.Is<IDefaultContext>(c => AssertDefaultContextIsValid(c, clientId, clientSecret)))
+                Arg.Is<IDefaultContext>(c => AssertDefaultContextIsValid(c, clientId, clientSecret)),
+                CancellationToken.None)
             .Returns(call =>
             {
                 var context = call.Arg<IDefaultContext>();
@@ -360,7 +362,7 @@ public class AuthorizationServiceTests
         var service = new AuthorizationService(_mockConfiguration, _mockClientService, mockIdTokenService);
 
         // Act & Assert
-        var exception = await Assert.ThrowsExceptionAsync<HttpRequestException>(() => service.CreateAccessToken(context));
+        var exception = await Assert.ThrowsExceptionAsync<HttpRequestException>(() => service.CreateAccessToken(context, CancellationToken.None));
         Assert.AreEqual(exception.StatusCode, HttpStatusCode.Unauthorized);
         Assert.AreEqual(exception.Message, "IdToken is invalid.");
     }
@@ -385,6 +387,6 @@ public class AuthorizationServiceTests
         var service = new AuthorizationService(_mockConfiguration, _mockClientService, mockIdTokenService);
 
         // Act & Assert
-        await Assert.ThrowsExceptionAsync<HttpRequestException>(() => service.CreateAccessToken(context));
+        await Assert.ThrowsExceptionAsync<HttpRequestException>(() => service.CreateAccessToken(context, CancellationToken.None));
     }
 }

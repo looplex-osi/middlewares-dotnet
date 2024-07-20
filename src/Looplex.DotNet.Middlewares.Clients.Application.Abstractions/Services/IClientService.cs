@@ -5,5 +5,5 @@ namespace Looplex.DotNet.Middlewares.Clients.Application.Abstractions.Services;
 
 public interface IClientService : ICrudService
 {
-    Task GetByIdAndSecretOrDefaultAsync(IDefaultContext context);
+    Task GetByIdAndSecretOrDefaultAsync(IDefaultContext context, CancellationToken cancellationToken);
 }

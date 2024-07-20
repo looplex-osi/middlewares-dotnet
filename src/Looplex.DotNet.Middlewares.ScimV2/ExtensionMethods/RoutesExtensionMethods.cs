@@ -16,21 +16,17 @@ public static class RoutesExtensionMethods
     private static MiddlewareDelegate GetMiddleware<TService>()
         where TService : ICrudService => async (context, cancellationToken, _) =>
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        
         HttpContext httpContext = context.State.HttpContext;
         var service = httpContext.RequestServices.GetRequiredService<TService>();
 
         await service.GetAllAsync(context, cancellationToken);
 
-        await httpContext.Response.WriteAsJsonAsync(context.Result);
+        await httpContext.Response.WriteAsJsonAsync(context.Result, cancellationToken);
     };
 
     private static MiddlewareDelegate GetByIdMiddleware<TService>()
         where TService : ICrudService => async (context, cancellationToken, _) =>
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        
         HttpContext httpContext = context.State.HttpContext;
         var service = httpContext.RequestServices.GetRequiredService<TService>();
 
@@ -39,20 +35,18 @@ public static class RoutesExtensionMethods
 
         await service.GetByIdAsync(context, cancellationToken);
 
-        await httpContext.Response.WriteAsJsonAsync(context.Result);
+        await httpContext.Response.WriteAsJsonAsync(context.Result, cancellationToken);
     };
 
     private static MiddlewareDelegate PostMiddleware<TService>(
         string resource)
         where TService : ICrudService => async (context, cancellationToken, _) =>
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        
         HttpContext httpContext = context.State.HttpContext;
         var service = httpContext.RequestServices.GetRequiredService<TService>();
 
         using StreamReader reader = new(httpContext.Request.Body);
-        context.State.Resource = await reader.ReadToEndAsync();
+        context.State.Resource = await reader.ReadToEndAsync(cancellationToken);
 
         await service.CreateAsync(context, cancellationToken);
         var id = context.Result;
@@ -64,8 +58,6 @@ public static class RoutesExtensionMethods
     private static MiddlewareDelegate DeleteMiddleware<TService>()
         where TService : ICrudService => async (context, cancellationToken, _) =>
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        
         HttpContext httpContext = context.State.HttpContext;
         var service = httpContext.RequestServices.GetRequiredService<TService>();
 
