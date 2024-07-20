@@ -7,7 +7,6 @@ using Looplex.DotNet.Core.Application.Abstractions.Services;
 using Looplex.DotNet.Core.Middlewares;
 using Looplex.DotNet.Core.WebAPI.Middlewares;
 using Looplex.DotNet.Core.WebAPI.Routes;
-using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods;
 
@@ -69,15 +68,12 @@ public static class RoutesExtensionMethods
         httpContext.Response.StatusCode = (int)HttpStatusCode.NoContent;
     };
 
-    public static void UseScimV2Routes<TResource, TService>(
+    public static void UseScimV2Routes<TService>(
         this IEndpointRouteBuilder app,
+        string resource,
         ScimV2RouteOptions options)
-        where TResource : Resource
         where TService : ICrudService
     {
-        var resourceType = typeof(TResource).Name;
-        var resource = resourceType[0].ToString().ToLower() + resourceType[1..];
-        var tag = resourceType;
 
         List<MiddlewareDelegate> getMiddlewares = [
             AuthenticationMiddlewares.AuthenticateMiddleware, CoreMiddlewares.PaginationMiddleware];
@@ -89,8 +85,7 @@ public static class RoutesExtensionMethods
                 {
                     Services = options.OptionsForGet?.Services ?? [],
                     Middlewares = getMiddlewares.ToArray()
-                })
-            .WithTags(tag);;
+                });
 
         List<MiddlewareDelegate> getByIdMiddlewares = [AuthenticationMiddlewares.AuthenticateMiddleware];
         getByIdMiddlewares.AddRange(options.OptionsForGetById?.Middlewares ?? []);
@@ -101,8 +96,7 @@ public static class RoutesExtensionMethods
                 {
                     Services = options.OptionsForGetById?.Services ?? [],
                     Middlewares = getByIdMiddlewares.ToArray()
-                })
-            .WithTags(tag);
+                });
 
         List<MiddlewareDelegate> postMiddlewares = [AuthenticationMiddlewares.AuthenticateMiddleware];
         postMiddlewares.AddRange(options.OptionsForPost?.Middlewares ?? []);
@@ -113,8 +107,7 @@ public static class RoutesExtensionMethods
                 {
                     Services = options.OptionsForPost?.Services ?? [],
                     Middlewares = postMiddlewares.ToArray()
-                })
-            .WithTags(tag);
+                });
 
         List<MiddlewareDelegate> deleteMiddlewares = [AuthenticationMiddlewares.AuthenticateMiddleware];
         deleteMiddlewares.AddRange(options.OptionsForDelete?.Middlewares ?? []);
@@ -125,7 +118,6 @@ public static class RoutesExtensionMethods
                 {
                     Services = options.OptionsForDelete?.Services ?? [],
                     Middlewares = deleteMiddlewares.ToArray()
-                })
-            .WithTags(tag);
+                });
     }
 }

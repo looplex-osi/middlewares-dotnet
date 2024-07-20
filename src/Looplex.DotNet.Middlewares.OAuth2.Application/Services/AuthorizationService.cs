@@ -32,9 +32,10 @@ public class AuthorizationService(
         
         string authorization = context.GetRequiredValue<string>("Authorization");
         var json = context.GetRequiredValue<string>("Resource");
-        var clientCredentialsDto = JsonConvert.DeserializeObject<ClientCredentialsDto>(json)!;
+        var clientCredentialsDto = JsonConvert.DeserializeObject<ClientCredentialsDto>(json);
         context.Plugins.Execute<IHandleInput>(context, cancellationToken);
-            
+        
+        ArgumentNullException.ThrowIfNull(clientCredentialsDto, "body");
         ValidateAuthorizationHeader(authorization);
         ValidateGrantType(clientCredentialsDto);
         var email = ValidateIdToken(clientCredentialsDto);
