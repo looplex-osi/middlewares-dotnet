@@ -22,7 +22,7 @@ public static class TokenRoutesExtensionMethods
         IAuthorizationService service = context.Services.GetRequiredService<IAuthorizationService>();
 
         HttpContext httpContext = context.State.HttpContext;
-        context.State.Authorization = httpContext.Request.Headers.Authorization;
+        context.State.Authorization = httpContext.Request.Headers.Authorization.ToString();
             
         using StreamReader reader = new(httpContext.Request.Body);
         context.State.Resource = await reader.ReadToEndAsync();
