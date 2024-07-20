@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.0.22"></a>
+## 1.0.22 (2024-07-20)
+
+### Bug Fixes
+
+* **routes:** fixed route naming for users, groups and clients
+
 <a name="1.0.21"></a>
 ## 1.0.21 (2024-07-20)
 
