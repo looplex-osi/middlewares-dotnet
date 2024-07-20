@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.0.21"></a>
+## 1.0.21 (2024-07-20)
+
+### Bug Fixes
+
+* upgrade core packages to 1.0.15
+
 <a name="1.0.20"></a>
 ## 1.0.20 (2024-07-20)
 
