@@ -1,9 +1,9 @@
 ﻿using Looplex.DotNet.Core.Application.Abstractions.Services;
-using Looplex.OpenForExtension.Context;
+using Looplex.OpenForExtension.Abstractions.Contexts;
 
 namespace Looplex.DotNet.Middlewares.Clients.Application.Abstractions.Services;
 
 public interface IClientService : ICrudService
 {
-    Task GetByIdAndSecretOrDefaultAsync(IDefaultContext context, CancellationToken cancellationToken);
+    Task GetByIdAndSecretOrDefaultAsync(IContext context, CancellationToken cancellationToken);
 }

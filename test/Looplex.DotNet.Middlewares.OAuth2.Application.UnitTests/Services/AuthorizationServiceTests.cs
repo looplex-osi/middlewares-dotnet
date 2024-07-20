@@ -1,3 +1,4 @@
+using System.Dynamic;
 using System.Net;
 using System.Text;
 using System.Text.Json;
@@ -8,7 +9,7 @@ using Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.Dtos;
 using Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.Services;
 using Looplex.DotNet.Middlewares.OAuth2.Application.Services;
 using Looplex.DotNet.Middlewares.OAuth2.Domain.Entities;
-using Looplex.OpenForExtension.Context;
+using Looplex.OpenForExtension.Abstractions.Contexts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using NSubstitute;
@@ -51,7 +52,10 @@ public class AuthorizationServiceTests
             ""id_token"": ""validIdToken""
         }";
         
-        var context = DefaultContext.Create([], _mockServiceProvider);
+        var context = Substitute.For<IContext>();
+        var state = new ExpandoObject();
+        context.State.Returns(state);
+        context.Services.Returns(_mockServiceProvider);
         context.State.Authorization = authorization;
         context.State.Resource = clientCredentials;
         var service = new AuthorizationService(_mockConfiguration, _mockClientService, mockIdTokenService);
@@ -73,8 +77,10 @@ public class AuthorizationServiceTests
             ""id_token"": ""validIdToken""
         }";
         
-        var context = DefaultContext.Create([], _mockServiceProvider);
-        context.State.Authorization = authorization;
+        var context = Substitute.For<IContext>();
+        var state = new ExpandoObject();
+        context.State.Returns(state);
+        context.Services.Returns(_mockServiceProvider);        context.State.Authorization = authorization;
         context.State.Resource = clientCredentials;
         var service = new AuthorizationService(_mockConfiguration, _mockClientService, mockIdTokenService);
 
@@ -113,8 +119,10 @@ public class AuthorizationServiceTests
             return true;
         });
 
-        var context = DefaultContext.Create([], _mockServiceProvider);
-        context.State.Authorization = authorization;
+        var context = Substitute.For<IContext>();
+        var state = new ExpandoObject();
+        context.State.Returns(state);
+        context.Services.Returns(_mockServiceProvider);        context.State.Authorization = authorization;
         context.State.Resource = clientCredentials;
         var service = new AuthorizationService(_mockConfiguration, _mockClientService, mockIdTokenService);
 
@@ -156,17 +164,23 @@ public class AuthorizationServiceTests
             return true;
         });
             
-        _mockContextFactory.Create(Arg.Any<IEnumerable<string>>()).Returns(DefaultContext.Create(null, null));
-
-        _mockClientService.GetByIdAndSecretOrDefaultAsync(Arg.Any<IDefaultContext>(), CancellationToken.None)
+        var contextChild = Substitute.For<IContext>();
+        var stateChild = new ExpandoObject();
+        contextChild.State.Returns(stateChild);
+        _mockContextFactory.Create(Arg.Any<IEnumerable<string>>()).Returns(contextChild);
+        
+        _mockClientService.GetByIdAndSecretOrDefaultAsync(Arg.Any<IContext>(), CancellationToken.None)
             .Returns(call =>
             {
-                var context = call.Arg<IDefaultContext>();
+                var context = call.Arg<IContext>();
                 context.Result = (IClient?)null;
                 return Task.CompletedTask;
             });
 
-        var context = DefaultContext.Create([], _mockServiceProvider);
+        var context = Substitute.For<IContext>();
+        var state = new ExpandoObject();
+        context.State.Returns(state);
+        context.Services.Returns(_mockServiceProvider);
         context.State.Authorization = authorization;
         context.State.Resource = clientCredentials;
         var service = new AuthorizationService(_mockConfiguration, _mockClientService, mockIdTokenService);
@@ -206,17 +220,22 @@ public class AuthorizationServiceTests
             return true;
         });
 
-        _mockContextFactory.Create(Arg.Any<IEnumerable<string>>()).Returns(DefaultContext.Create(null, null));
-        _mockClientService.GetByIdAndSecretOrDefaultAsync(Arg.Any<IDefaultContext>(), CancellationToken.None)
+        var contextChild = Substitute.For<IContext>();
+        var stateChild = new ExpandoObject();
+        contextChild.State.Returns(stateChild);
+        _mockContextFactory.Create(Arg.Any<IEnumerable<string>>()).Returns(contextChild);
+        _mockClientService.GetByIdAndSecretOrDefaultAsync(Arg.Any<IContext>(), CancellationToken.None)
             .Returns(call =>
             {
-                var context = call.Arg<IDefaultContext>();
+                var context = call.Arg<IContext>();
                 context.Result = (IClient?)null;
                 return Task.CompletedTask;
             });
 
-        var context = DefaultContext.Create([], _mockServiceProvider);
-        context.State.Authorization = authorization;
+        var context = Substitute.For<IContext>();
+        var state = new ExpandoObject();
+        context.State.Returns(state);
+        context.Services.Returns(_mockServiceProvider);        context.State.Authorization = authorization;
         context.State.Resource = clientCredentials;
         var service = new AuthorizationService(_mockConfiguration, _mockClientService, mockIdTokenService);
             
@@ -260,8 +279,11 @@ public class AuthorizationServiceTests
             return true;
         });
 
-        _mockContextFactory.Create(Arg.Any<IEnumerable<string>>()).Returns(DefaultContext.Create(null, null));
-
+        var contextChild = Substitute.For<IContext>();
+        var stateChild = new ExpandoObject();
+        contextChild.State.Returns(stateChild);
+        _mockContextFactory.Create(Arg.Any<IEnumerable<string>>()).Returns(contextChild);
+        
         var client = Substitute.For<IClient>();
         client.Id.Returns(clientId.ToString());
         client.DisplayName.Returns("client");
@@ -270,11 +292,11 @@ public class AuthorizationServiceTests
         client.ExpirationTime.Returns(DateTimeOffset.UtcNow.AddMinutes(1));
 
         _mockClientService.GetByIdAndSecretOrDefaultAsync(
-                Arg.Is<IDefaultContext>(c => AssertDefaultContextIsValid(c, clientId, clientSecret)),
+                Arg.Is<IContext>(c => AssertDefaultContextIsValid(c, clientId, clientSecret)),
                 CancellationToken.None)
             .Returns(call =>
             {
-                var context = call.Arg<IDefaultContext>();
+                var context = call.Arg<IContext>();
                 context.Result = (IClient?)client;
                 return Task.CompletedTask;
             });
@@ -282,8 +304,10 @@ public class AuthorizationServiceTests
         _httpContext.Request.Headers.Authorization = "Bearer " + Convert.ToBase64String(Encoding.UTF8.GetBytes(clientId + ":" + clientSecret));
         _httpContext.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(clientCredentialsDto)));
 
-        var context = DefaultContext.Create([], _mockServiceProvider);
-        context.State.Authorization = authorization;
+        var context = Substitute.For<IContext>();
+        var state = new ExpandoObject();
+        context.State.Returns(state);
+        context.Services.Returns(_mockServiceProvider);        context.State.Authorization = authorization;
         context.State.Resource = clientCredentials;
         var service = new AuthorizationService(_mockConfiguration, _mockClientService, mockIdTokenService);
 
@@ -296,7 +320,7 @@ public class AuthorizationServiceTests
         Assert.IsInstanceOfType(context.Result, typeof(AccessTokenDto));
     }
 
-    private bool AssertDefaultContextIsValid(IDefaultContext c, Guid clientId, string clientSecret)
+    private bool AssertDefaultContextIsValid(IContext c, Guid clientId, string clientSecret)
     {
         return c.State.ClientId == clientId
                && c.State.ClientSecret == clientSecret;
@@ -344,11 +368,11 @@ public class AuthorizationServiceTests
         client.ExpirationTime.Returns(DateTimeOffset.UtcNow.AddMinutes(1));
 
         _mockClientService.GetByIdAndSecretOrDefaultAsync(
-                Arg.Is<IDefaultContext>(c => AssertDefaultContextIsValid(c, clientId, clientSecret)),
+                Arg.Is<IContext>(c => AssertDefaultContextIsValid(c, clientId, clientSecret)),
                 CancellationToken.None)
             .Returns(call =>
             {
-                var context = call.Arg<IDefaultContext>();
+                var context = call.Arg<IContext>();
                 context.Result = (IClient?)client;
                 return Task.CompletedTask;
             });
@@ -356,8 +380,10 @@ public class AuthorizationServiceTests
         _httpContext.Request.Headers.Authorization = "Bearer " + Convert.ToBase64String(Encoding.UTF8.GetBytes(clientId + ":" + clientSecret));
         _httpContext.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(clientCredentialsDto)));
 
-        var context = DefaultContext.Create([], _mockServiceProvider);
-        context.State.Authorization = authorization;
+        var context = Substitute.For<IContext>();
+        var state = new ExpandoObject();
+        context.State.Returns(state);
+        context.Services.Returns(_mockServiceProvider);        context.State.Authorization = authorization;
         context.State.Resource = clientCredentials;
         var service = new AuthorizationService(_mockConfiguration, _mockClientService, mockIdTokenService);
 
@@ -381,8 +407,10 @@ public class AuthorizationServiceTests
             ""id_token"": ""validIdToken""
         }";
 
-        var context = DefaultContext.Create([], _mockServiceProvider);
-        context.State.Authorization = authorization;
+        var context = Substitute.For<IContext>();
+        var state = new ExpandoObject();
+        context.State.Returns(state);
+        context.Services.Returns(_mockServiceProvider);        context.State.Authorization = authorization;
         context.State.Resource = clientCredentials;
         var service = new AuthorizationService(_mockConfiguration, _mockClientService, mockIdTokenService);
 

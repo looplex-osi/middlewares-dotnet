@@ -8,9 +8,9 @@ using Looplex.DotNet.Middlewares.Clients.Application.Abstractions.Services;
 using Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.Dtos;
 using Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.Services;
 using Looplex.DotNet.Middlewares.OAuth2.Domain.Entities;
-using Looplex.OpenForExtension.Commands;
-using Looplex.OpenForExtension.Context;
-using Looplex.OpenForExtension.ExtensionMethods;
+using Looplex.OpenForExtension.Abstractions.Commands;
+using Looplex.OpenForExtension.Abstractions.Contexts;
+using Looplex.OpenForExtension.Abstractions.ExtensionMethods;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -26,7 +26,7 @@ public class AuthorizationService(
     private readonly IClientService _clientService = clientService;
     private readonly IIdTokenService _idTokenService = idTokenService;
 
-    public async Task CreateAccessToken(IDefaultContext context, CancellationToken cancellationToken)
+    public async Task CreateAccessToken(IContext context, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         
@@ -41,8 +41,8 @@ public class AuthorizationService(
         await ValidateClientCredentials(authorization![7..], context, cancellationToken);
         context.Plugins.Execute<IValidateInput>(context, cancellationToken);
 
-        context.Actors["ClientCredentials"] = clientCredentialsDto;
-        context.Plugins.Execute<IDefineActors>(context, cancellationToken);
+        context.Roles["ClientCredentials"] = clientCredentialsDto;
+        context.Plugins.Execute<IDefineRoles>(context, cancellationToken);
 
         context.Plugins.Execute<IBind>(context, cancellationToken);
 
@@ -91,7 +91,7 @@ public class AuthorizationService(
         return email!;
     }
 
-    private async Task ValidateClientCredentials(string credentials, IDefaultContext parentContext, CancellationToken cancellationToken)
+    private async Task ValidateClientCredentials(string credentials, IContext parentContext, CancellationToken cancellationToken)
     {
         var (clientId, clientSecret) = DecodeCredentials(credentials);
 
@@ -136,7 +136,7 @@ public class AuthorizationService(
         return isAdmin;
     }
 
-    private async Task ValidateClientCredentialsDefaultAction(IDefaultContext context, CancellationToken cancellationToken)
+    private async Task ValidateClientCredentialsDefaultAction(IContext context, CancellationToken cancellationToken)
     {
         await _clientService.GetByIdAndSecretOrDefaultAsync(context, cancellationToken);
         var client = (IClient?) context.Result;

@@ -25,7 +25,7 @@
     </Target>
     
     <ItemGroup>
-      <PackageReference Include="Looplex.OpenForExtension" Version="1.0.11" />
+      <PackageReference Include="Looplex.DotNet.Core.Application.Abstractions" Version="1.0.15" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 
