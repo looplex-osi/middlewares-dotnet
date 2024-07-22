@@ -14,7 +14,6 @@ public partial class Group
             DateParseHandling = DateParseHandling.None,
             Converters =
             {
-                MemberElement.GroupTypeConverter.Singleton,
                 new IsoDateTimeConverter { DateTimeStyles = DateTimeStyles.AssumeUniversal }
             }
         };
