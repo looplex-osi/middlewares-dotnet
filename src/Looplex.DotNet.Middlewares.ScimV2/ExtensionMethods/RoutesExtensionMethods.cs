@@ -54,6 +54,25 @@ public static class RoutesExtensionMethods
         httpContext.Response.StatusCode = (int)HttpStatusCode.Created;
         httpContext.Response.Headers.Location = $"{resource}/{id}";
     };
+    
+    private static MiddlewareDelegate PatchMiddleware<TService>(
+        string resource)
+        where TService : ICrudService => async (context, cancellationToken, _) =>
+    {
+        HttpContext httpContext = context.State.HttpContext;
+        var service = httpContext.RequestServices.GetRequiredService<TService>();
+
+        var id = (string)httpContext.Request.RouteValues["id"]!;
+        context.State.Id = id;
+        
+        using StreamReader reader = new(httpContext.Request.Body);
+        context.State.Operations = await reader.ReadToEndAsync(cancellationToken);
+
+        await service.PatchAsync(context, cancellationToken);
+
+        httpContext.Response.StatusCode = (int)HttpStatusCode.Created;
+        httpContext.Response.Headers.Location = $"{resource}/{id}";
+    };
 
     private static MiddlewareDelegate DeleteMiddleware<TService>()
         where TService : ICrudService => async (context, cancellationToken, _) =>
@@ -109,6 +128,17 @@ public static class RoutesExtensionMethods
                 Middlewares = postMiddlewares.ToArray()
             });
 
+        List<MiddlewareDelegate> patchMiddlewares = [AuthenticationMiddlewares.AuthenticateMiddleware];
+        patchMiddlewares.AddRange(options.OptionsForPatch?.Middlewares ?? []);
+        patchMiddlewares.Add(PatchMiddleware<TService>(resource));
+        app.MapPatch(
+            resource,
+            new RouteBuilderOptions
+            {
+                Services = options.OptionsForPatch?.Services ?? [],
+                Middlewares = patchMiddlewares.ToArray()
+            });
+        
         List<MiddlewareDelegate> deleteMiddlewares = [AuthenticationMiddlewares.AuthenticateMiddleware];
         deleteMiddlewares.AddRange(options.OptionsForDelete?.Middlewares ?? []);
         deleteMiddlewares.Add(DeleteMiddleware<TService>());
