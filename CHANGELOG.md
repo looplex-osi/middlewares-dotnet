@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.1.0"></a>
+## 1.1.0 (2024-08-01)
+
+### Features
+
+* **scimv2 routes:** added patch endpoint map for scim v2 resources
+
+### Bug Fixes
+
+* change from custom enum converter to newtonsoft`s stringenumconverter
+
 <a name="1.0.23"></a>
 ## 1.0.23 (2024-07-20)
 
