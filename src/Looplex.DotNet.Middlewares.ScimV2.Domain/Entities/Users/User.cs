@@ -12,8 +12,10 @@ namespace Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Users;
 /// </summary>
 public partial class User
 {
+    #region Serialization
+    
     public bool ShouldSerializePassword() => false;
-
+    
     public static class Converter
     {
         public static readonly JsonSerializerSettings Settings = new()
@@ -27,6 +29,8 @@ public partial class User
             }
         };
     }
+    
+    #endregion
 }
 
 public static class Serialize

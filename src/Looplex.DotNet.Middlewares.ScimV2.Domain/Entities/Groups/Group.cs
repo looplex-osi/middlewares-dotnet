@@ -6,6 +6,8 @@ namespace Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Groups;
 
 public partial class Group
 {
+    #region Serialization
+    
     public static class Converter
     {
         public static readonly JsonSerializerSettings Settings = new()
@@ -18,6 +20,8 @@ public partial class Group
             }
         };
     }
+    
+    #endregion
 }
 
 public static class Serialize

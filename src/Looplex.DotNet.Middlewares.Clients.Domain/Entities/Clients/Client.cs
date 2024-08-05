@@ -6,6 +6,8 @@ namespace Looplex.DotNet.Middlewares.Clients.Domain.Entities.Clients;
 
 public partial class Client
 {
+    #region Serialization
+    
     public static class Converter
     {
         public static readonly JsonSerializerSettings Settings = new JsonSerializerSettings
@@ -18,6 +20,8 @@ public partial class Client
             },
         };
     }
+    
+    #endregion
 }
 
 public static class Serialize
