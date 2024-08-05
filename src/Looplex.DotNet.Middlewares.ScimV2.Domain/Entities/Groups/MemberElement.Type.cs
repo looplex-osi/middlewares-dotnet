@@ -4,6 +4,12 @@ namespace Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Groups;
 
 public partial class MemberElement
 {
+    [JsonIgnore]
+    public required string Id { get; set; }
+    
+    [JsonIgnore]
+    public required string GroupId { get; set; }
+    
     /// <summary>
     ///     The URI corresponding to a SCIM resource that is a member of this Group.
     /// </summary>

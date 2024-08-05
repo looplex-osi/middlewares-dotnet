@@ -29,8 +29,6 @@ public partial class Group : Resource
         get => _members;
         set
         {
-            if (_members != null) throw new InvalidOperationException();
-            
             _members = value;
             if (value is INotifyCollectionChanged collection)
                 collection.CollectionChanged += OnCollectionChanged;

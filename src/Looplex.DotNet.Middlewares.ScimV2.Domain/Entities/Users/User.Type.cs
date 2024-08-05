@@ -59,8 +59,6 @@ public partial class User : Resource
         get => _addresses;
         set
         {
-            if (_addresses != null) throw new InvalidOperationException();
-            
             _addresses = value;
             if (value is INotifyCollectionChanged collection)
                 collection.CollectionChanged += OnCollectionChanged;
@@ -94,8 +92,6 @@ public partial class User : Resource
         get => _emails;
         set
         {
-            if (_emails != null) throw new InvalidOperationException();
-            
             _emails = value;
             if (value is INotifyCollectionChanged collection)
                 collection.CollectionChanged += OnCollectionChanged;
@@ -116,8 +112,6 @@ public partial class User : Resource
         get => _entitlements;
         set
         {
-            if (_entitlements != null) throw new InvalidOperationException();
-            
             _entitlements = value;
             if (value is INotifyCollectionChanged collection)
                 collection.CollectionChanged += OnCollectionChanged;
@@ -134,8 +128,6 @@ public partial class User : Resource
         get => _groups;
         set
         {
-            if (_groups != null) throw new InvalidOperationException();
-            
             _groups = value;
             if (value is INotifyCollectionChanged collection)
                 collection.CollectionChanged += OnCollectionChanged;
@@ -153,8 +145,6 @@ public partial class User : Resource
         get => _ims;
         set
         {
-            if (_ims != null) throw new InvalidOperationException();
-            
             _ims = value;
             if (value is INotifyCollectionChanged collection)
                 collection.CollectionChanged += OnCollectionChanged;
@@ -246,8 +236,6 @@ public partial class User : Resource
         get => _phoneNumbers;
         set
         {
-            if (_phoneNumbers != null) throw new InvalidOperationException();
-            
             _phoneNumbers = value;
             if (value is INotifyCollectionChanged collection)
                 collection.CollectionChanged += OnCollectionChanged;
@@ -264,8 +252,6 @@ public partial class User : Resource
         get => _photos;
         set
         {
-            if (_photos != null) throw new InvalidOperationException();
-            
             _photos = value;
             if (value is INotifyCollectionChanged collection)
                 collection.CollectionChanged += OnCollectionChanged;
@@ -318,8 +304,6 @@ public partial class User : Resource
         get => _roles;
         set
         {
-            if (_roles != null) throw new InvalidOperationException();
-            
             _roles = value;
             if (value is INotifyCollectionChanged collection)
                 collection.CollectionChanged += OnCollectionChanged;

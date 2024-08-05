@@ -8,6 +8,12 @@ namespace Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Users;
 /// </summary>
 public partial class Name
 {
+    [JsonIgnore]
+    public required string Id { get; set; }
+    
+    [JsonIgnore]
+    public required string UserId { get; set; }
+    
     /// <summary>
     ///     The family name of the User, or last name in most Western languages (e.g., 'Jensen' given
     ///     the full name 'Ms. Barbara J Jensen, III').

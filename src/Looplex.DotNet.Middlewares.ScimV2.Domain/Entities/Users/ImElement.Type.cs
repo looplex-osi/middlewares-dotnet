@@ -4,6 +4,12 @@ namespace Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Users;
 
 public partial class ImElement
 {
+    [JsonIgnore]
+    public required string Id { get; set; }
+    
+    [JsonIgnore]
+    public required string UserId { get; set; }
+    
     /// <summary>
     ///     A Boolean value indicating the 'primary' or preferred attribute value for this attribute,
     ///     e.g., the preferred messenger or primary messenger.  The primary attribute value 'true'

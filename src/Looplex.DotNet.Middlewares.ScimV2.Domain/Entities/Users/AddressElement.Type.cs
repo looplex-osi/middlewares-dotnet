@@ -4,6 +4,12 @@ namespace Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Users;
 
 public partial class AddressElement
 {
+    [JsonIgnore]
+    public required string Id { get; set; }
+    
+    [JsonIgnore]
+    public required string UserId { get; set; }
+    
     /// <summary>
     ///     The country name component.  When specified, the value MUST be in ISO 3166-1 'alpha-2'
     ///     code format [ISO3166]; e.g., the United States and Sweden are 'US' and 'SE', respectively.

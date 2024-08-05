@@ -2,6 +2,7 @@ using FluentAssertions;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Schemas;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Users;
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 
 namespace Looplex.DotNet.Middlewares.ScimV2.Domain.UnitTests.Entities.Users;
 
@@ -54,6 +55,8 @@ public class UserTests
             },
             Name = new Name
             {
+                Id = null,
+                UserId = null,
                 Formatted = "Mr. John Doe",
                 FamilyName = "Doe",
                 GivenName = "John",
@@ -75,6 +78,8 @@ public class UserTests
             [
                 new EmailElement
                 {
+                    Id = null,
+                    UserId = null,
                     Value = "johndoe@example.com",
                     Type = EmailType.Work,
                     Primary = true
@@ -84,6 +89,8 @@ public class UserTests
             {
                 new PhoneNumberElement
                 {
+                    Id = null,
+                    UserId = null,
                     Value = "+1-555-555-5555",
                     Type = PhoneNumberType.Mobile,
                     Primary = true
@@ -93,6 +100,8 @@ public class UserTests
             [
                 new ImElement
                 {
+                    Id = null,
+                    UserId = null,
                     Value = "john.doe",
                     Type = "gtalk",
                     Primary = true
@@ -102,6 +111,8 @@ public class UserTests
             [
                 new PhotoElement
                 {
+                    Id = null,
+                    UserId = null,
                     Value = new Uri("https://example.com/photos/johndoe.jpg"),
                     Type = PhotoType.Photo,
                     Primary = true
@@ -111,6 +122,8 @@ public class UserTests
             [
                 new AddressElement
                 {
+                    Id = null,
+                    UserId = null,
                     Formatted = "123 Main St, Anytown, CA 12345, USA",
                     StreetAddress = "123 Main St",
                     Locality = "Anytown",
@@ -133,6 +146,8 @@ public class UserTests
             [
                 new EntitlementElement
                 {
+                    Id = null,
+                    UserId = null,
                     Value = "entitlement1",
                     Type = "type1",
                     Primary = true
@@ -142,6 +157,8 @@ public class UserTests
             [
                 new RoleElement
                 {
+                    Id = null,
+                    UserId = null,
                     Value = "role1",
                     Type = "type1",
                     Primary = true

@@ -2,6 +2,7 @@ using FluentAssertions;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Groups;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Schemas;
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 
 namespace Looplex.DotNet.Middlewares.ScimV2.Domain.UnitTests.Entities.Groups;
 
@@ -56,6 +57,8 @@ public class GroupTests
             {
                 new MemberElement
                 {
+                    Id = null,
+                    GroupId = null,
                     Value = "user789",
                     Ref = new Uri("https://example.com/scim/v2/Users/user789"),
                     Type = GroupType.User
