@@ -25,6 +25,7 @@
     </Target>
     
     <ItemGroup>
+      <PackageReference Include="Looplex.OpenForExtension" Version="1.1.1" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
       <PackageReference Include="Newtonsoft.Json.Schema" Version="4.0.1" />
     </ItemGroup>
