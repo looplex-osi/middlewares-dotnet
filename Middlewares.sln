@@ -33,6 +33,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Looplex.DotNet.Middlewares.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions", "src\Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions\Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.csproj", "{8C07F296-D37C-4497-85C4-5ADC416E3A65}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Looplex.DotNet.Middlewares.ScimV2.UnitTests", "test\Looplex.DotNet.Middlewares.ScimV2.UnitTests\Looplex.DotNet.Middlewares.ScimV2.UnitTests.csproj", "{13781573-BB8C-4254-B581-6B109B9AA025}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -91,6 +93,10 @@ Global
 		{8C07F296-D37C-4497-85C4-5ADC416E3A65}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8C07F296-D37C-4497-85C4-5ADC416E3A65}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8C07F296-D37C-4497-85C4-5ADC416E3A65}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13781573-BB8C-4254-B581-6B109B9AA025}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13781573-BB8C-4254-B581-6B109B9AA025}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13781573-BB8C-4254-B581-6B109B9AA025}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13781573-BB8C-4254-B581-6B109B9AA025}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -109,6 +115,7 @@ Global
 		{AB514DE6-4E3D-449A-833A-57E191D8EEE1} = {4610E867-1D15-49E3-B24E-22DB4B747B03}
 		{6E8D8747-0DD7-48A8-9786-2C431C262C49} = {4610E867-1D15-49E3-B24E-22DB4B747B03}
 		{8C07F296-D37C-4497-85C4-5ADC416E3A65} = {4610E867-1D15-49E3-B24E-22DB4B747B03}
+		{13781573-BB8C-4254-B581-6B109B9AA025} = {FD844EE8-C48B-4FFD-BC9E-4408AAC41332}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6DFDACD8-69B4-4E60-9A29-C0394A838A4F}

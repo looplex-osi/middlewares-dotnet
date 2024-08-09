@@ -3,7 +3,7 @@ using Microsoft.Extensions.Configuration;
 using System.Net;
 using Looplex.DotNet.Core.Common.Utils;
 using Looplex.DotNet.Core.Middlewares;
-using Looplex.DotNet.Middlewares.OAuth2.Application.Services;
+using Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Looplex.DotNet.Middlewares.OAuth2;
@@ -29,10 +29,10 @@ public static partial class AuthenticationMiddlewares
             accesToken = authorization["Bearer ".Length..].Trim();
         }
 
-        using var jwtService = new JwtService(
-            StringUtils.Base64Decode(configuration["PrivateKey"]!),
-            StringUtils.Base64Decode(configuration["PublicKey"]!));
-        bool authenticated = jwtService.ValidateToken(issuer, audience, accesToken);
+        var publicKey = StringUtils.Base64Decode(configuration["PublicKey"]!);
+        
+        var jwtService = context.Services.GetService<IJwtService>()!;
+        bool authenticated = jwtService.ValidateToken(publicKey, issuer, audience, accesToken);
 
         if (!authenticated)
         {

@@ -10,5 +10,7 @@ public static class ServicesExtensionMethods
     {
         services.AddSingleton<IAuthorizationService, AuthorizationService>();
         services.AddSingleton<IIdTokenService, IdTokenService>();
+        services.AddSingleton<IJwtService, JwtService>();
+
     }
 }

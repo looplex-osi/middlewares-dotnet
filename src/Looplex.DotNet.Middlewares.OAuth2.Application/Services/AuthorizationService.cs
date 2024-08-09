@@ -20,12 +20,14 @@ namespace Looplex.DotNet.Middlewares.OAuth2.Application.Services;
 public class AuthorizationService(
     IConfiguration configuration,
     IClientService clientService,
-    IIdTokenService idTokenService) : IAuthorizationService
+    IIdTokenService idTokenService,
+    IJwtService jwtService) : IAuthorizationService
 {
     private readonly IConfiguration _configuration = configuration;
     private readonly IClientService _clientService = clientService;
     private readonly IIdTokenService _idTokenService = idTokenService;
-
+    private readonly IJwtService _jwtService = jwtService;
+    
     public async Task CreateAccessToken(IContext context, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -166,10 +168,9 @@ public class AuthorizationService(
         var issuer = _configuration["Issuer"]!;
         var tokenExpirationTimeInMinutes = _configuration.GetValue<int>("TokenExpirationTimeInMinutes");
 
-        using var jwtService = new JwtService(
-            StringUtils.Base64Decode(_configuration["PrivateKey"]!),
-            StringUtils.Base64Decode(_configuration["PublicKey"]!));
-        var accessToken = jwtService.GenerateToken(issuer, audience, claims, TimeSpan.FromMinutes(tokenExpirationTimeInMinutes));
+        var privateKey = StringUtils.Base64Decode(configuration["PrivateKey"]!);
+        
+        var accessToken = _jwtService.GenerateToken(privateKey, issuer, audience, claims, TimeSpan.FromMinutes(tokenExpirationTimeInMinutes));
         return accessToken;
     }
 }

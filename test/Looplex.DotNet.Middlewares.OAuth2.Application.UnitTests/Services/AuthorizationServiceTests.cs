@@ -23,6 +23,7 @@ public class AuthorizationServiceTests
     private IClientService _mockClientService = null!;
     private IServiceProvider _mockServiceProvider = null!;
     private IContextFactory _mockContextFactory = null!;
+    private IJwtService _mockJwtService = null!;
     private DefaultHttpContext _httpContext = null!;
 
     [TestInitialize]
@@ -32,6 +33,7 @@ public class AuthorizationServiceTests
         _mockClientService = Substitute.For<IClientService>();
         _mockServiceProvider = Substitute.For<IServiceProvider>();
         _mockContextFactory = Substitute.For<IContextFactory>();
+        _mockJwtService = Substitute.For<IJwtService>();
         _httpContext = new DefaultHttpContext();
 
         var configurationSection = Substitute.For<IConfigurationSection>();
@@ -58,7 +60,7 @@ public class AuthorizationServiceTests
         context.Services.Returns(_mockServiceProvider);
         context.State.Authorization = authorization;
         context.State.Resource = clientCredentials;
-        var service = new AuthorizationService(_mockConfiguration, _mockClientService, mockIdTokenService);
+        var service = new AuthorizationService(_mockConfiguration, _mockClientService, mockIdTokenService, _mockJwtService);
 
         // Act & Assert
         var exception = await Assert.ThrowsExceptionAsync<HttpRequestException>(() => service.CreateAccessToken(context, CancellationToken.None));
@@ -80,9 +82,10 @@ public class AuthorizationServiceTests
         var context = Substitute.For<IContext>();
         var state = new ExpandoObject();
         context.State.Returns(state);
-        context.Services.Returns(_mockServiceProvider);        context.State.Authorization = authorization;
+        context.Services.Returns(_mockServiceProvider);
+        context.State.Authorization = authorization;
         context.State.Resource = clientCredentials;
-        var service = new AuthorizationService(_mockConfiguration, _mockClientService, mockIdTokenService);
+        var service = new AuthorizationService(_mockConfiguration, _mockClientService, mockIdTokenService, _mockJwtService);
 
         // Act & Assert
         var exception = await Assert.ThrowsExceptionAsync<HttpRequestException>(() => service.CreateAccessToken(context, CancellationToken.None));
@@ -122,9 +125,10 @@ public class AuthorizationServiceTests
         var context = Substitute.For<IContext>();
         var state = new ExpandoObject();
         context.State.Returns(state);
-        context.Services.Returns(_mockServiceProvider);        context.State.Authorization = authorization;
+        context.Services.Returns(_mockServiceProvider);
+        context.State.Authorization = authorization;
         context.State.Resource = clientCredentials;
-        var service = new AuthorizationService(_mockConfiguration, _mockClientService, mockIdTokenService);
+        var service = new AuthorizationService(_mockConfiguration, _mockClientService, mockIdTokenService, _mockJwtService);
 
         // Act
         await service.CreateAccessToken(context, CancellationToken.None);
@@ -183,7 +187,7 @@ public class AuthorizationServiceTests
         context.Services.Returns(_mockServiceProvider);
         context.State.Authorization = authorization;
         context.State.Resource = clientCredentials;
-        var service = new AuthorizationService(_mockConfiguration, _mockClientService, mockIdTokenService);
+        var service = new AuthorizationService(_mockConfiguration, _mockClientService, mockIdTokenService, _mockJwtService);
 
         // Act & Assert
         var exception = await Assert.ThrowsExceptionAsync<EntityInvalidException>(() => service.CreateAccessToken(context, CancellationToken.None));
@@ -235,9 +239,10 @@ public class AuthorizationServiceTests
         var context = Substitute.For<IContext>();
         var state = new ExpandoObject();
         context.State.Returns(state);
-        context.Services.Returns(_mockServiceProvider);        context.State.Authorization = authorization;
+        context.Services.Returns(_mockServiceProvider);
+        context.State.Authorization = authorization;
         context.State.Resource = clientCredentials;
-        var service = new AuthorizationService(_mockConfiguration, _mockClientService, mockIdTokenService);
+        var service = new AuthorizationService(_mockConfiguration, _mockClientService, mockIdTokenService, _mockJwtService);
             
         // Act & Assert
         var exception = await Assert.ThrowsExceptionAsync<EntityInvalidException>(() => service.CreateAccessToken(context, CancellationToken.None));
@@ -307,9 +312,10 @@ public class AuthorizationServiceTests
         var context = Substitute.For<IContext>();
         var state = new ExpandoObject();
         context.State.Returns(state);
-        context.Services.Returns(_mockServiceProvider);        context.State.Authorization = authorization;
+        context.Services.Returns(_mockServiceProvider);
+        context.State.Authorization = authorization;
         context.State.Resource = clientCredentials;
-        var service = new AuthorizationService(_mockConfiguration, _mockClientService, mockIdTokenService);
+        var service = new AuthorizationService(_mockConfiguration, _mockClientService, mockIdTokenService, _mockJwtService);
 
         // Act
         await service.CreateAccessToken(context, CancellationToken.None);
@@ -383,9 +389,10 @@ public class AuthorizationServiceTests
         var context = Substitute.For<IContext>();
         var state = new ExpandoObject();
         context.State.Returns(state);
-        context.Services.Returns(_mockServiceProvider);        context.State.Authorization = authorization;
+        context.Services.Returns(_mockServiceProvider);
+        context.State.Authorization = authorization;
         context.State.Resource = clientCredentials;
-        var service = new AuthorizationService(_mockConfiguration, _mockClientService, mockIdTokenService);
+        var service = new AuthorizationService(_mockConfiguration, _mockClientService, mockIdTokenService, _mockJwtService);
 
         // Act & Assert
         var exception = await Assert.ThrowsExceptionAsync<HttpRequestException>(() => service.CreateAccessToken(context, CancellationToken.None));
@@ -410,9 +417,10 @@ public class AuthorizationServiceTests
         var context = Substitute.For<IContext>();
         var state = new ExpandoObject();
         context.State.Returns(state);
-        context.Services.Returns(_mockServiceProvider);        context.State.Authorization = authorization;
+        context.Services.Returns(_mockServiceProvider);
+        context.State.Authorization = authorization;
         context.State.Resource = clientCredentials;
-        var service = new AuthorizationService(_mockConfiguration, _mockClientService, mockIdTokenService);
+        var service = new AuthorizationService(_mockConfiguration, _mockClientService, mockIdTokenService, _mockJwtService);
 
         // Act & Assert
         await Assert.ThrowsExceptionAsync<HttpRequestException>(() => service.CreateAccessToken(context, CancellationToken.None));

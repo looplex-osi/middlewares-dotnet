@@ -70,7 +70,10 @@ public static class RoutesExtensionMethods
 
         await service.PatchAsync(context, cancellationToken);
 
-        httpContext.Response.StatusCode = (int)HttpStatusCode.Created;
+        // TODO: The server MUST return a 200 OK (and the model in the body)
+        // if the "attributes" parameter is specified in the request.
+
+        httpContext.Response.StatusCode = (int)HttpStatusCode.NoContent;
         httpContext.Response.Headers.Location = $"{resource}/{id}";
     };
 
@@ -132,7 +135,7 @@ public static class RoutesExtensionMethods
         patchMiddlewares.AddRange(options.OptionsForPatch?.Middlewares ?? []);
         patchMiddlewares.Add(PatchMiddleware<TService>(resource));
         app.MapPatch(
-            resource,
+            $"{resource}/{{id}}",
             new RouteBuilderOptions
             {
                 Services = options.OptionsForPatch?.Services ?? [],
