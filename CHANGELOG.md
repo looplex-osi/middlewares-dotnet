@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.2.0"></a>
+## 1.2.0 (2024-08-21)
+
+### Features
+
+* added parent id for not readonly childs of entities
+* added property and collection modified events in entities
+* **scimv2:** added patch to scimv2 routes
+
 <a name="1.1.0"></a>
 ## 1.1.0 (2024-08-01)
 
