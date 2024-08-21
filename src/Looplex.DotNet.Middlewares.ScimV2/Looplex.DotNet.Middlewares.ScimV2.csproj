@@ -26,7 +26,6 @@
     
   <ItemGroup>
 	<PackageReference Include="Looplex.DotNet.Core.WebAPI" Version="1.0.18" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
 
   <ItemGroup>

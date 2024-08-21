@@ -168,7 +168,7 @@ public class AuthorizationService(
         var issuer = _configuration["Issuer"]!;
         var tokenExpirationTimeInMinutes = _configuration.GetValue<int>("TokenExpirationTimeInMinutes");
 
-        var privateKey = StringUtils.Base64Decode(configuration["PrivateKey"]!);
+        var privateKey = StringUtils.Base64Decode(_configuration["PrivateKey"]!);
         
         var accessToken = _jwtService.GenerateToken(privateKey, issuer, audience, claims, TimeSpan.FromMinutes(tokenExpirationTimeInMinutes));
         return accessToken;
