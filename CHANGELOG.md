@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.2.2"></a>
+## 1.2.2 (2024-08-22)
+
+### Bug Fixes
+
+* **authorizationservice:** state and result should have serialized values
+
 <a name="1.2.1"></a>
 ## 1.2.1 (2024-08-22)
 
