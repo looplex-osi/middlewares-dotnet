@@ -330,7 +330,7 @@ public class AuthorizationServiceTests
 
     private bool AssertDefaultContextIsValid(IContext c, Guid clientId, string clientSecret)
     {
-        return c.State.ClientId == clientId
+        return c.State.ClientId == clientId.ToString()
                && c.State.ClientSecret == clientSecret;
     }
 

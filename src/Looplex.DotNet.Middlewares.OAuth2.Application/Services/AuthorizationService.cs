@@ -105,7 +105,7 @@ public class AuthorizationService(
             var context = contextFactory.Create(["AuthorizationService.ValidateClientCredentials"]);
             
             context.State.ParentContext = parentContext;
-            context.State.ClientId = clientId;
+            context.State.ClientId = clientId.ToString();
             context.State.ClientSecret = clientSecret;
                 
             await ValidateClientCredentialsDefaultAction(context, cancellationToken);
