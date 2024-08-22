@@ -142,8 +142,11 @@ public class AuthorizationService(
     private async Task ValidateClientCredentialsDefaultAction(IContext context, CancellationToken cancellationToken)
     {
         await _clientService.GetByIdAndSecretOrDefaultAsync(context, cancellationToken);
-        var client = (IClient?) context.Result;
-                
+        IClient? client = default;
+        if (context.Roles.TryGetValue("Client", out var role))
+        {
+            client = (IClient)role;
+        }
         if (client == default)
         {
             throw new EntityInvalidException(["Invalid clientId or clientSecret."]);

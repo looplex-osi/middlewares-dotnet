@@ -287,6 +287,8 @@ public class AuthorizationServiceTests
         var contextChild = Substitute.For<IContext>();
         var stateChild = new ExpandoObject();
         contextChild.State.Returns(stateChild);
+        var roles = new Dictionary<string, dynamic>();
+        contextChild.Roles.Returns(roles);
         _mockContextFactory.Create(Arg.Any<IEnumerable<string>>()).Returns(contextChild);
         
         var client = Substitute.For<IClient>();
@@ -302,7 +304,7 @@ public class AuthorizationServiceTests
             .Returns(call =>
             {
                 var context = call.Arg<IContext>();
-                context.Result = (IClient?)client;
+                context.Roles["Client"] = client;
                 return Task.CompletedTask;
             });
 
