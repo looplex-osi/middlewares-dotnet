@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.2.1"></a>
+## 1.2.1 (2024-08-22)
+
+### Bug Fixes
+
+* **authorizationservice:** should not use serialized res but rather the unserialized value in roles
+
 <a name="1.2.0"></a>
 ## 1.2.0 (2024-08-21)
 
