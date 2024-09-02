@@ -10,8 +10,12 @@ namespace Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Users;
 ///     "urn:ietf:params:scim:schemas:core:2.0:User".
 ///     <see cref="https://datatracker.ietf.org/doc/html/rfc7643#section-4.1" />
 /// </summary>
-public partial class User
+public partial class User : Resource
 {
+    public override IList<string> ChangedProperties { get; } = new List<string>();
+    public override IDictionary<string, IList<object>> AddedItems { get; } = new Dictionary<string, IList<object>>();
+    public override IDictionary<string, IList<object>> RemovedItems { get; } = new Dictionary<string, IList<object>>();
+    
     #region Serialization
     
     public bool ShouldSerializePassword() => false;

@@ -42,7 +42,7 @@ public class GroupTests
         var json = File.ReadAllText("./Entities/Groups/Mocks/ValidGroup.json");
         var expectedGroup = new Group
         {
-            Id = "group123",
+            UniqueId = Guid.Parse("a33ba1e5-11e7-437a-821e-97bd1e6752a3"),
             ExternalId = "external456",
             Meta = new Meta
             {
@@ -55,10 +55,8 @@ public class GroupTests
             DisplayName = "Engineering Group",
             Members = new List<MemberElement>
             {
-                new MemberElement
+                new()
                 {
-                    Id = null,
-                    GroupId = null,
                     Value = "user789",
                     Ref = new Uri("https://example.com/scim/v2/Users/user789"),
                     Type = GroupType.User

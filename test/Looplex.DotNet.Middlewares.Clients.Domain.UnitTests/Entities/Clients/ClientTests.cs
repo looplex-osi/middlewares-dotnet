@@ -44,7 +44,7 @@ public class ClientTests
         var json = File.ReadAllText("./Entities/Clients/Mocks/ValidClient.json");
         var expectedClient = new Client
         {
-            Id = "client123",
+            UniqueId = Guid.Parse("51793315-c672-4a81-8482-62680847dca6"),
             ExternalId = "external456",
             Meta = new Meta
             {

@@ -1,10 +1,8 @@
-﻿using Looplex.DotNet.Middlewares.OAuth2.Domain.Entities;
-using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
 namespace Looplex.DotNet.Middlewares.Clients.Domain.Entities.Clients;
 
-public partial class Client : Resource, IClient
+public partial class Client 
 {
     private string _displayName = null!;
     private DateTimeOffset _expirationTime;

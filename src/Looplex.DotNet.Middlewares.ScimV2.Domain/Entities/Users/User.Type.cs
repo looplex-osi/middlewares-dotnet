@@ -10,7 +10,7 @@ namespace Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Users;
 ///     "urn:ietf:params:scim:schemas:core:2.0:User".
 ///     <see cref="https://datatracker.ietf.org/doc/html/rfc7643#section-4.1" />
 /// </summary>
-public partial class User : Resource
+public partial class User
 {
     private bool? _active;
     private IList<AddressElement> _addresses = new ObservableCollection<AddressElement>();
@@ -61,7 +61,7 @@ public partial class User : Resource
         {
             _addresses = value;
             if (value is INotifyCollectionChanged collection)
-                collection.CollectionChanged += OnCollectionChanged;
+                BindOnCollectionChanged(ref collection);
         }
     }
 
@@ -94,7 +94,7 @@ public partial class User : Resource
         {
             _emails = value;
             if (value is INotifyCollectionChanged collection)
-                collection.CollectionChanged += OnCollectionChanged;
+                BindOnCollectionChanged(ref collection);
         }
     }
 
@@ -114,7 +114,7 @@ public partial class User : Resource
         {
             _entitlements = value;
             if (value is INotifyCollectionChanged collection)
-                collection.CollectionChanged += OnCollectionChanged;
+                BindOnCollectionChanged(ref collection);
         }
     }
 
@@ -130,7 +130,7 @@ public partial class User : Resource
         {
             _groups = value;
             if (value is INotifyCollectionChanged collection)
-                collection.CollectionChanged += OnCollectionChanged;
+                BindOnCollectionChanged(ref collection);
         }
     }
 
@@ -147,7 +147,7 @@ public partial class User : Resource
         {
             _ims = value;
             if (value is INotifyCollectionChanged collection)
-                collection.CollectionChanged += OnCollectionChanged;
+                BindOnCollectionChanged(ref collection);
         }
     }
 
@@ -238,7 +238,7 @@ public partial class User : Resource
         {
             _phoneNumbers = value;
             if (value is INotifyCollectionChanged collection)
-                collection.CollectionChanged += OnCollectionChanged;
+                BindOnCollectionChanged(ref collection);
         }
     }
 
@@ -254,7 +254,7 @@ public partial class User : Resource
         {
             _photos = value;
             if (value is INotifyCollectionChanged collection)
-                collection.CollectionChanged += OnCollectionChanged;
+                BindOnCollectionChanged(ref collection);
         }
     }
 
@@ -306,7 +306,7 @@ public partial class User : Resource
         {
             _roles = value;
             if (value is INotifyCollectionChanged collection)
-                collection.CollectionChanged += OnCollectionChanged;
+                BindOnCollectionChanged(ref collection);
         }
     }
 

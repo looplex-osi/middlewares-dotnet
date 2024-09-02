@@ -4,31 +4,77 @@ namespace Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Users;
 
 public partial class EmailElement
 {
+    private bool? _primary;
+    private EmailType? _type;
+    private string? _value;
+
+    /// <summary>
+    ///     Sequencial id for an entity.
+    /// </summary>
     [JsonIgnore]
-    public required string Id { get; set; }
+    public int? Id { get; set; }
+
+    /// <summary>
+    ///     A unique identifier for an entity.
+    /// </summary>
+    [JsonProperty("uuid")]
+    public Guid? UniqueId { get; set; }
     
     [JsonIgnore]
-    public required string UserId { get; set; }
-    
+    public int? UserId { get; set; }
+
     /// <summary>
     ///     A Boolean value indicating the 'primary' or preferred attribute value for this attribute,
-    ///     e.g., the preferred mailing email or primary email email.  The primary attribute
+    ///     e.g., the preferred mailing email or primary email. The primary attribute
     ///     value 'true' MUST appear no more than once.
     /// </summary>
     [JsonProperty("primary", NullValueHandling = NullValueHandling.Ignore)]
-    public bool? Primary { get; set; }
+    public bool? Primary
+    {
+        get => _primary;
+        set
+        {
+            if (value != _primary)
+            {
+                _primary = value;
+                OnPropertyChanged();
+            }
+        }
+    }
 
     /// <summary>
     ///     A label indicating the attribute's function, e.g., 'work' or 'home'.
     /// </summary>
     [JsonProperty("type", NullValueHandling = NullValueHandling.Ignore)]
-    public EmailType? Type { get; set; }
+    public EmailType? Type
+    {
+        get => _type;
+        set
+        {
+            if (value != _type)
+            {
+                _type = value;
+                OnPropertyChanged();
+            }
+        }
+    }
 
     /// <summary>
-    ///     Email emailes for the user.  The value SHOULD be canonicalized by the service provider,
+    ///     Email addresses for the user. The value SHOULD be canonicalized by the service provider,
     ///     e.g., 'bjensen@example.com' instead of 'bjensen@EXAMPLE.COM'. Canonical type values of
     ///     'work', 'home', and 'other'.
     /// </summary>
     [JsonProperty("value", NullValueHandling = NullValueHandling.Ignore)]
-    public string? Value { get; set; }
+    public string? Value
+    {
+        get => _value;
+        set
+        {
+            if (value != _value)
+            {
+                _value = value;
+                OnPropertyChanged();
+            }
+        }
+    }
 }

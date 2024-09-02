@@ -292,7 +292,7 @@ public class AuthorizationServiceTests
         _mockContextFactory.Create(Arg.Any<IEnumerable<string>>()).Returns(contextChild);
         
         var client = Substitute.For<IClient>();
-        client.Id.Returns(clientId.ToString());
+        client.UniqueId.Returns(clientId);
         client.DisplayName.Returns("client");
         client.Secret.Returns(clientSecret);
         client.NotBefore.Returns(DateTimeOffset.UtcNow.AddMinutes(-1));
@@ -369,7 +369,7 @@ public class AuthorizationServiceTests
 
 
         var client = Substitute.For<IClient>();
-        client.Id.Returns(clientId.ToString());
+        client.UniqueId.Returns(clientId);
         client.DisplayName.Returns("client");
         client.Secret.Returns(clientSecret);
         client.NotBefore.Returns(DateTimeOffset.UtcNow.AddMinutes(1));

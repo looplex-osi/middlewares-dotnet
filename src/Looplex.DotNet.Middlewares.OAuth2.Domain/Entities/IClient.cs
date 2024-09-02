@@ -3,7 +3,7 @@
 public interface IClient
 {
     string DisplayName { get; }
-    string Id { get; }
+    Guid? UniqueId { get; }
     string Secret { get; }
     DateTimeOffset ExpirationTime { get; }
     DateTimeOffset NotBefore { get; }

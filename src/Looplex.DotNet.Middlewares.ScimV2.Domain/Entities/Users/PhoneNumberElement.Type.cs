@@ -4,11 +4,20 @@ namespace Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Users;
 
 public partial class PhoneNumberElement
 {
+    /// <summary>
+    ///     Sequencial id for an entity.
+    /// </summary>
     [JsonIgnore]
-    public required string Id { get; set; }
+    public int? Id { get; set; }
+
+    /// <summary>
+    ///     A unique identifier for an entity.
+    /// </summary>
+    [JsonProperty("uuid")]
+    public Guid? UniqueId { get; set; }
     
     [JsonIgnore]
-    public required string UserId { get; set; }
+    public int? UserId { get; set; }
     
     /// <summary>
     ///     A Boolean value indicating the 'primary' or preferred attribute value for this attribute,

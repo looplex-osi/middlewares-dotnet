@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Groups;
 
-public partial class Group : Resource
+public partial class Group
 {
     private string? _displayName;
     private IList<MemberElement> _members = new ObservableCollection<MemberElement>();
@@ -31,7 +31,7 @@ public partial class Group : Resource
         {
             _members = value;
             if (value is INotifyCollectionChanged collection)
-                collection.CollectionChanged += OnCollectionChanged;
+                BindOnCollectionChanged(ref collection);
         }
     }
 }

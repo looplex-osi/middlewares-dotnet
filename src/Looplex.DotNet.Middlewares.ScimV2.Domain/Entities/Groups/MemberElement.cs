@@ -1,6 +1,10 @@
-﻿namespace Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Groups;
+﻿using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Abstractions;
 
-public partial class MemberElement
+namespace Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Groups;
+
+public partial class MemberElement : ObservableType, IEntity
 {
-    
+    public override IList<string> ChangedProperties { get; } = new List<string>();
+    public override IDictionary<string, IList<object>> AddedItems { get; } = new Dictionary<string, IList<object>>();
+    public override IDictionary<string, IList<object>> RemovedItems { get; } = new Dictionary<string, IList<object>>();
 }
