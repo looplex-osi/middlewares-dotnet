@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.2.3"></a>
+## 1.2.3 (2024-09-02)
+
+### Bug Fixes
+
+* added a base observabletype class with change tracker for props and collections
+
 <a name="1.2.2"></a>
 ## 1.2.2 (2024-08-22)
 
