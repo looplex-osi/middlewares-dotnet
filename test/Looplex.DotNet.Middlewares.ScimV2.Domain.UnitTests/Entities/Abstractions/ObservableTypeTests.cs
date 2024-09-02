@@ -90,9 +90,9 @@ public class ObservableTypeTests
 
 class SampleModel : ObservableType
 {
-    private string _name;
+    private string? _name;
     private int _age;
-    private ObservableCollection<string> _items;
+    private ObservableCollection<string> _items = null!;
 
     public SampleModel()
     {
@@ -103,7 +103,7 @@ class SampleModel : ObservableType
     public override IDictionary<string, IList<object>> AddedItems { get; } = new Dictionary<string, IList<object>>();
     public override IDictionary<string, IList<object>> RemovedItems { get; } = new Dictionary<string, IList<object>>();
 
-    public string Name
+    public string? Name
     {
         get => _name;
         set
