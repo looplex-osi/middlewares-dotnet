@@ -1,145 +1,136 @@
 using System.Collections.ObjectModel;
-using System.Collections.Specialized;
+using FluentAssertions;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Abstractions;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.Domain.UnitTests.Entities.Abstractions;
 
+[TestClass]
 public class ObservableTypeTests
 {
-    [TestClass]
-    public class SampleModelTests
+    [TestMethod]
+    public void PropertyChange_ShouldBeTracked()
     {
-        [TestMethod]
-        public void PropertyChange_ShouldBeTracked()
-        {
-            // Arrange
-            var model = new SampleModel();
+        // Arrange
+        var model = SampleModel.Mock();
 
-            // Act
-            model.Name = "Test Name";
-            model.Age = 30;
+        // Act
+        model.Name = "Test Name";
+        model.Age = 30;
 
-            // Assert
-            Assert.IsTrue(model.ChangedProperties.Contains("Name"));
-            Assert.IsTrue(model.ChangedProperties.Contains("Age"));
-            Assert.AreEqual(2, model.ChangedProperties.Count);
-        }
+        // Assert
+        Assert.IsTrue(model.ChangedProperties.Contains("Name"));
+        Assert.IsTrue(model.ChangedProperties.Contains("Age"));
+        Assert.AreEqual(2, model.ChangedProperties.Count);
+        
+        model.AddedItems.Should().BeEmpty();
+        model.RemovedItems.Should().BeEmpty();
+    }
 
-        [TestMethod]
-        public void CollectionChange_ShouldBeTracked()
-        {
-            // Arrange
-            var model = new SampleModel();
-            var item1 = "Item 1";
-            var item2 = "Item 2";
+    [TestMethod]
+    public void CollectionChange_ShouldBeTracked()
+    {
+        // Arrange
+        var model = SampleModel.Mock();
+        var item1 = "Item 1";
+        var item2 = "Item 2";
 
-            // Act
-            model.Items.Add(item1);
-            model.Items.Add(item2);
-            model.Items.Remove(item1);
+        // Act
+        model.Items.Add(item1);
+        model.Items.Add(item2);
+        model.Items.Remove(item1);
 
-            // Assert
-            Assert.IsTrue(model.AddedItems.ContainsKey("Items"));
-            Assert.IsTrue(model.AddedItems["Items"].Contains(item1));
-            Assert.IsTrue(model.AddedItems["Items"].Contains(item2));
-            Assert.AreEqual(2, model.AddedItems["Items"].Count);
+        // Assert
+        Assert.IsTrue(model.AddedItems.ContainsKey("Items"));
+        Assert.IsTrue(model.AddedItems["Items"].Contains(item1));
+        Assert.IsTrue(model.AddedItems["Items"].Contains(item2));
+        Assert.AreEqual(2, model.AddedItems["Items"].Count);
 
-            Assert.IsTrue(model.RemovedItems.ContainsKey("Items"));
-            Assert.IsTrue(model.RemovedItems["Items"].Contains(item1));
-            Assert.AreEqual(1, model.RemovedItems["Items"].Count);
-        }
+        Assert.IsTrue(model.RemovedItems.ContainsKey("Items"));
+        Assert.IsTrue(model.RemovedItems["Items"].Contains(item1));
+        Assert.AreEqual(1, model.RemovedItems["Items"].Count);
+        
+        model.ChangedProperties.Should().BeEmpty();
+    }
 
-        [TestMethod]
-        public void MultiplePropertyChanges_ShouldTrackAllChanges()
-        {
-            // Arrange
-            var model = new SampleModel();
+    [TestMethod]
+    public void MultiplePropertyChanges_ShouldTrackAllChanges()
+    {
+        // Arrange
+        var model = SampleModel.Mock();
 
-            // Act
-            model.Name = "First Name";
-            model.Age = 25;
-            model.Name = "Second Name"; // Change Name again
+        // Act
+        model.Name = "First Name";
+        model.Age = 25;
+        model.Name = "Second Name"; // Change Name again
 
-            // Assert
-            Assert.AreEqual(2, model.ChangedProperties.Count);
-            Assert.IsTrue(model.ChangedProperties.Contains("Name"));
-            Assert.IsTrue(model.ChangedProperties.Contains("Age"));
-        }
+        // Assert
+        Assert.AreEqual(2, model.ChangedProperties.Count);
+        Assert.IsTrue(model.ChangedProperties.Contains("Name"));
+        Assert.IsTrue(model.ChangedProperties.Contains("Age"));
+        
+        model.AddedItems.Should().BeEmpty();
+        model.RemovedItems.Should().BeEmpty();
+    }
 
-        [TestMethod]
-        public void CollectionChanged_ShouldTrackAddAndRemove()
-        {
-            // Arrange
-            var model = new SampleModel();
+    [TestMethod]
+    public void CollectionChanged_ShouldTrackAddAndRemove()
+    {
+        // Arrange
+        var model = SampleModel.Mock();
 
-            // Act
-            model.Items.Add("Item 1");
-            model.Items.Remove("Item 1");
+        // Act
+        model.Items.Add("Item 1");
+        model.Items.Remove("Item 1");
 
-            // Assert
-            Assert.IsTrue(model.AddedItems.ContainsKey("Items"));
-            Assert.IsTrue(model.AddedItems["Items"].Contains("Item 1"));
-            Assert.AreEqual(1, model.AddedItems["Items"].Count);
+        // Assert
+        Assert.IsTrue(model.AddedItems.ContainsKey("Items"));
+        Assert.IsTrue(model.AddedItems["Items"].Contains("Item 1"));
+        Assert.AreEqual(1, model.AddedItems["Items"].Count);
 
-            Assert.IsTrue(model.RemovedItems.ContainsKey("Items"));
-            Assert.IsTrue(model.RemovedItems["Items"].Contains("Item 1"));
-            Assert.AreEqual(1, model.RemovedItems["Items"].Count);
-        }
+        Assert.IsTrue(model.RemovedItems.ContainsKey("Items"));
+        Assert.IsTrue(model.RemovedItems["Items"].Contains("Item 1"));
+        Assert.AreEqual(1, model.RemovedItems["Items"].Count);
+        
+        model.ChangedProperties.Should().BeEmpty();
+    }
+    
+    [TestMethod]
+    public void NewCollectionChanged_ShouldTrackAddAndRemove()
+    {
+        // Arrange
+        var model = SampleModel.Mock();
+
+        // Act
+        model.Items = new ObservableCollection<string>();
+        model.Items.Add("Item 1");
+        model.Items.Remove("Item 1");
+
+        // Assert
+        Assert.IsTrue(model.AddedItems.ContainsKey("Items"));
+        Assert.IsTrue(model.AddedItems["Items"].Contains("Item 1"));
+        Assert.AreEqual(1, model.AddedItems["Items"].Count);
+
+        Assert.IsTrue(model.RemovedItems.ContainsKey("Items"));
+        Assert.IsTrue(model.RemovedItems["Items"].Contains("Item 1"));
+        Assert.AreEqual(1, model.RemovedItems["Items"].Count);
+        
+        model.ChangedProperties.Should().BeEmpty();
     }
 }
 
-class SampleModel : ObservableType
+public class SampleModel : ObservableType
 {
-    private string? _name;
-    private int _age;
-    private ObservableCollection<string> _items = null!;
-
-    public SampleModel()
+    public static SampleModel Mock()
     {
-        Items = new ObservableCollection<string>();
-    }
-
-    public override IList<string> ChangedProperties { get; } = new List<string>();
-    public override IDictionary<string, IList<object>> AddedItems { get; } = new Dictionary<string, IList<object>>();
-    public override IDictionary<string, IList<object>> RemovedItems { get; } = new Dictionary<string, IList<object>>();
-
-    public string? Name
-    {
-        get => _name;
-        set
+        return new SampleModel()
         {
-            if (value != _name)
-            {
-                _name = value;
-                OnPropertyChanged();
-            }
-        }
+            Age = 1,
+            Name = "Name Init"
+        }.WithObservableProxy();
     }
+    public virtual string? Name { get; set; }
 
-    public int Age
-    {
-        get => _age;
-        set
-        {
-            if (value != _age)
-            {
-                _age = value;
-                OnPropertyChanged();
-            }
-        }
-    }
+    public virtual int Age { get; set; }
 
-    public ObservableCollection<string> Items
-    {
-        get => _items;
-        set
-        {
-            if (_items != value)
-            {
-                _items = value;
-                if (value is INotifyCollectionChanged collection)
-                    BindOnCollectionChanged(ref collection);
-            }
-        }
-    }
+    public virtual IList<string> Items { get; set; } = new ObservableCollection<string>();
 }
