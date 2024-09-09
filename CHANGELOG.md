@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.3.1"></a>
+## 1.3.1 (2024-09-09)
+
+### Bug Fixes
+
+* **authenticationmiddleware:** revert from basic to bearer only in the middleware, added tests
+
 <a name="1.3.0"></a>
 ## 1.3.0 (2024-09-09)
 
