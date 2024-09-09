@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.3.0"></a>
+## 1.3.0 (2024-09-09)
+
+### Features
+
+* added observable trait to entities
+* removed changed property boilerplate and created a proxy for that
+
+### Bug Fixes
+
+* changed /token authorization to Basic
+
 <a name="1.2.3"></a>
 ## 1.2.3 (2024-09-02)
 
