@@ -2,9 +2,9 @@
 
 public interface IClient
 {
-    string DisplayName { get; }
+    string? DisplayName { get; }
     Guid? UniqueId { get; }
-    string Secret { get; }
+    string? Secret { get; }
     DateTimeOffset ExpirationTime { get; }
     DateTimeOffset NotBefore { get; }
 }
