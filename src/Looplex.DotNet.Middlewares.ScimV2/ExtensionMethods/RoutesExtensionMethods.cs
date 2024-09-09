@@ -8,6 +8,7 @@ using Looplex.DotNet.Core.Middlewares;
 using Looplex.DotNet.Core.WebAPI.Middlewares;
 using Looplex.DotNet.Core.WebAPI.Routes;
 using Looplex.DotNet.Core.Common.Utils;
+using Looplex.DotNet.Middlewares.OAuth2.Middlewares;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods;
 
@@ -98,7 +99,7 @@ public static class RoutesExtensionMethods
         where TService : ICrudService
     {
         List<MiddlewareDelegate> getMiddlewares = [
-            AuthenticationMiddlewares.AuthenticateMiddleware, CoreMiddlewares.PaginationMiddleware];
+            AuthenticationMiddleware.AuthenticateMiddleware, CoreMiddlewares.PaginationMiddleware];
         getMiddlewares.AddRange(options.OptionsForGet?.Middlewares ?? []);
         getMiddlewares.Add(GetMiddleware<TService>());
         app.MapGet(
@@ -109,7 +110,7 @@ public static class RoutesExtensionMethods
                 Middlewares = getMiddlewares.ToArray()
             });
 
-        List<MiddlewareDelegate> getByIdMiddlewares = [AuthenticationMiddlewares.AuthenticateMiddleware];
+        List<MiddlewareDelegate> getByIdMiddlewares = [AuthenticationMiddleware.AuthenticateMiddleware];
         getByIdMiddlewares.AddRange(options.OptionsForGetById?.Middlewares ?? []);
         getByIdMiddlewares.Add(GetByIdMiddleware<TService>());
         app.MapGet(
@@ -120,7 +121,7 @@ public static class RoutesExtensionMethods
                 Middlewares = getByIdMiddlewares.ToArray()
             });
 
-        List<MiddlewareDelegate> postMiddlewares = [AuthenticationMiddlewares.AuthenticateMiddleware];
+        List<MiddlewareDelegate> postMiddlewares = [AuthenticationMiddleware.AuthenticateMiddleware];
         postMiddlewares.AddRange(options.OptionsForPost?.Middlewares ?? []);
         postMiddlewares.Add(PostMiddleware<TService>(resource));
         app.MapPost(
@@ -131,7 +132,7 @@ public static class RoutesExtensionMethods
                 Middlewares = postMiddlewares.ToArray()
             });
 
-        List<MiddlewareDelegate> patchMiddlewares = [AuthenticationMiddlewares.AuthenticateMiddleware];
+        List<MiddlewareDelegate> patchMiddlewares = [AuthenticationMiddleware.AuthenticateMiddleware];
         patchMiddlewares.AddRange(options.OptionsForPatch?.Middlewares ?? []);
         patchMiddlewares.Add(PatchMiddleware<TService>(resource));
         app.MapPatch(
@@ -142,7 +143,7 @@ public static class RoutesExtensionMethods
                 Middlewares = patchMiddlewares.ToArray()
             });
         
-        List<MiddlewareDelegate> deleteMiddlewares = [AuthenticationMiddlewares.AuthenticateMiddleware];
+        List<MiddlewareDelegate> deleteMiddlewares = [AuthenticationMiddleware.AuthenticateMiddleware];
         deleteMiddlewares.AddRange(options.OptionsForDelete?.Middlewares ?? []);
         deleteMiddlewares.Add(DeleteMiddleware<TService>());
         app.MapDelete(

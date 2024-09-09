@@ -1,14 +1,14 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
-using System.Net;
+﻿using System.Net;
 using Looplex.DotNet.Core.Common.Utils;
 using Looplex.DotNet.Core.Middlewares;
 using Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.Services;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Looplex.DotNet.Middlewares.OAuth2;
+namespace Looplex.DotNet.Middlewares.OAuth2.Middlewares;
 
-public static partial class AuthenticationMiddlewares
+public static partial class AuthenticationMiddleware
 {
     public static readonly MiddlewareDelegate AuthenticateMiddleware = new(async (context, cancellationToken, next) =>
     {
@@ -24,9 +24,9 @@ public static partial class AuthenticationMiddlewares
 
         string? authorization = httpContext.Request.Headers.Authorization;
 
-        if (!string.IsNullOrEmpty(authorization) && authorization.StartsWith("Basic "))
+        if (!string.IsNullOrEmpty(authorization) && authorization.StartsWith("Bearer "))
         {
-            accesToken = authorization["Basic ".Length..].Trim();
+            accesToken = authorization["Bearer ".Length..].Trim();
         }
 
         var publicKey = StringUtils.Base64Decode(configuration["PublicKey"]!);

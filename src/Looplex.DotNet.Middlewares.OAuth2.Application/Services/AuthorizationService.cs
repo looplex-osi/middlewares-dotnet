@@ -41,7 +41,8 @@ public class AuthorizationService(
         ValidateAuthorizationHeader(authorization);
         ValidateGrantType(clientCredentialsDto);
         var email = ValidateIdToken(clientCredentialsDto);
-        await ValidateClientCredentials(authorization![6..], context, cancellationToken);
+        var base64Credentials = authorization["Basic ".Length..].Trim();
+        await ValidateClientCredentials(base64Credentials, context, cancellationToken);
         context.Plugins.Execute<IValidateInput>(context, cancellationToken);
 
         context.Roles["ClientCredentials"] = clientCredentialsDto;
