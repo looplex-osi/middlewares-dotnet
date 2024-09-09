@@ -48,7 +48,7 @@ public class AuthorizationServiceTests
     {
         // Arrange
         var mockIdTokenService = Substitute.For<IIdTokenService>();
-        var authorization = "Basic xxxxxx";
+        var authorization = "Bearer xxxxxx";
         var clientCredentials = @"{
             ""grant_type"": ""client_credentials"",
             ""id_token"": ""validIdToken""
@@ -73,7 +73,7 @@ public class AuthorizationServiceTests
     {
         // Arrange
         var mockIdTokenService = Substitute.For<IIdTokenService>();
-        var authorization = "Bearer xxxxxx";
+        var authorization = "Basic xxxxxx";
         var clientCredentials = @"{
             ""grant_type"": ""invalid"",
             ""id_token"": ""validIdToken""
@@ -94,7 +94,7 @@ public class AuthorizationServiceTests
     }
 
     [TestMethod]
-    public async Task TokenMiddleware_ValidBearerAdminAuth_ReturnsAccessToken()
+    public async Task TokenMiddleware_ValidBasicAdminAuth_ReturnsAccessToken()
     {
         // Arrange
         var mockIdTokenService = Substitute.For<IIdTokenService>();
@@ -110,7 +110,7 @@ public class AuthorizationServiceTests
         _mockConfiguration["PublicKey"].Returns(Convert.ToBase64String(Encoding.UTF8.GetBytes(RsaKeys.PublicKey)));
         _mockConfiguration["PrivateKey"].Returns(Convert.ToBase64String(Encoding.UTF8.GetBytes(RsaKeys.PrivateKey)));
 
-        var authorization = "Bearer " + Convert.ToBase64String(Encoding.UTF8.GetBytes($"{clientId}:clientSecret"));
+        var authorization = "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes($"{clientId}:clientSecret"));
         var clientCredentials = @"{
             ""grant_type"": ""client_credentials"",
             ""id_token"": ""validIdToken""
@@ -140,7 +140,7 @@ public class AuthorizationServiceTests
     }
 
     [TestMethod]
-    public async Task TokenMiddleware_InvalidBearerAdminAuthClientSecretIsWrong_ThrowsUnauthorized()
+    public async Task TokenMiddleware_InvalidBasicAdminAuthClientSecretIsWrong_ThrowsUnauthorized()
     {
         // Arrange
         var mockIdTokenService = Substitute.For<IIdTokenService>();
@@ -156,7 +156,7 @@ public class AuthorizationServiceTests
         _mockConfiguration["PublicKey"].Returns(Convert.ToBase64String(Encoding.UTF8.GetBytes(RsaKeys.PublicKey)));
         _mockConfiguration["PrivateKey"].Returns(Convert.ToBase64String(Encoding.UTF8.GetBytes(RsaKeys.PrivateKey)));
 
-        var authorization = "Bearer " + Convert.ToBase64String(Encoding.UTF8.GetBytes($"{clientId}:clientSecretWrong"));
+        var authorization = "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes($"{clientId}:clientSecretWrong"));
         var clientCredentials = @"{
             ""grant_type"": ""client_credentials"",
             ""id_token"": ""validIdToken""
@@ -195,7 +195,7 @@ public class AuthorizationServiceTests
     }
 
     [TestMethod]
-    public async Task TokenMiddleware_InvalidBearerAdminAuthClientIdIsWrong_ThrowsUnauthorized()
+    public async Task TokenMiddleware_InvalidBasicAdminAuthClientIdIsWrong_ThrowsUnauthorized()
     {
         // Arrange
         var mockIdTokenService = Substitute.For<IIdTokenService>();
@@ -212,7 +212,7 @@ public class AuthorizationServiceTests
         _mockConfiguration["PublicKey"].Returns(Convert.ToBase64String(Encoding.UTF8.GetBytes(RsaKeys.PublicKey)));
         _mockConfiguration["PrivateKey"].Returns(Convert.ToBase64String(Encoding.UTF8.GetBytes(RsaKeys.PrivateKey)));
 
-        var authorization = "Bearer " + Convert.ToBase64String(Encoding.UTF8.GetBytes($"{clientIdWrong}:clientSecret"));
+        var authorization = "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes($"{clientIdWrong}:clientSecret"));
         var clientCredentials = @"{
             ""grant_type"": ""client_credentials"",
             ""id_token"": ""validIdToken""
@@ -250,7 +250,7 @@ public class AuthorizationServiceTests
     }
 
     [TestMethod]
-    public async Task TokenMiddleware_ValidBearerAuth_ReturnsAccessToken()
+    public async Task TokenMiddleware_ValidBasicAuth_ReturnsAccessToken()
     {
         // Arrange
         var mockIdTokenService = Substitute.For<IIdTokenService>();
@@ -272,7 +272,7 @@ public class AuthorizationServiceTests
         _mockConfiguration["PublicKey"].Returns(Convert.ToBase64String(Encoding.UTF8.GetBytes(RsaKeys.PublicKey)));
         _mockConfiguration["PrivateKey"].Returns(Convert.ToBase64String(Encoding.UTF8.GetBytes(RsaKeys.PrivateKey)));
             
-        var authorization = "Bearer " + Convert.ToBase64String(Encoding.UTF8.GetBytes($"{clientId}:clientSecret"));
+        var authorization = "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes($"{clientId}:clientSecret"));
         var clientCredentials = @"{
             ""grant_type"": ""client_credentials"",
             ""id_token"": ""validIdToken""
@@ -308,7 +308,7 @@ public class AuthorizationServiceTests
                 return Task.CompletedTask;
             });
 
-        _httpContext.Request.Headers.Authorization = "Bearer " + Convert.ToBase64String(Encoding.UTF8.GetBytes(clientId + ":" + clientSecret));
+        _httpContext.Request.Headers.Authorization = "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes(clientId + ":" + clientSecret));
         _httpContext.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(clientCredentialsDto)));
 
         var context = Substitute.For<IContext>();
@@ -335,7 +335,7 @@ public class AuthorizationServiceTests
     }
 
     [TestMethod]
-    public async Task TokenMiddleware_InvalidBearerAuth_ThrowsUnauthorized()
+    public async Task TokenMiddleware_InvalidBasicAuth_ThrowsUnauthorized()
     {
         // Arrange
         var mockIdTokenService = Substitute.For<IIdTokenService>();
@@ -355,7 +355,7 @@ public class AuthorizationServiceTests
         _mockConfiguration["PublicKey"].Returns(Convert.ToBase64String(Encoding.UTF8.GetBytes(RsaKeys.PublicKey)));
         _mockConfiguration["PrivateKey"].Returns(Convert.ToBase64String(Encoding.UTF8.GetBytes(RsaKeys.PrivateKey)));
 
-        var authorization = "Bearer " + Convert.ToBase64String(Encoding.UTF8.GetBytes($"{clientId}:clientSecret"));
+        var authorization = "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes($"{clientId}:clientSecret"));
         var clientCredentials = @"{
             ""grant_type"": ""client_credentials"",
             ""id_token"": ""validIdToken""
@@ -385,7 +385,7 @@ public class AuthorizationServiceTests
                 return Task.CompletedTask;
             });
 
-        _httpContext.Request.Headers.Authorization = "Bearer " + Convert.ToBase64String(Encoding.UTF8.GetBytes(clientId + ":" + clientSecret));
+        _httpContext.Request.Headers.Authorization = "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes(clientId + ":" + clientSecret));
         _httpContext.Request.Body = new MemoryStream(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(clientCredentialsDto)));
 
         var context = Substitute.For<IContext>();
@@ -410,7 +410,7 @@ public class AuthorizationServiceTests
         _httpContext.Request.Headers.Authorization = "InvalidFormat";
 
         Guid clientId = Guid.NewGuid();
-        var authorization = "Bearer " + Convert.ToBase64String(Encoding.UTF8.GetBytes($"{clientId}:clientSecret"));
+        var authorization = "Basic " + Convert.ToBase64String(Encoding.UTF8.GetBytes($"{clientId}:clientSecret"));
         var clientCredentials = @"{
             ""grant_type"": ""client_credentials"",
             ""id_token"": ""validIdToken""

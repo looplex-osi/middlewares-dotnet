@@ -24,9 +24,9 @@ public static partial class AuthenticationMiddlewares
 
         string? authorization = httpContext.Request.Headers.Authorization;
 
-        if (!string.IsNullOrEmpty(authorization) && authorization.StartsWith("Bearer "))
+        if (!string.IsNullOrEmpty(authorization) && authorization.StartsWith("Basic "))
         {
-            accesToken = authorization["Bearer ".Length..].Trim();
+            accesToken = authorization["Basic ".Length..].Trim();
         }
 
         var publicKey = StringUtils.Base64Decode(configuration["PublicKey"]!);

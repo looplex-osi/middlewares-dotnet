@@ -41,7 +41,7 @@ public class AuthorizationService(
         ValidateAuthorizationHeader(authorization);
         ValidateGrantType(clientCredentialsDto);
         var email = ValidateIdToken(clientCredentialsDto);
-        await ValidateClientCredentials(authorization![7..], context, cancellationToken);
+        await ValidateClientCredentials(authorization![6..], context, cancellationToken);
         context.Plugins.Execute<IValidateInput>(context, cancellationToken);
 
         context.Roles["ClientCredentials"] = clientCredentialsDto;
@@ -67,7 +67,7 @@ public class AuthorizationService(
 
     private static void ValidateAuthorizationHeader(string? authorization)
     {
-        if (string.IsNullOrEmpty(authorization) || !authorization.StartsWith("Bearer "))
+        if (string.IsNullOrEmpty(authorization) || !authorization.StartsWith("Basic "))
         {
             throw new HttpRequestException("Invalid authorization.", null, HttpStatusCode.Unauthorized);
         }
