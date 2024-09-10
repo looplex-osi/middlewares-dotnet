@@ -10,16 +10,16 @@ public partial class EntitlementElement : IEntity, IHasChangedPropertyNotificati
     ///     Sequencial id for an entity.
     /// </summary>
     [JsonIgnore]
-    public int? Id { get; set; }
+    public virtual int? Id { get; set; }
 
     /// <summary>
     ///     A unique identifier for an entity.
     /// </summary>
     [JsonProperty("uuid")]
-    public Guid? UniqueId { get; set; }
+    public virtual Guid? UniqueId { get; set; }
     
     [JsonIgnore]
-    public int? UserId { get; set; }
+    public virtual int? UserId { get; set; }
 
     /// <summary>
     ///     A Boolean value indicating the 'primary' or preferred attribute value for this

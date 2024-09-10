@@ -10,7 +10,7 @@ public partial class Meta : IHasChangedPropertyNotificationTrait
     ///     be a DateTimeOffset ISO8601Z.
     /// </summary>
     [JsonProperty("created", NullValueHandling = NullValueHandling.Ignore)]
-    public DateTimeOffset? Created { get; set; }
+    public virtual DateTimeOffset? Created { get; set; }
 
     /// <summary>
     ///     The most recent DateTimeOffset that the details of this resource were updated at the service
@@ -18,26 +18,26 @@ public partial class Meta : IHasChangedPropertyNotificationTrait
     ///     MUST be the same as the value of `created`.
     /// </summary>
     [JsonProperty("lastModified", NullValueHandling = NullValueHandling.Ignore)]
-    public DateTimeOffset? LastModified { get; set; }
+    public virtual DateTimeOffset? LastModified { get; set; }
 
     /// <summary>
     ///     The URI of the resource being returned. This value MUST be the same as the
     ///     `Content-Location` HTTP response header (see Section 3.1.4.2 of [RFC7231]).
     /// </summary>
     [JsonProperty("location", NullValueHandling = NullValueHandling.Ignore)]
-    public Uri? Location { get; set; }
+    public virtual Uri? Location { get; set; }
 
     /// <summary>
     ///     The name of the resource type of the resource. This attribute has a mutability of
     ///     `readOnly` and `caseExact` as `true`.
     /// </summary>
     [JsonProperty("resourceType", NullValueHandling = NullValueHandling.Ignore)]
-    public string? ResourceType { get; set; }
+    public virtual string? ResourceType { get; set; }
 
     /// <summary>
     ///     The version of the resource being returned. This value must be the same as the
     ///     entity-tag (ETag) HTTP response header (see Sections 2.1 and 2.3 of [RFC7232]).
     /// </summary>
     [JsonProperty("version", NullValueHandling = NullValueHandling.Ignore)]
-    public string? Version { get; set; }
+    public virtual string? Version { get; set; }
 }

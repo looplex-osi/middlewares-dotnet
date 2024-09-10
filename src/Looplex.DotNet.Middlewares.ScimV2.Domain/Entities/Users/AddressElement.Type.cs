@@ -10,16 +10,16 @@ public partial class AddressElement : IEntity, IHasChangedPropertyNotificationTr
     ///     Sequencial id for an entity.
     /// </summary>
     [JsonIgnore]
-    public int? Id { get; set; }
+    public virtual int? Id { get; set; }
 
     /// <summary>
     ///     A unique identifier for an entity.
     /// </summary>
     [JsonProperty("uuid")]
-    public Guid? UniqueId { get; set; }
+    public virtual Guid? UniqueId { get; set; }
     
     [JsonIgnore]
-    public int? UserId { get; set; }
+    public virtual int? UserId { get; set; }
 
     /// <summary>
     ///     The country name component.  When specified, the value MUST be in ISO 3166-1 'alpha-2'

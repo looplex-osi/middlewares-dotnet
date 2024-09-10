@@ -11,20 +11,20 @@ public abstract partial class Resource : IEntity, IHasChangedPropertyNotificatio
     ///     Sequencial id for an entity.
     /// </summary>
     [JsonIgnore]
-    public int? Id { get; set; }
+    public virtual int? Id { get; set; }
 
     /// <summary>
     ///     A unique identifier for a SCIM resource as defined by the service provider
     /// </summary>
     [JsonProperty("id")]
-    public Guid? UniqueId { get; set; }
+    public virtual Guid? UniqueId { get; set; }
     
     /// <summary>
     ///     A String that is an identifier for the resource as defined by the provisioning client.
     /// </summary>
     [JsonProperty("externalId", NullValueHandling = NullValueHandling.Ignore)]
-    public string? ExternalId { get; set; }
+    public virtual string? ExternalId { get; set; }
 
     [JsonProperty("meta", NullValueHandling = NullValueHandling.Ignore)]
-    public Meta? Meta { get; set; }
+    public virtual Meta? Meta { get; set; }
 }

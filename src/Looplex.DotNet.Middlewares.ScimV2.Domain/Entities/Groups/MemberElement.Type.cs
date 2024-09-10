@@ -10,16 +10,16 @@ public partial class MemberElement : IEntity, IHasChangedPropertyNotificationTra
     ///     Sequencial id for an entity.
     /// </summary>
     [JsonIgnore]
-    public int? Id { get; set; }
+    public virtual int? Id { get; set; }
 
     /// <summary>
     ///     A unique identifier for an entity.
     /// </summary>
     [JsonProperty("uuid")]
-    public Guid? UniqueId { get; set; }
+    public virtual Guid? UniqueId { get; set; }
     
     [JsonIgnore]
-    public int? GroupId { get; set; }
+    public virtual int? GroupId { get; set; }
     
     /// <summary>
     ///     The URI corresponding to a SCIM resource that is a member of this Group.
