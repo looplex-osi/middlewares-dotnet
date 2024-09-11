@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.3.5"></a>
+## 1.3.5 (2024-09-11)
+
+### Bug Fixes
+
+* upgrade core packages
+
 <a name="1.3.4"></a>
 ## 1.3.4 (2024-09-10)
 
