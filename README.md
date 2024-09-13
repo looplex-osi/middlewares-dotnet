@@ -176,6 +176,51 @@ erDiagram
 
   Users ||--o{ ApiKeys : contains
 ```
+## PBKDF Reference Implementation
+
+```js
+import { scrypt, randomBytes, timingSafeEqual } from 'node:crypto'
+
+const DEFAULT_SALT_LENGTH = 16// NIST 800-132 minimal recommended salt length
+const DEFAULT_KEY_LENGTH = 32
+
+async function pbkdf (password, options = {}) {
+  return new Promise((resolve, reject) => {
+    let saltlen = options.saltlen ?? DEFAULT_SALT_LENGTH
+    let keylen = options.keylen ?? DEFAULT_KEY_LENGTH
+    let salt = randomBytes(saltlen)
+    scrypt(password, salt, keylen, options, (err, derivedKey) => {
+      if (err) reject(err)
+      resolve(`${salt.toString('hex')}:${derivedKey.toString('hex')}`)
+    })
+  })
+}
+
+async function pbkdf_verify (password, digest, options = {}) {
+  return new Promise((resolve, reject) => {
+    let [salt, providedDerivedKey] = digest.split(':').map(x => Buffer.from(x, 'hex'))
+    let keylen = options.keylen ?? DEFAULT_KEY_LENGTH
+    scrypt(password, salt, keylen, options, (err, derivedKey) => {
+      if (err) reject(err)
+      resolve(timingSafeEqual(providedDerivedKey, derivedKey))
+    })
+  })
+}
+
+let secret_1 = await pbkdf('very_secret_password')
+let secret_2 = await pbkdf('very_secret_password')
+
+console.log(secret_1.length)
+
+// digest MUST be different
+console.log(secret_1)
+console.log(secret_2)
+console.log(secret_1 == secret_2)
+
+// incoming password MUST be verifiable
+console.log(await pbkdf_verify('very_secret_password', secret_1))
+console.log(await pbkdf_verify('very_secret_password', secret_2))
+```
 
 ## References
 
@@ -187,3 +232,5 @@ erDiagram
 * [RFC7523](https://www.ietf.org/rfc/rfc7523.txt) -- JSON Web Token (JWT) Profile for OAuth 2.0 Client Authentication and Authorization Grants
 * [RFC8693](https://www.ietf.org/rfc/rfc8693.txt) -- OAuth 2.0 Token Exchange
 * [OIDC](https://openid.net/specs/openid-connect-core-1_0-final.html) -- OpenID Connect Core 1.0 Final
+* [Scrypt | Crypto | Node.js](https://nodejs.org/api/crypto.html#cryptoscryptpassword-salt-keylen-options-callback) -- crypto.scrypt(password, salt, keylen[, options], callback)
+* [NIST Special Publication 800-132](https://nvlpubs.nist.gov/nistpubs/Legacy/SP/nistspecialpublication800-132.pdf) -- Recommendation for Password-Based Key Derivation
