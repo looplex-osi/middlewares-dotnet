@@ -155,3 +155,35 @@ sequenceDiagram
 ```
 
 > IMPORTANT: Although `preferredLanguage` SHOULD be present in the `access_token` payload, it have a lower specificity than a local_storage `currentLanguage` value.
+
+## ER-Diagram
+
+```mermaid
+erDiagram
+  Users {
+    int id PK
+    uuid uid
+    varchar name
+  }
+
+  ApiKeys {
+    int id PK
+    int user_id FK
+    varchar client_name
+    uuid client_id
+    varchar digest
+  }
+
+  Users ||--o{ ApiKeys : contains
+```
+
+## References
+
+* [RFC2119](https://www.ietf.org/rfc/rfc2119.txt) -- Key words for use in RFCs to Indicate Requirement Levels
+* [RFC6749](https://www.ietf.org/rfc/rfc6749.txt) -- The OAuth 2.0 Authorization Framework
+* [RFC6750](https://www.ietf.org/rfc/rfc6750.txt) -- The OAuth 2.0 Authorization Framework: Bearer Token Usage
+* [RFC7519](https://www.ietf.org/rfc/rfc7519.txt) -- JSON Web Token (JWT)
+* [RFC7521](https://www.ietf.org/rfc/rfc7521.txt) -- Assertion Framework for OAuth 2.0 Client Authentication and Authorization Grants
+* [RFC7523](https://www.ietf.org/rfc/rfc7523.txt) -- JSON Web Token (JWT) Profile for OAuth 2.0 Client Authentication and Authorization Grants
+* [RFC8693](https://www.ietf.org/rfc/rfc8693.txt) -- OAuth 2.0 Token Exchange
+* [OIDC](https://openid.net/specs/openid-connect-core-1_0-final.html) -- OpenID Connect Core 1.0 Final
