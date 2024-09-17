@@ -1,4 +1,6 @@
-﻿using Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.Services;
+﻿using Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.Factories;
+using Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.Services;
+using Looplex.DotNet.Middlewares.OAuth2.Application.Factories;
 using Looplex.DotNet.Middlewares.OAuth2.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -8,9 +10,10 @@ public static class ServicesExtensionMethods
 {
     public static void AddOAuth2Services(this IServiceCollection services)
     {
-        services.AddSingleton<IAuthorizationService, AuthorizationService>();
-        services.AddSingleton<IIdTokenService, IdTokenService>();
+        services.AddSingleton<IAuthorizationServiceFactory, AuthorizationServiceFactory>();
+        services.AddSingleton<ITokenService, TokenService>();
         services.AddSingleton<IJwtService, JwtService>();
-
+        services.AddTransient<TokenExchangeAuthorizationService>();
+        services.AddTransient<ClientCredentialsAuthorizationService>();
     }
 }

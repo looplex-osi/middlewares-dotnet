@@ -5,12 +5,12 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <IsPackable>true</IsPackable>
-        <PackageId>Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions</PackageId>
+        <PackageId>Looplex.DotNet.Middlewares.ApiKeys.Domain</PackageId>
         <Authors>Guilherme Câmara</Authors>
         <Company>Looplex</Company>
-        <PackageTags>Looplex;Middleware;OAuth2;Application;</PackageTags>
+        <PackageTags>Looplex;Middleware;Clients;Domain;</PackageTags>
         <Description>
-            Defines the domain interfaces and services for using OAuth2 authentication.
+            Defines SCIM v2 entity for the ClientCredentials resource type.
         </Description>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
@@ -25,12 +25,16 @@
     </Target>
     
     <ItemGroup>
-      <PackageReference Include="Looplex.DotNet.Core.Application.Abstractions" Version="1.1.2" />
-      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    </ItemGroup>
-    
-    <ItemGroup>
       <ProjectReference Include="..\Looplex.DotNet.Middlewares.OAuth2.Domain\Looplex.DotNet.Middlewares.OAuth2.Domain.csproj" />
+      <ProjectReference Include="..\Looplex.DotNet.Middlewares.ScimV2.Domain\Looplex.DotNet.Middlewares.ScimV2.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Update="Entities\Schemas\ApiKey.1.0.schema.json">
+          <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+          <Pack>true</Pack>
+          <PackagePath>schemas\</PackagePath>
+      </None>
     </ItemGroup>
 
 </Project>
