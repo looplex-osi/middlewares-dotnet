@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.4.0"></a>
+## 1.4.0 (2024-09-17)
+
+### Features
+
+* added token exchange flow and renamed clients to api-keys
+
 <a name="1.3.6"></a>
 ## 1.3.6 (2024-09-12)
 
