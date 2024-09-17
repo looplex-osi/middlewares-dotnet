@@ -7,8 +7,6 @@ namespace Looplex.DotNet.Middlewares.ApiKeys.Domain.Entities.ApiKeys;
 public partial class ApiKey
 {
     #region Serialization
-    
-    public bool ShouldSerializeSecret() => false;
 
     public static class Converter
     {

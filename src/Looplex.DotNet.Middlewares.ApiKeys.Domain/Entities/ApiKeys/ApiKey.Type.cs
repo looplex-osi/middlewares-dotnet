@@ -27,7 +27,4 @@ public partial class ApiKey : Resource, IApiKey
 
     [JsonProperty("notBefore")]
     public virtual DateTimeOffset NotBefore { get; set; }
-
-    [JsonProperty("secret")]
-    public virtual string? Secret { get; set; }
 }
