@@ -1,3 +1,170 @@
+# Identity and Resources Management
+
+SCIM (System for Cross-domain Identity Management) is considered an industry standard for identity management and user provisioning across multiple applications and domains. It has been widely adopted by cloud service providers, SaaS applications, and enterprise solutions due to its interoperability, scalability, and ease of integration.
+
+Many major tech companies, including Microsoft, Amazon, Google and others, have implemented SCIM in their identity and access management services. The protocol can be resumed by the following er-diagram, operations and discovery mechanism:
+
+```mermaid
+erDiagram
+  RESOURCE {
+    uuid id
+    string externalId
+  }
+
+  META {
+    string resourceType
+    iso8601 created
+    iso8601 lastModified
+    string location
+    string version
+  }
+
+  USER {
+    string userName
+    string displayName
+    string nickName
+    rfc3986 profileUrl
+    string title
+    string userType
+    rfc7231 preferredLanguage
+    rfc5646 locale
+    rfc6557 timezone
+    boolean active
+    deprecated password
+  }
+
+  GROUP {
+    string displayName
+  }
+
+  OTHER {}
+
+  NAME {
+    string formatted
+    string familyName
+    string givenName
+    string middleName
+    string honorificPrefix
+    string honorificSuffix
+  }
+
+  EMAIL {
+    rfc5321 display
+    string type
+  }
+
+  PHONE {
+    rfc3966 display
+    string type
+  }
+
+  IMS {
+    string display
+    string type
+  }
+
+  PHOTOS {
+    rfc3986 uri
+    string type
+  }
+
+  ADDRESS {
+    string formatted
+    string streetAddress
+    string locality
+    string region
+    string postalCode
+    iso3166-1 country
+  }
+
+  ENTITLEMENTS {
+    string entitlement
+  }
+
+  ROLES {
+    string role
+  }
+
+  X509CERTIFICATES {
+    base64 certificateDer
+  }
+
+  ENTERPRISE_USER {
+    string employeeNumber
+    string costCenter
+    string organization
+    string division
+    string department
+  }
+
+  MANAGER {
+    uuid value
+    rfc3986 dollar_ref
+    string displayName
+  }
+
+  RESOURCE ||--|| META : contains
+  USER ||--|| RESOURCE : "is a"
+  GROUP ||--|| RESOURCE : "is a"
+  OTHER ||--|| RESOURCE : "is a"
+
+  ENTERPRISE_USER ||--|| USER : "is a"
+  ENTERPRISE_USER ||--|| MANAGER : "has a"
+
+  USER ||--o| NAME : has
+  USER ||--o{ EMAIL : has
+  USER ||--o{ PHONE : has
+  USER ||--o{ IMS : has
+  USER ||--o{ PHOTOS : has
+  USER ||--o{ ADDRESS : has
+  USER ||--o{ ENTITLEMENTS : has
+  USER ||--o{ ROLES : has
+  USER ||--o{ X509CERTIFICATES : has
+
+  USER ||--o{ GROUP : "belongs to"
+```
+
+**Operations**
+
+| action      | verb     | url                                                                                                                         |
+|-------------|----------|-----------------------------------------------------------------------------------------------------------------------------|
+| **Create**  | `POST`   | https://domain.com/:version/:resource                                                                                       |
+| **Read**    | `GET`    | https://domain.com/:version/:resource/:id                                                                                   |
+| **Replace** | `PUT`    | https://domain.com/:version/:resource/:id                                                                                   |
+| **Delete**  | `DELETE` | https://domain.com/:version/:resource/:id                                                                                   |
+| **Update**  | `PATCH`  | https://domain.com/:version/:resource/:id                                                                                   |
+| **Search**  | `GET`    | https://domain.com/:version/:resource?ﬁlter={attribute}{op}{value}&sortBy={attributeName}&sortOrder={ascending\|descending} |
+| **Bulk**    | `POST`   | https://domain.com/:version/Bulk                                                                                            |
+
+**Discovery**
+
+To simplify interoperability, SCIM provides three end points to discover supported features and specific attribute details:
+
+| discover                                                      | verb  | url                                               |
+|---------------------------------------------------------------|-------|---------------------------------------------------|
+| Specification compliance, authentication schemes, data models | `GET` | https://domain.com/:version/ServiceProviderConfig |
+| Types of resources available                                  | `GET` | https://domain.com/:version/ResourceTypes         |
+| Resources and attribute extensions                            | `GET` | https://domain.com/:version/Schemas               |
+
+## Extensibility
+
+Additionally to being globally recognized and used as protocol for sharing and synchronizing Users and Groups, the specification also defines a standardized way to extend it for other resource types, providing a robust foundation for exchanging serialized data across multiple domains using REST architectural style. Because of that, we feel there's only one way to define RESTful APIs, any other attempt would introduce unnecessary complexity, duplicating what SCIM already does efficiently. This not only saves development time and resources but also ensures compatibility with existing systems and services, making integration smoother and more predictable.
+
+## References
+
+* [REST](https://ics.uci.edu/~fielding/pubs/dissertation/rest_arch_style.htm) -- Representational State Transfer
+* [RFC3966](https://datatracker.ietf.org/doc/html/rfc3966) -- The tel URI for Telephone Numbers
+* [RFC3986](https://datatracker.ietf.org/doc/html/rfc3986) -- Uniform Resource Identifier (URI): Generic Syntax
+* [RFC4648](https://datatracker.ietf.org/doc/html/rfc4648) -- The Base16, Base32, and Base64 Data Encodings
+* [RFC5321](https://datatracker.ietf.org/doc/html/rfc5321) -- Simple Mail Transfer Protocol
+* [RFC5646](https://datatracker.ietf.org/doc/html/rfc5646) -- Tags for Identifying Languages
+* [RFC6557](https://datatracker.ietf.org/doc/html/rfc6557) -- Procedures for Maintaining the Time Zone Database
+* [RFC7642](https://datatracker.ietf.org/doc/html/rfc7642) -- System for Cross-domain Identity Management: Definitions, Overview, Concepts, and Requirements
+* [RFC7643](https://datatracker.ietf.org/doc/html/rfc7643) -- System for Cross-domain Identity Management: Core Schema
+* [RFC7644](https://datatracker.ietf.org/doc/html/rfc7644) -- System for Cross-domain Identity Management: Protocol
+* [ISO639](https://www.iso.org/iso-639-language-code) -- Language code
+* [ISO3166](https://www.iso.org/iso-3166-country-codes.html) -- Country Codes
+
 # Authentication and Authorization
 
 When examining the public or confidential nature of a given client, we're evaluating the ability of that client to prove its identity to the authorization server. This is important because the authorization server must be able to trust the identity of the client in order to issue access tokens.
