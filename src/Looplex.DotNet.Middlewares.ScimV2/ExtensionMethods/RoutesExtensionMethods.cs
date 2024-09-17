@@ -1,5 +1,4 @@
-﻿using Looplex.DotNet.Middlewares.OAuth2;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net;

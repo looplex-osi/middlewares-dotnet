@@ -3,7 +3,7 @@ using System.Net;
 using System.Text;
 using Looplex.DotNet.Core.Application.Abstractions.Factories;
 using Looplex.DotNet.Core.Application.Abstractions.Services;
-using Looplex.DotNet.Middlewares.Clients.Application.Abstractions.Services;
+using Looplex.DotNet.Middlewares.ApiKeys.Application.Abstractions.Services;
 using Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -23,10 +23,11 @@ public class ScimV2RouteOptionsTests
 {
     private IConfiguration _configurationMock = null!;
     private ICrudService _crudServiceMock = null!;
-    private IClientService _clientServiceMock = null!;
+    private IApiKeyService _apiKeyServiceMock = null!;
     private IContextFactory _contextFactoryMock = null!;
     private IServiceProvider _serviceProviderMock = null!;
     private IJwtService _jwtServiceMock = null!;
+    private IHttpClientFactory _httpClientFactoryMock = null!;
     private IContext _context = null!;
     private HttpClient _client = null!;
     private IHost _host = null!;
@@ -36,13 +37,14 @@ public class ScimV2RouteOptionsTests
     {
         _configurationMock = Substitute.For<IConfiguration>();
         _crudServiceMock = Substitute.For<ICrudService>();
-        _clientServiceMock = Substitute.For<IClientService>();
+        _apiKeyServiceMock = Substitute.For<IApiKeyService>();
         _contextFactoryMock = Substitute.For<IContextFactory>();
         _serviceProviderMock = Substitute.For<IServiceProvider>();
         _jwtServiceMock = Substitute.For<IJwtService>();
         _jwtServiceMock
             .ValidateToken(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(true);
+        _httpClientFactoryMock = Substitute.For<IHttpClientFactory>();
         _serviceProviderMock.GetService(typeof(IConfiguration)).Returns(_configurationMock);
         _serviceProviderMock.GetService(typeof(IJwtService)).Returns(_jwtServiceMock);  
         _context = Substitute.For<IContext>();
@@ -59,9 +61,10 @@ public class ScimV2RouteOptionsTests
                     {
                         services.AddSingleton(_configurationMock);
                         services.AddSingleton(_crudServiceMock);
-                        services.AddSingleton(_clientServiceMock);
+                        services.AddSingleton(_apiKeyServiceMock);
                         services.AddSingleton(_contextFactoryMock);
-
+                        services.AddSingleton(_httpClientFactoryMock);
+                        
                         services.AddOAuth2Services();
                     })
                     .Configure(app =>

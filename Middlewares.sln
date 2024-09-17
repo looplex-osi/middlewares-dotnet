@@ -13,19 +13,19 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Looplex.DotNet.Middlewares.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Looplex.DotNet.Middlewares.ScimV2", "src\Looplex.DotNet.Middlewares.ScimV2\Looplex.DotNet.Middlewares.ScimV2.csproj", "{2562DFC4-97FA-4FC7-8BD3-9CE5E3AD86F4}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Looplex.DotNet.Middlewares.Clients", "src\Looplex.DotNet.Middlewares.Clients\Looplex.DotNet.Middlewares.Clients.csproj", "{011816E9-E1C4-4C0F-9B70-BD889935E428}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Looplex.DotNet.Middlewares.ApiKeys", "src\Looplex.DotNet.Middlewares.ApiKeys\Looplex.DotNet.Middlewares.ApiKeys.csproj", "{011816E9-E1C4-4C0F-9B70-BD889935E428}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Looplex.DotNet.Middlewares.ScimV2.Domain.UnitTests", "test\Looplex.DotNet.Middlewares.ScimV2.Domain.UnitTests\Looplex.DotNet.Middlewares.ScimV2.Domain.UnitTests.csproj", "{23184F6D-7812-48CC-8DA5-E8127EBE5EAF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Looplex.DotNet.Middlewares.Clients.Domain.UnitTests", "test\Looplex.DotNet.Middlewares.Clients.Domain.UnitTests\Looplex.DotNet.Middlewares.Clients.Domain.UnitTests.csproj", "{8C603181-1121-4C80-B660-BDB1FD5AD5D0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Looplex.DotNet.Middlewares.ApiKeys.Domain.UnitTests", "test\Looplex.DotNet.Middlewares.ApiKeys.Domain.UnitTests\Looplex.DotNet.Middlewares.ApiKeys.Domain.UnitTests.csproj", "{8C603181-1121-4C80-B660-BDB1FD5AD5D0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Looplex.DotNet.Middlewares.ScimV2.Domain", "src\Looplex.DotNet.Middlewares.ScimV2.Domain\Looplex.DotNet.Middlewares.ScimV2.Domain.csproj", "{10537CAA-E7C3-4F63-9F3C-ED8EAEB15DCA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Looplex.DotNet.Middlewares.Clients.Domain", "src\Looplex.DotNet.Middlewares.Clients.Domain\Looplex.DotNet.Middlewares.Clients.Domain.csproj", "{33213E94-C1DD-4137-A49C-891C8665AE3A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Looplex.DotNet.Middlewares.ApiKeys.Domain", "src\Looplex.DotNet.Middlewares.ApiKeys.Domain\Looplex.DotNet.Middlewares.ApiKeys.Domain.csproj", "{33213E94-C1DD-4137-A49C-891C8665AE3A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Looplex.DotNet.Middlewares.OAuth2.Domain", "src\Looplex.DotNet.Middlewares.OAuth2.Domain\Looplex.DotNet.Middlewares.OAuth2.Domain.csproj", "{2A4B3937-C85A-4EC9-ADFA-B3E6A36B8273}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Looplex.DotNet.Middlewares.Clients.Application.Abstractions", "src\Looplex.DotNet.Middlewares.Clients.Application.Abstractions\Looplex.DotNet.Middlewares.Clients.Application.Abstractions.csproj", "{3E6120EE-107A-45EB-B63A-32E4AB687A51}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Looplex.DotNet.Middlewares.ApiKeys.Application.Abstractions", "src\Looplex.DotNet.Middlewares.ApiKeys.Application.Abstractions\Looplex.DotNet.Middlewares.ApiKeys.Application.Abstractions.csproj", "{3E6120EE-107A-45EB-B63A-32E4AB687A51}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions", "src\Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions\Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.csproj", "{AB514DE6-4E3D-449A-833A-57E191D8EEE1}"
 EndProject
