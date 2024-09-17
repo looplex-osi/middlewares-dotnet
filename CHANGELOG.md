@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.4.1"></a>
+## 1.4.1 (2024-09-17)
+
+### Bug Fixes
+
+* **apikey:** removed secret from json serialize
+
 <a name="1.4.0"></a>
 ## 1.4.0 (2024-09-17)
 
