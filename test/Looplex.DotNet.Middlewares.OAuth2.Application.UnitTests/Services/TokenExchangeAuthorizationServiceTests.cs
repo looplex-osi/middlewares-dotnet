@@ -101,7 +101,6 @@ public class TokenExchangeAuthorizationServiceTests
         _mockConfiguration["Issuer"].Returns("issuer");
         _mockConfiguration["OicdAudience"].Returns("oicdAudience");
         _mockConfiguration["OicdIssuer"].Returns("oicdIssuer");
-        _mockConfiguration["OicdTenantId"].Returns("oicdTenantId");
         _mockConfiguration["PublicKey"].Returns(Convert.ToBase64String(Encoding.UTF8.GetBytes(RsaKeys.PublicKey)));
         _mockConfiguration["PrivateKey"].Returns(Convert.ToBase64String(Encoding.UTF8.GetBytes(RsaKeys.PrivateKey)));
         _mockConfiguration["OicdUserInfoEndpoint"].Returns("https://graph.microsoft.com/oidc/userinfo");
@@ -112,7 +111,7 @@ public class TokenExchangeAuthorizationServiceTests
             ""subject_token_type"": ""urn:ietf:params:oauth:token-type:access_token""
         }";
 
-        mockIdTokenService.ValidateToken("oicdIssuer", "oicdTenantId", "oicdAudience", "validToken").Returns(true);
+        mockIdTokenService.ValidateToken("oicdIssuer", "oicdAudience", "validToken").Returns(true);
         
         var context = Substitute.For<IContext>();
         var state = new ExpandoObject();
@@ -139,7 +138,6 @@ public class TokenExchangeAuthorizationServiceTests
         _mockConfiguration["Issuer"].Returns("issuer");
         _mockConfiguration["OicdAudience"].Returns("oicdAudience");
         _mockConfiguration["OicdIssuer"].Returns("oicdIssuer");
-        _mockConfiguration["OicdTenantId"].Returns("oicdTenantId");
         _mockConfiguration["PublicKey"].Returns(Convert.ToBase64String(Encoding.UTF8.GetBytes(RsaKeys.PublicKey)));
         _mockConfiguration["PrivateKey"].Returns(Convert.ToBase64String(Encoding.UTF8.GetBytes(RsaKeys.PrivateKey)));
         _mockConfiguration["OicdUserInfoEndpoint"].Returns("https://graph.microsoft.com/oidc/userinfo");
@@ -150,7 +148,7 @@ public class TokenExchangeAuthorizationServiceTests
             ""subject_token_type"": ""urn:ietf:params:oauth:token-type:access_token""
         }";
 
-        mockIdTokenService.ValidateToken("oicdIssuer", "oicdTenantId", "oicdAudience", "validToken").Returns(false);
+        mockIdTokenService.ValidateToken("oicdIssuer", "oicdAudience", "validToken").Returns(false);
         
         var context = Substitute.For<IContext>();
         var state = new ExpandoObject();
