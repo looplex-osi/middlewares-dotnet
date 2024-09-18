@@ -2,5 +2,5 @@
 
 public interface ITokenService
 {
-    bool ValidateToken(string issuer, string tenantId, string audience, string token);
+    bool ValidateToken(string issuer, string audience, string token);
 }

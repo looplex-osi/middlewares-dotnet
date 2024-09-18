@@ -86,10 +86,9 @@ public class TokenExchangeAuthorizationService(
     {
         var oicdAudience = _configuration["OicdAudience"]!;
         var oicdIssuer = _configuration["OicdIssuer"]!;
-        var oicdTenantId = _configuration["OicdTenantId"]!;
 
         if (string.IsNullOrWhiteSpace(accessToken)
-            || !_tokenService.ValidateToken(oicdIssuer, oicdTenantId, oicdAudience, accessToken))
+            || !_tokenService.ValidateToken(oicdIssuer, oicdAudience, accessToken))
         {
             throw new HttpRequestException("Token is invalid.", null, HttpStatusCode.Unauthorized);
         }

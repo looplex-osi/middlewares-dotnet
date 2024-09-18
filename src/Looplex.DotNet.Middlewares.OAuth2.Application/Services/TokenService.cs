@@ -8,13 +8,13 @@ namespace Looplex.DotNet.Middlewares.OAuth2.Application.Services;
 
 public class TokenService() : ITokenService
 {
-    public bool ValidateToken(string issuer, string tenantId, string audience, string token)
+    public bool ValidateToken(string issuer, string audience, string token)
     {
         bool isValid;
         try
         {
             var configurationManager = new ConfigurationManager<OpenIdConnectConfiguration>(
-                $"{issuer}/{tenantId}/v2.0/.well-known/openid-configuration",
+                $"{issuer}/.well-known/openid-configuration",
                 new OpenIdConnectConfigurationRetriever());
             var openIdConfig = configurationManager.GetConfigurationAsync(CancellationToken.None).Result;
 
@@ -24,7 +24,7 @@ public class TokenService() : ITokenService
                     ValidateIssuerSigningKey = true,
                     IssuerSigningKeys = openIdConfig.SigningKeys,
                     ValidateIssuer = true,
-                    ValidIssuer = $"{issuer}/{tenantId}/v2.0",
+                    ValidIssuer = $"{issuer}",
                     ValidateAudience = true,
                     ValidAudiences = [audience],
                     ValidateLifetime = true,
