@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.4.2"></a>
+## 1.4.2 (2024-09-18)
+
+### Bug Fixes
+
+* **tokenservice:** removed tenantid (now tenant may be in the issuer)
+
 <a name="1.4.1"></a>
 ## 1.4.1 (2024-09-17)
 
