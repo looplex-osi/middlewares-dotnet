@@ -17,12 +17,10 @@ namespace Looplex.DotNet.Middlewares.OAuth2.Application.Services;
 
 public class TokenExchangeAuthorizationService(
     IConfiguration configuration,
-    ITokenService tokenService,
     IJwtService jwtService,
     IHttpClientFactory httpClientFactory) : IAuthorizationService
 {
     private readonly IConfiguration _configuration = configuration;
-    private readonly ITokenService _tokenService = tokenService;
     private readonly IJwtService _jwtService = jwtService;
     private readonly IHttpClientFactory _httpClientFactory = httpClientFactory;
 
@@ -84,11 +82,7 @@ public class TokenExchangeAuthorizationService(
 
     private void ValidateAccessToken(string? accessToken)
     {
-        var oicdAudience = _configuration["OicdAudience"]!;
-        var oicdIssuer = _configuration["OicdIssuer"]!;
-
-        if (string.IsNullOrWhiteSpace(accessToken)
-            || !_tokenService.ValidateToken(oicdIssuer, oicdAudience, accessToken))
+        if (string.IsNullOrWhiteSpace(accessToken))
         {
             throw new HttpRequestException("Token is invalid.", null, HttpStatusCode.Unauthorized);
         }
