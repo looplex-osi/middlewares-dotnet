@@ -11,7 +11,6 @@ public static class ServicesExtensionMethods
     public static void AddOAuth2Services(this IServiceCollection services)
     {
         services.AddSingleton<IAuthorizationServiceFactory, AuthorizationServiceFactory>();
-        services.AddSingleton<ITokenService, TokenService>();
         services.AddSingleton<IJwtService, JwtService>();
         services.AddTransient<TokenExchangeAuthorizationService>();
         services.AddTransient<ClientCredentialsAuthorizationService>();
