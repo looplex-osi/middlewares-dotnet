@@ -8,9 +8,9 @@
         <PackageId>Looplex.DotNet.Middlewares.ApiKeys.Application.Abstractions</PackageId>
         <Authors>Guilherme Câmara</Authors>
         <Company>Looplex</Company>
-        <PackageTags>Looplex;Middleware;Clients;Domain;Application;</PackageTags>
+        <PackageTags>Looplex;Middleware;ApiKeys;Domain;Application;</PackageTags>
         <Description>
-            Defines domain interfaces and services for SCIM v2 Client resource type.
+            Defines domain interfaces and services for SCIM v2 api-keys resource type.
         </Description>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>

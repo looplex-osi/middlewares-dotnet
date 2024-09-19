@@ -8,9 +8,9 @@
 	<PackageId>Looplex.DotNet.Middlewares.ApiKeys</PackageId>
 	<Authors>Guilherme Câmara</Authors>
 	<Company>Looplex</Company>
-	<PackageTags>Looplex;Middleware;Clients;</PackageTags>
+	<PackageTags>Looplex;Middleware;ApiKeys;</PackageTags>
 	<Description>
-		Defines SCIM v2 apis for the ClientCredentials resource type.
+		Defines SCIM v2 apis for the api-keys resource type.
 	</Description>
 	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
 	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>

@@ -8,9 +8,9 @@
         <PackageId>Looplex.DotNet.Middlewares.ApiKeys.Domain</PackageId>
         <Authors>Guilherme Câmara</Authors>
         <Company>Looplex</Company>
-        <PackageTags>Looplex;Middleware;Clients;Domain;</PackageTags>
+        <PackageTags>Looplex;Middleware;ApiKeys;Domain;</PackageTags>
         <Description>
-            Defines SCIM v2 entity for the ClientCredentials resource type.
+            Defines SCIM v2 entity for the api-keys resource type.
         </Description>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
