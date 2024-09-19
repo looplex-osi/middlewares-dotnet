@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.4.3"></a>
+## 1.4.3 (2024-09-19)
+
+### Bug Fixes
+
+* **tokenexchangeauthorizationservice:** access_token is now validated using the userinfo endpoint
+
 <a name="1.4.2"></a>
 ## 1.4.2 (2024-09-18)
 
