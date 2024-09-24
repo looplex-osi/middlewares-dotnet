@@ -102,14 +102,12 @@ public class TokenExchangeAuthorizationService(
     private string CreateAccessToken(UserInfo userInfo)
     {
         var claims = new ClaimsIdentity([
-            new Claim(ClaimTypes.Name, userInfo.Name),
-            new Claim(ClaimTypes.GivenName, userInfo.GivenName),
-            new Claim(ClaimTypes.Surname, userInfo.FamilyName),
+            new Claim(ClaimTypes.Name, $"{userInfo.GivenName} {userInfo.GivenName}"),
             new Claim(ClaimTypes.Email, userInfo.Email),
             new Claim(Constants.Photo, userInfo.Picture),
             // TODO add preferredLanguage
         ]);
-
+        
         var audience = _configuration["Audience"]!;
         var issuer = _configuration["Issuer"]!;
         var tokenExpirationTimeInMinutes = _configuration.GetValue<int>("TokenExpirationTimeInMinutes");

@@ -10,11 +10,7 @@ public partial class ApiKey : Resource, IApiKey
     public virtual string? ClientName { get; set; }
     
     [JsonProperty("clientId")]
-    public virtual Guid? ClientId
-    {
-        get => UniqueId;
-        set => UniqueId = value;
-    }
+    public virtual Guid? ClientId { get; set; }
 
     [JsonIgnore]
     public string? Digest { get; set; }
