@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="1.4.4"></a>
+## 1.4.4 (2024-09-24)
+
+### Bug Fixes
+
+* token claims fixed full name, removed apikey uniqueid equals to clientid
+* **tokenexchangeauthorizationservice:** access_token is now validated using the userinfo endpoint
+* **tokenservice:** removed tenantid (now tenant may be in the issuer)
+
 <a name="1.4.3"></a>
 ## 1.4.3 (2024-09-19)
 
