@@ -1,0 +1,150 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:ietf:params:scim:schemas:core:2.0:ServiceProviderConfig",
+  "title": "ServerProviderConfiguration",
+  "description": "ServerProviderConfiguration",
+  "type": "object",
+  "properties": {
+    "documentationUri": {
+      "type": "uri",
+      "description": "An HTTP-addressable URL pointing to the service provider's human-consumable help documentation."
+    },
+    "patch": {
+      "description": "A complex type that specifies PATCH configuration options.",
+      "$ref": "#/$defs/patch"
+    },
+    "bulk": {
+      "description": "A complex type that specifies bulk configuration options.  See Section 3.7 of [RFC7644]. ",
+      "$ref": "#/$defs/bulk"
+    },
+    "filter": {
+      "description": "A complex type that specifies FILTER options.",
+      "$ref": "#/$defs/filter"
+    },
+    "changePassword": {
+      "description": "A complex type that specifies configuration options related to changing a password.",
+      "$ref": "#/$defs/changePassword"
+    },
+    "sort": {
+      "description": "A complex type that specifies Sort configuration options.",
+      "$ref": "#/$defs/sort"
+    },
+    "etag": {
+      "description": "A complex type that specifies ETag configuration options.",
+      "$ref": "#/$defs/etag"
+    },
+    "authenticationSchemes": {
+      "type": "array",
+      "description": "A multi-valued complex type that specifies supported authentication scheme properties.  To enable seamless discovery of configurations, the service provider SHOULD, with the appropriate security considerations, make the authenticationSchemes attribute publicly accessible without prior authentication.",
+      "items": {
+        "$ref": "#/$defs/authenticationScheme"
+      }
+    }
+  },
+  "required": [
+    "patch",
+    "bulk",
+    "filter",
+    "changePassword",
+    "sort",
+    "etag"
+  ],
+  "$defs": {
+    "patch": {
+      "type": "object",
+      "properties": {
+        "supported": {
+          "type": "boolean",
+          "description": "A Boolean value specifying whether or not the operation is supported.",
+          "readonly": true
+        }
+      },
+      "required": [
+        "supported"
+      ]
+    },
+    "bulk": {
+      "type": "object",
+      "properties": {
+        "supported": {
+          "type": "boolean",
+          "description": "A Boolean value specifying whether or not the operation is supported.",
+          "readonly": true
+        },
+        "maxOperations": {
+          "type": "number",
+          "description": "An integer value specifying the maximum number of operations. ",
+          "readonly": true
+        },
+        "maxPayloadSize": {
+          "type": "number",
+          "description": "An integer value specifying the maximum payload size in bytes. ",
+          "readonly": true
+        }
+      },
+      "required": [
+        "supported",
+        "maxOperations",
+        "maxPayloadSize"
+      ]
+    },
+    "filter": {
+      "type": "object",
+      "properties": {
+        "supported": {
+          "type": "boolean",
+          "description": "A Boolean value specifying whether or not the operation is supported.",
+          "readonly": true
+        },
+        "maxResults": {
+          "type": "number",
+          "description": "An integer value specifying the maximum number of resources returned in a response.",
+          "readonly": true
+        }
+      },
+      "required": [
+        "supported",
+        "maxResults"
+      ]
+    },
+    "changePassword": {
+      "type": "object",
+      "properties": {
+        "supported": {
+          "type": "boolean",
+          "description": "A Boolean value specifying whether or not the operation is supported.",
+          "readonly": true
+        }
+      },
+      "required": [
+        "supported"
+      ]
+    },
+    "sort": {
+      "type": "object",
+      "properties": {
+        "supported": {
+          "type": "boolean",
+          "description": "A Boolean value specifying whether or not the operation is supported.",
+          "readonly": true
+        }
+      },
+      "required": [
+        "supported"
+      ]
+    },
+    "etag": {
+      "type": "object",
+      "properties": {
+        "supported": {
+          "type": "boolean",
+          "description": "A Boolean value specifying whether or not the operation is supported.",
+          "readonly": true
+        }
+      },
+      "required": [
+        "supported"
+      ]
+    }
+  }
+}

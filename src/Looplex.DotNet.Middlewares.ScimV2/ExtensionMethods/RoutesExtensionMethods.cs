@@ -2,12 +2,15 @@
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net;
+using Looplex.DotNet.Core.Application.Abstractions.Factories;
 using Looplex.DotNet.Core.Application.Abstractions.Services;
 using Looplex.DotNet.Core.Middlewares;
 using Looplex.DotNet.Core.WebAPI.Middlewares;
 using Looplex.DotNet.Core.WebAPI.Routes;
 using Looplex.DotNet.Core.Common.Utils;
 using Looplex.DotNet.Middlewares.OAuth2.Middlewares;
+using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Services;
+using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods;
 
@@ -55,6 +58,29 @@ public static class RoutesExtensionMethods
         httpContext.Response.Headers.Location = $"{resource}/{id}";
     };
     
+    private static MiddlewareDelegate PutMiddleware<TService>(
+        string resource)
+        where TService : ICrudService => async (context, cancellationToken, _) =>
+    {
+        // TODO
+        HttpContext httpContext = context.State.HttpContext;
+        var service = httpContext.RequestServices.GetRequiredService<TService>();
+
+        var id = (string)httpContext.Request.RouteValues["id"]!;
+        context.State.Id = id;
+        
+        using StreamReader reader = new(httpContext.Request.Body);
+        context.State.Operations = await reader.ReadToEndAsync(cancellationToken);
+
+        await service.UpdateAsync(context, cancellationToken);
+
+        // TODO: The server MUST return a 200 OK (and the model in the body)
+        // if the "attributes" parameter is specified in the request.
+
+        httpContext.Response.StatusCode = (int)HttpStatusCode.NoContent;
+        httpContext.Response.Headers.Location = $"{resource}/{id}";
+    };
+    
     private static MiddlewareDelegate PatchMiddleware<TService>(
         string resource)
         where TService : ICrudService => async (context, cancellationToken, _) =>
@@ -91,12 +117,25 @@ public static class RoutesExtensionMethods
         httpContext.Response.StatusCode = (int)HttpStatusCode.NoContent;
     };
 
-    public static void UseScimV2Routes<TService>(
+    public static async Task UseScimV2RoutesAsync<T, TService>(
         this IEndpointRouteBuilder app,
         string resource,
-        ScimV2RouteOptions options)
+        string jsonSchemaId,
+        ScimV2RouteOptions options,
+        CancellationToken cancellationToken)
+        where T : Resource
         where TService : ICrudService
     {
+        var schemaService = app.ServiceProvider.GetRequiredService<ISchemaService>();
+        var contextFactory = app.ServiceProvider.GetRequiredService<IContextFactory>();
+        var context = contextFactory.Create([]);
+        context.State.Id = jsonSchemaId;
+        await schemaService.CreateAsync(context, cancellationToken);
+        await schemaService.GetByIdAsync(context, cancellationToken);
+        
+        // Cache the default jsonschema for model validation on deserialization purposes
+        Schemas.Add(typeof(T), (string)context.Result!);
+        
         List<MiddlewareDelegate> getMiddlewares = [
             AuthenticationMiddleware.AuthenticateMiddleware, CoreMiddlewares.PaginationMiddleware];
         getMiddlewares.AddRange(options.OptionsForGet?.Middlewares ?? []);
@@ -119,7 +158,18 @@ public static class RoutesExtensionMethods
                 Services = options.OptionsForGetById?.Services ?? [],
                 Middlewares = getByIdMiddlewares.ToArray()
             });
-
+        
+        List<MiddlewareDelegate> putMiddlewares = [AuthenticationMiddleware.AuthenticateMiddleware];
+        putMiddlewares.AddRange(options.OptionsForPut?.Middlewares ?? []);
+        putMiddlewares.Add(PutMiddleware<TService>(resource));
+        app.MapPut(
+            resource,
+            new RouteBuilderOptions
+            {
+                Services = options.OptionsForPut?.Services ?? [],
+                Middlewares = putMiddlewares.ToArray()
+            });
+        
         List<MiddlewareDelegate> postMiddlewares = [AuthenticationMiddleware.AuthenticateMiddleware];
         postMiddlewares.AddRange(options.OptionsForPost?.Middlewares ?? []);
         postMiddlewares.Add(PostMiddleware<TService>(resource));

@@ -1,6 +1,5 @@
 using FluentAssertions;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities;
-using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Schemas;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Users;
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 
@@ -12,8 +11,8 @@ public class UserTests
     [TestInitialize]
     public void Init()
     {
-        if (!Schema.Schemas.ContainsKey(typeof(User)))
-            Schema.Add<User>(File.ReadAllText("./Entities/Schemas/User.1.0.schema.json"));
+        if (!Schemas.ContainsKey(typeof(User)))
+            Schemas.Add(typeof(User), File.ReadAllText("./Entities/Schemas/User.1.0.schema.json"));
     }
         
     [TestMethod]

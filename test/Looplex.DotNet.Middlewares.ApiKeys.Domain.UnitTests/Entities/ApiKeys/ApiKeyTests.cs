@@ -1,7 +1,6 @@
 using FluentAssertions;
 using Looplex.DotNet.Middlewares.ApiKeys.Domain.Entities.ApiKeys;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities;
-using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Schemas;
 
 namespace Looplex.DotNet.Middlewares.ApiKeys.Domain.UnitTests.Entities.ApiKeys;
 
@@ -11,8 +10,8 @@ public class ApiKeyTests
     [TestInitialize]
     public void Init()
     {
-        if (!Schema.Schemas.ContainsKey(typeof(ApiKey)))
-            Schema.Add<ApiKey>(File.ReadAllText("./Entities/Schemas/ApiKey.1.0.schema.json"));
+        if (!Schemas.ContainsKey(typeof(ApiKey)))
+            Schemas.Add(typeof(ApiKey), File.ReadAllText("./Entities/Schemas/ApiKey.1.0.schema.json"));
     }
 
     [TestMethod]

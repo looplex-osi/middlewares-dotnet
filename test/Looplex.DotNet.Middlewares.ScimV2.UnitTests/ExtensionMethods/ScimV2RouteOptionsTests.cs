@@ -1,6 +1,7 @@
 using System.Dynamic;
 using System.Net;
 using System.Text;
+using FluentAssertions;
 using Looplex.DotNet.Core.Application.Abstractions.Factories;
 using Looplex.DotNet.Core.Application.Abstractions.Services;
 using Looplex.DotNet.Middlewares.ApiKeys.Application.Abstractions.Services;
@@ -14,6 +15,8 @@ using Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods;
 using Looplex.OpenForExtension.Abstractions.Contexts;
 using NSubstitute;
 using Looplex.DotNet.Middlewares.OAuth2.ExtensionMethods;
+using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Services;
+using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities;
 using Microsoft.Extensions.Configuration;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.ExtensionMethods;
@@ -28,6 +31,7 @@ public class ScimV2RouteOptionsTests
     private IServiceProvider _serviceProviderMock = null!;
     private IJwtService _jwtServiceMock = null!;
     private IHttpClientFactory _httpClientFactoryMock = null!;
+    private ISchemaService _schemaServiceMock = null!;
     private IContext _context = null!;
     private HttpClient _client = null!;
     private IHost _host = null!;
@@ -47,6 +51,7 @@ public class ScimV2RouteOptionsTests
         _httpClientFactoryMock = Substitute.For<IHttpClientFactory>();
         _serviceProviderMock.GetService(typeof(IConfiguration)).Returns(_configurationMock);
         _serviceProviderMock.GetService(typeof(IJwtService)).Returns(_jwtServiceMock);  
+        _schemaServiceMock = Substitute.For<ISchemaService>();
         _context = Substitute.For<IContext>();
         var state = new ExpandoObject();
         _context.State.Returns(state);
@@ -64,15 +69,22 @@ public class ScimV2RouteOptionsTests
                         services.AddSingleton(_apiKeyServiceMock);
                         services.AddSingleton(_contextFactoryMock);
                         services.AddSingleton(_httpClientFactoryMock);
-                        
+                        services.AddSingleton(_configurationMock);
+                        services.AddSingleton(_schemaServiceMock);
+
                         services.AddOAuth2Services();
                     })
                     .Configure(app =>
                     {
+                        Schemas.Map.Clear();
                         app.UseRouting();
                         app.UseEndpoints(endpoints =>
                         {
-                            endpoints.UseScimV2Routes<ICrudService>("cars", new ScimV2RouteOptions());
+                            endpoints.UseScimV2RoutesAsync<Car, ICrudService>(
+                                "cars",
+                                "example/car.schema.json",
+                                new ScimV2RouteOptions(),
+                                CancellationToken.None).GetAwaiter().GetResult();
                         });
                     });
             })
@@ -183,4 +195,9 @@ public class ScimV2RouteOptionsTests
         Assert.AreEqual("id_car", _context.State.Id);
         await _crudServiceMock.Received(1).DeleteAsync(_context, Arg.Any<CancellationToken>());
     }
+
+    private class Car : Resource
+    {
+        
+    };
 }

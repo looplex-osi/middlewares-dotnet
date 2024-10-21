@@ -1,7 +1,7 @@
 using FluentAssertions;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Groups;
-using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Schemas;
+
 #pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference type.
 
 namespace Looplex.DotNet.Middlewares.ScimV2.Domain.UnitTests.Entities.Groups;
@@ -12,8 +12,8 @@ public class GroupTests
     [TestInitialize]
     public void Init()
     {
-        if (!Schema.Schemas.ContainsKey(typeof(Group)))
-            Schema.Add<Group>(File.ReadAllText("./Entities/Schemas/Group.1.0.schema.json"));
+        if (!Schemas.ContainsKey(typeof(Group)))
+            Schemas.Add(typeof(Group), File.ReadAllText("./Entities/Schemas/Group.1.0.schema.json"));
     }
         
     [TestMethod]

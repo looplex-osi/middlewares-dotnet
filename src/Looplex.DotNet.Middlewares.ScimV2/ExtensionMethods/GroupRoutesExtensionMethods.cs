@@ -1,12 +1,21 @@
 ﻿using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Services;
+using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Groups;
 using Microsoft.AspNetCore.Routing;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods;
 
 public static class GroupRoutesExtensionMethods
 {
-    public static void UseGroupRoutes(this IEndpointRouteBuilder app, string resource = "groups", ScimV2RouteOptions? options = null)
+    public static Task UseGroupRoutesAsync(this IEndpointRouteBuilder app,
+        string jsonSchemaId,
+        string resource = "users",
+        ScimV2RouteOptions? options = null,
+        CancellationToken? cancellationToken = null)
     {
-        app.UseScimV2Routes<IGroupService>(resource, options ?? new ScimV2RouteOptions());
+        return app.UseScimV2RoutesAsync<Group, IGroupService>(
+            resource,
+            jsonSchemaId,
+            options ?? new ScimV2RouteOptions(),
+            cancellationToken ?? CancellationToken.None);
     }
 }
