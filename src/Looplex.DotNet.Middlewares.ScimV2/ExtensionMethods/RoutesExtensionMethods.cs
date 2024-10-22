@@ -159,17 +159,6 @@ public static class RoutesExtensionMethods
                 Middlewares = getByIdMiddlewares.ToArray()
             });
         
-        List<MiddlewareDelegate> putMiddlewares = [AuthenticationMiddleware.AuthenticateMiddleware];
-        putMiddlewares.AddRange(options.OptionsForPut?.Middlewares ?? []);
-        putMiddlewares.Add(PutMiddleware<TService>(resource));
-        app.MapPut(
-            resource,
-            new RouteBuilderOptions
-            {
-                Services = options.OptionsForPut?.Services ?? [],
-                Middlewares = putMiddlewares.ToArray()
-            });
-        
         List<MiddlewareDelegate> postMiddlewares = [AuthenticationMiddleware.AuthenticateMiddleware];
         postMiddlewares.AddRange(options.OptionsForPost?.Middlewares ?? []);
         postMiddlewares.Add(PostMiddleware<TService>(resource));
@@ -179,6 +168,17 @@ public static class RoutesExtensionMethods
             {
                 Services = options.OptionsForPost?.Services ?? [],
                 Middlewares = postMiddlewares.ToArray()
+            });
+        
+        List<MiddlewareDelegate> putMiddlewares = [AuthenticationMiddleware.AuthenticateMiddleware];
+        putMiddlewares.AddRange(options.OptionsForPut?.Middlewares ?? []);
+        putMiddlewares.Add(PutMiddleware<TService>(resource));
+        app.MapPut(
+            $"{resource}/{{id}}",
+            new RouteBuilderOptions
+            {
+                Services = options.OptionsForPut?.Services ?? [],
+                Middlewares = putMiddlewares.ToArray()
             });
 
         List<MiddlewareDelegate> patchMiddlewares = [AuthenticationMiddleware.AuthenticateMiddleware];

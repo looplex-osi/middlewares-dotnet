@@ -159,6 +159,25 @@ public class ScimV2RouteOptionsTests
     }
     
     [TestMethod]
+    public async Task Put_Endpoint_Returns_Mock_Message()
+    {
+        // Arrange
+        var url = "/cars/id_car"; 
+        HttpContent content = new StringContent("operationsContent", Encoding.UTF8, "application/text");
+        
+        // Act
+        var response = await _client.PutAsync(url, content);
+        
+        // Assert
+        Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode);
+        var responseString = await response.Content.ReadAsStringAsync();
+        Assert.AreEqual(string.Empty, responseString);
+        Assert.AreEqual("id_car", _context.State.Id);
+        Assert.AreEqual("cars/id_car", response.Headers.Location!.ToString());
+        await _crudServiceMock.Received(1).UpdateAsync(_context, Arg.Any<CancellationToken>());
+    }
+    
+    [TestMethod]
     public async Task Patch_Endpoint_Returns_Mock_Message()
     {
         // Arrange
