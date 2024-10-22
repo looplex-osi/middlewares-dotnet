@@ -39,16 +39,15 @@ public static class TokenRoutesExtensionMethods
     public static void UseTokenRoute(this IEndpointRouteBuilder app, string[] services)
     {
         app.MapPost(
-                Resource,
-                new RouteBuilderOptions
-                {
-                    Services = services,
-                    Middlewares =
-                    [
-                        CoreMiddlewares.ExceptionMiddleware,
-                        TokenMiddleware
-                    ]
-                })
-            .WithTags(Tag);
+            Resource,
+            new RouteBuilderOptions
+            {
+                Services = services,
+                Middlewares =
+                [
+                    CoreMiddlewares.ExceptionMiddleware,
+                    TokenMiddleware
+                ]
+            });
     }
 }

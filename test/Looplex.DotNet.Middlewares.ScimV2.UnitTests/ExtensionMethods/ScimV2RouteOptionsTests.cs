@@ -1,7 +1,6 @@
 using System.Dynamic;
 using System.Net;
 using System.Text;
-using FluentAssertions;
 using Looplex.DotNet.Core.Application.Abstractions.Factories;
 using Looplex.DotNet.Core.Application.Abstractions.Services;
 using Looplex.DotNet.Middlewares.ApiKeys.Application.Abstractions.Services;

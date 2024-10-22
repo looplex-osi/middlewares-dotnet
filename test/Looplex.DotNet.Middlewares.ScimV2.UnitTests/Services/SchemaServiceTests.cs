@@ -1,7 +1,6 @@
 using System.Dynamic;
 using FluentAssertions;
 using Looplex.DotNet.Core.Application.Abstractions.Services;
-using Looplex.DotNet.Core.Application.ExtensionMethods;
 using Looplex.DotNet.Core.Domain;
 using Looplex.DotNet.Middlewares.ScimV2.Services;
 using Looplex.OpenForExtension.Abstractions.Contexts;
