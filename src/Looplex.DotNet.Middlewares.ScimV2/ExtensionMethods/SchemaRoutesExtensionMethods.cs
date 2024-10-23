@@ -12,7 +12,7 @@ namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods;
 
 public static class SchemaRoutesExtensionMethods
 {
-    private const string Resource = "/schemas";
+    private const string Resource = "/Schemas";
 
     internal static MiddlewareDelegate GetMiddleware()
         => async (context, cancellationToken, _) =>

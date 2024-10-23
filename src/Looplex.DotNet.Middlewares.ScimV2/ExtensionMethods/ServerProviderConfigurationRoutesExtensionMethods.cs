@@ -11,7 +11,7 @@ namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods;
 
 public static class ServerProviderConfigurationRoutesExtensionMethods
 {
-    private const string Resource = "/schemas";
+    private const string Resource = "/ServiceProviderConfig";
 
     internal static MiddlewareDelegate GetMiddleware()
         => async (context, cancellationToken, _) =>
