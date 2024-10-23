@@ -1,6 +1,4 @@
 using System.Dynamic;
-using System.Net;
-using Looplex.DotNet.Core.Common.Utils;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Services;
 using Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods;
 using Looplex.OpenForExtension.Abstractions.Contexts;
