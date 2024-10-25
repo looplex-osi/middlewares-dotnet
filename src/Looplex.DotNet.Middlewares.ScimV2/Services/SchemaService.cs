@@ -47,7 +47,7 @@ public class SchemaService(
                 .Take(perPage)
                 .ToList();
 
-            var records = await ResolveJsonSchemasAsync(schemaIds);
+            var records = await ResolveJsonSchemasAsync(schemaIds, lang);
             
             var result = new PaginatedCollection
             {
@@ -56,7 +56,7 @@ public class SchemaService(
                 PerPage = perPage,
                 TotalCount = SchemaIds.Count
             };
-            context.State.Pagination.TotalCount = schemaIds.Count;
+            context.State.Pagination.TotalCount = SchemaIds.Count;
             
             context.Result = JsonConvert.SerializeObject(result);
         }
@@ -83,12 +83,19 @@ public class SchemaService(
         return result;
     }
     
-    private Task<string?> ResolveJsonSchemaAsync(string schemaId, string? lang)
+    private async Task<string?> ResolveJsonSchemaAsync(string schemaId, string? lang)
     {
+        string? schema = null;
         if (!string.IsNullOrWhiteSpace(lang))
-            schemaId = schemaId.Replace("schema", lang);
+        {
+            var localizedSchemaId = schemaId.Replace("schema", lang);
+            schema = await ResolveJsonSchemaAsync(localizedSchemaId);
+        }
 
-        return ResolveJsonSchemaAsync(schemaId);
+        if (string.IsNullOrEmpty(schema))
+            schema = await ResolveJsonSchemaAsync(schemaId);
+
+        return schema;
     }
     
     private async Task<string?> ResolveJsonSchemaAsync(string schemaId)

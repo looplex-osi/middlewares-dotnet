@@ -28,10 +28,6 @@ public class SchemaServiceTests
         _cacheService = Substitute.For<ICacheService>();
         _restClient = Substitute.For<IRestClient>();  // Mocking IRestClient
 
-        // Mock behavior for IRestClient.ExecuteAsync (if necessary)
-        var mockResponse = new RestResponse { Content = "mockContent" };
-        _restClient.ExecuteAsync(Arg.Any<RestRequest>()).Returns(Task.FromResult(mockResponse));
-
         // Instantiate SchemaService with mocks
         _schemaService = new SchemaService(_configuration, _cacheService, _restClient);
         
@@ -46,17 +42,23 @@ public class SchemaServiceTests
     public async Task GetAllAsync_Should_Return_JsonResult_When_Action_Not_Skipped()
     {
         // Arrange
+        var mockResponse = new RestResponse { Content = "mockContent" };
+        _restClient.ExecuteAsync(Arg.Any<RestRequest>()).Returns(Task.FromResult(mockResponse));
         var cancellationToken = CancellationToken.None;
-        SchemaService.SchemaIds = new List<string> { "first.schema.json", "second.schema.json" };
+        SchemaService.SchemaIds = new List<string>
+        {
+            "first.schema.json",
+            "second.schema.json"
+        };
 
         _context.State.Pagination = new ExpandoObject();
         _context.State.Pagination.Page = 1;
         _context.State.Pagination.PerPage = 10;
         _context.State.Lang = "en";
-        _cacheService.TryGetCacheValueAsync("first.schema.json", out Arg.Any<string>())
+        _cacheService.TryGetCacheValueAsync("first.en.json", out Arg.Any<string>())
             .Returns(call =>
         {
-            call[1] = "cachedValue";
+            call[1] = "cachedValue1";
             return Task.FromResult(true); 
         });
         
@@ -66,8 +68,40 @@ public class SchemaServiceTests
         // Assert
         var result = JsonConvert.DeserializeObject<PaginatedCollection>((string)_context.Result!)!;
         Assert.AreEqual(2, result.TotalCount);
-        result.Records[0].ToString()!.Should().BeEquivalentTo("cachedValue");
+        result.Records[0].ToString()!.Should().BeEquivalentTo("cachedValue1");
         result.Records[1].ToString()!.Should().BeEquivalentTo("mockContent");
+    }
+
+    [TestMethod]
+    public async Task GetAllAsync_Should_Return_JsonResult_When_Action_Not_Skipped_FallbackToNotLocalizedSchema()
+    {
+        var mockResponse = new RestResponse { Content = null };
+        _restClient.ExecuteAsync(Arg.Any<RestRequest>()).Returns(Task.FromResult(mockResponse));
+        // Arrange
+        var cancellationToken = CancellationToken.None;
+        SchemaService.SchemaIds = new List<string>
+        {
+            "first.schema.json"
+        };
+
+        _context.State.Pagination = new ExpandoObject();
+        _context.State.Pagination.Page = 1;
+        _context.State.Pagination.PerPage = 10;
+        _context.State.Lang = "en";
+        _cacheService.TryGetCacheValueAsync("first.schema.json", out Arg.Any<string>())
+            .Returns(call =>
+            {
+                call[1] = "cachedValue";
+                return Task.FromResult(true); 
+            });
+        
+        // Act
+        await _schemaService.GetAllAsync(_context, cancellationToken);
+
+        // Assert
+        var result = JsonConvert.DeserializeObject<PaginatedCollection>((string)_context.Result!)!;
+        Assert.AreEqual(1, result.TotalCount);
+        result.Records[0].ToString()!.Should().BeEquivalentTo("cachedValue");
     }
 
     [TestMethod]

@@ -4,15 +4,8 @@ using Newtonsoft.Json.Converters;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Configurations;
 
-/// <summary>
-/// The service provider configuration resource enables a service provider to discover SCIM
-/// specification features in a standardized form as well as provide additional
-/// implementation details to clients. All attributes have a mutability of `readOnly`.
-/// Unlike other core resources, the `id` attribute is not required for the service provider
-/// configuration resource.
-/// </summary>
-public partial class ServiceProviderConfiguration
-{ 
+public partial class ResourceType
+{
     public static class Converter
     {
         public static readonly JsonSerializerSettings Settings = new()
@@ -30,8 +23,8 @@ public partial class ServiceProviderConfiguration
 
 public static partial class Serialize
 {
-    public static string ToJson(this ServiceProviderConfiguration self)
+    public static string ToJson(this ResourceType self)
     {
-        return JsonConvert.SerializeObject(self, ServiceProviderConfiguration.Converter.Settings);
+        return JsonConvert.SerializeObject(self, ResourceType.Converter.Settings);
     }
 }
