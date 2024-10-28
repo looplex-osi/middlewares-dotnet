@@ -18,7 +18,7 @@ public static class ResourceTypeRoutesExtensionMethods
         => async (context, cancellationToken, _) =>
     {
         HttpContext httpContext = context.State.HttpContext;
-        var service = httpContext.RequestServices.GetRequiredService<ISchemaService>();
+        var service = httpContext.RequestServices.GetRequiredService<IResourceTypeService>();
 
         await service.GetAllAsync(context, cancellationToken);
 
@@ -29,7 +29,7 @@ public static class ResourceTypeRoutesExtensionMethods
         => async (context, cancellationToken, _) =>
     {
         HttpContext httpContext = context.State.HttpContext;
-        var service = httpContext.RequestServices.GetRequiredService<ISchemaService>();
+        var service = httpContext.RequestServices.GetRequiredService<IResourceTypeService>();
 
         var id = (string)httpContext.Request.RouteValues["id"]!;
         context.State.Id = id;
@@ -39,7 +39,7 @@ public static class ResourceTypeRoutesExtensionMethods
         await httpContext.Response.WriteAsJsonAsync((string)context.Result!, HttpStatusCode.OK);
     };
 
-    public static void UseSchemaRoute(this IEndpointRouteBuilder app, string[] services)
+    public static void UseResourceTypeRoute(this IEndpointRouteBuilder app, string[] services)
     {
         List<MiddlewareDelegate> getMiddlewares =
         [

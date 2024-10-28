@@ -10,7 +10,8 @@ public static class ServicesExtensionMethods
     public static void AddScimV2Services(this IServiceCollection services)
     {
         services.AddSingleton<ISchemaService, SchemaService>();
-        
+        services.AddSingleton<IResourceTypeService, ResourceTypeService>();
+
         var config = new ServiceProviderConfiguration
         {
             Patch = new()
