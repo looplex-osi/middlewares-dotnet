@@ -1,7 +1,6 @@
 using System.Dynamic;
-using Looplex.DotNet.Core.Application.ExtensionMethods;
-using Looplex.DotNet.Core.Domain;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Configurations;
+using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Messages;
 using Looplex.DotNet.Middlewares.ScimV2.Services;
 using Looplex.OpenForExtension.Abstractions.Contexts;
 using Newtonsoft.Json;
@@ -40,16 +39,16 @@ public class ResourceTypeServiceTests
             new ResourceType { Id = "resource2", Name = "Group", Schemas = new[] { "schema2" }, Endpoint = "Groups", Schema = "urn:ietf:params:scim:schemas:core:2.0:Group" },
         };
         _context.State.Pagination = new ExpandoObject();
-        _context.State.Pagination.Page = 1;
-        _context.State.Pagination.PerPage = 10;
+        _context.State.Pagination.StartIndex = 1;
+        _context.State.Pagination.ItemsPerPage = 10;
 
         // Act
         await _resourceTypeService.GetAllAsync(_context, _cancellationToken);
 
         // Assert
-        var result = JsonConvert.DeserializeObject<PaginatedCollection>((string)_context.Result)!;
-        Assert.AreEqual(2, result.Records.Count);
-        Assert.AreEqual(2, result.TotalCount);
+        var result = JsonConvert.DeserializeObject<ListResponse>((string)_context.Result!)!;
+        Assert.AreEqual(2, result.Resources.Count);
+        Assert.AreEqual(2, result.TotalResults);
     }
 
     [TestMethod]

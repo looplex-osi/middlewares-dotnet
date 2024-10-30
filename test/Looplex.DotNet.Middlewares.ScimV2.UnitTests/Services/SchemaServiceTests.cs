@@ -1,7 +1,7 @@
 using System.Dynamic;
 using FluentAssertions;
 using Looplex.DotNet.Core.Application.Abstractions.Services;
-using Looplex.DotNet.Core.Domain;
+using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Messages;
 using Looplex.DotNet.Middlewares.ScimV2.Services;
 using Looplex.OpenForExtension.Abstractions.Contexts;
 using Microsoft.Extensions.Configuration;
@@ -52,8 +52,8 @@ public class SchemaServiceTests
         };
 
         _context.State.Pagination = new ExpandoObject();
-        _context.State.Pagination.Page = 1;
-        _context.State.Pagination.PerPage = 10;
+        _context.State.Pagination.StartIndex = 1;
+        _context.State.Pagination.ItemsPerPage = 10;
         _context.State.Lang = "en";
         _cacheService.TryGetCacheValueAsync("first.en.json", out Arg.Any<string>())
             .Returns(call =>
@@ -66,10 +66,10 @@ public class SchemaServiceTests
         await _schemaService.GetAllAsync(_context, cancellationToken);
 
         // Assert
-        var result = JsonConvert.DeserializeObject<PaginatedCollection>((string)_context.Result!)!;
-        Assert.AreEqual(2, result.TotalCount);
-        result.Records[0].ToString()!.Should().BeEquivalentTo("cachedValue1");
-        result.Records[1].ToString()!.Should().BeEquivalentTo("mockContent");
+        var result = JsonConvert.DeserializeObject<ListResponse>((string)_context.Result!)!;
+        Assert.AreEqual(2, result.TotalResults);
+        result.Resources[0].ToString()!.Should().BeEquivalentTo("cachedValue1");
+        result.Resources[1].ToString()!.Should().BeEquivalentTo("mockContent");
     }
 
     [TestMethod]
@@ -85,8 +85,8 @@ public class SchemaServiceTests
         };
 
         _context.State.Pagination = new ExpandoObject();
-        _context.State.Pagination.Page = 1;
-        _context.State.Pagination.PerPage = 10;
+        _context.State.Pagination.StartIndex = 1;
+        _context.State.Pagination.ItemsPerPage = 10;
         _context.State.Lang = "en";
         _cacheService.TryGetCacheValueAsync("first.schema.json", out Arg.Any<string>())
             .Returns(call =>
@@ -99,9 +99,9 @@ public class SchemaServiceTests
         await _schemaService.GetAllAsync(_context, cancellationToken);
 
         // Assert
-        var result = JsonConvert.DeserializeObject<PaginatedCollection>((string)_context.Result!)!;
-        Assert.AreEqual(1, result.TotalCount);
-        result.Records[0].ToString()!.Should().BeEquivalentTo("cachedValue");
+        var result = JsonConvert.DeserializeObject<ListResponse>((string)_context.Result!)!;
+        Assert.AreEqual(1, result.TotalResults);
+        result.Resources[0].ToString()!.Should().BeEquivalentTo("cachedValue");
     }
 
     [TestMethod]

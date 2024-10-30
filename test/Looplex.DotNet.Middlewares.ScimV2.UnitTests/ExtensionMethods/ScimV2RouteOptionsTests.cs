@@ -108,7 +108,7 @@ public class ScimV2RouteOptionsTests
             {
                 _context.State.Pagination.TotalCount = 0;
             });
-        var url = "/cars?page=1&perPage=10"; 
+        var url = "/cars?startIndex=1&count=10"; 
 
         // Act
         var response = await _client.GetAsync(url);
@@ -117,8 +117,8 @@ public class ScimV2RouteOptionsTests
         Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
         var responseString = await response.Content.ReadAsStringAsync();
         Assert.IsTrue(responseString.Contains("mock_result"));
-        Assert.AreEqual(1, _context.State.Pagination.Page);
-        Assert.AreEqual(10, _context.State.Pagination.PerPage);
+        Assert.AreEqual(1, _context.State.Pagination.StartIndex);
+        Assert.AreEqual(10, _context.State.Pagination.ItemsPerPage);
     }
     
     [TestMethod]

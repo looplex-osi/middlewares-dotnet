@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.Middlewares;
 
-public static partial class QueryEndpointsMiddleware
+public static partial class ScimV2Middlewares
 {
     public static readonly MiddlewareDelegate AttributesMiddleware = new(async (context, cancellationToken, next) =>
     {

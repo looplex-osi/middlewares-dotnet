@@ -1,14 +1,14 @@
 using Looplex.DotNet.Core.Application.Abstractions.Services;
 using Looplex.DotNet.Core.Application.ExtensionMethods;
-using Looplex.DotNet.Core.Common.Utils;
-using Looplex.DotNet.Core.Domain;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Services;
+using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Messages;
 using Looplex.OpenForExtension.Abstractions.Commands;
 using Looplex.OpenForExtension.Abstractions.Contexts;
 using Looplex.OpenForExtension.Abstractions.ExtensionMethods;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using RestSharp;
+using Method = RestSharp.Method;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.Services;
 
@@ -28,8 +28,8 @@ public class SchemaService(
         cancellationToken.ThrowIfCancellationRequested();
 
         await context.Plugins.ExecuteAsync<IHandleInput>(context, cancellationToken);
-        var page = context.GetRequiredValue<int>("Pagination.Page");
-        var perPage = context.GetRequiredValue<int>("Pagination.PerPage");
+        var startIndex = context.GetRequiredValue<int>("Pagination.StartIndex");
+        var itemsPerPage = context.GetRequiredValue<int>("Pagination.ItemsPerPage");
         var lang = context.GetValue<string?>("Lang");
             
         await context.Plugins.ExecuteAsync<IValidateInput>(context, cancellationToken);
@@ -43,18 +43,18 @@ public class SchemaService(
         if (!context.SkipDefaultAction)
         {
             var schemaIds = SchemaIds
-                .Skip(PaginationUtils.GetOffset(perPage, page))
-                .Take(perPage)
+                .Skip(Math.Min(0, startIndex - 1))
+                .Take(itemsPerPage)
                 .ToList();
 
             var records = await ResolveJsonSchemasAsync(schemaIds, lang);
             
-            var result = new PaginatedCollection
+            var result = new ListResponse
             {
-                Records = records.Select(r => (object)r).ToList(),
-                Page = page,
-                PerPage = perPage,
-                TotalCount = SchemaIds.Count
+                Resources = records.Select(r => (object)r).ToList(),
+                StartIndex = startIndex,
+                ItemsPerPage = itemsPerPage,
+                TotalResults = SchemaIds.Count
             };
             context.State.Pagination.TotalCount = SchemaIds.Count;
             

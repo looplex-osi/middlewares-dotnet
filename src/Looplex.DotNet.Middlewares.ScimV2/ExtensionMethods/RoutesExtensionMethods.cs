@@ -5,12 +5,12 @@ using System.Net;
 using Looplex.DotNet.Core.Application.Abstractions.Factories;
 using Looplex.DotNet.Core.Application.Abstractions.Services;
 using Looplex.DotNet.Core.Middlewares;
-using Looplex.DotNet.Core.WebAPI.Middlewares;
 using Looplex.DotNet.Core.WebAPI.Routes;
 using Looplex.DotNet.Core.Common.Utils;
 using Looplex.DotNet.Middlewares.OAuth2.Middlewares;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Services;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities;
+using Looplex.DotNet.Middlewares.ScimV2.Middlewares;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods;
 
@@ -137,7 +137,7 @@ public static class RoutesExtensionMethods
         Schemas.Add(typeof(T), (string)context.Result!);
         
         List<MiddlewareDelegate> getMiddlewares = [
-            AuthenticationMiddleware.AuthenticateMiddleware, CoreMiddlewares.PaginationMiddleware];
+            AuthenticationMiddleware.AuthenticateMiddleware, ScimV2Middlewares.PaginationMiddleware];
         getMiddlewares.AddRange(options.OptionsForGet?.Middlewares ?? []);
         getMiddlewares.Add(GetMiddleware<TService>());
         app.MapGet(

@@ -1,12 +1,12 @@
 ﻿using System.Net;
 using Looplex.DotNet.Core.Common.Utils;
 using Looplex.DotNet.Core.Middlewares;
-using Looplex.DotNet.Core.WebAPI.Middlewares;
 using Looplex.DotNet.Core.WebAPI.Routes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Services;
+using Looplex.DotNet.Middlewares.ScimV2.Middlewares;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods;
 
@@ -43,7 +43,7 @@ public static class SchemaRoutesExtensionMethods
     {
         List<MiddlewareDelegate> getMiddlewares =
         [
-            CoreMiddlewares.PaginationMiddleware,
+            ScimV2Middlewares.PaginationMiddleware,
             GetMiddleware()
         ];
         app.MapGet(
