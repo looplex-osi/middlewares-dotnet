@@ -10,6 +10,7 @@ using Looplex.DotNet.Core.Common.Utils;
 using Looplex.DotNet.Middlewares.OAuth2.Middlewares;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Services;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities;
+using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Configurations;
 using Looplex.DotNet.Middlewares.ScimV2.Middlewares;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods;
@@ -128,11 +129,20 @@ public static class RoutesExtensionMethods
     {
         var schemaService = app.ServiceProvider.GetRequiredService<ISchemaService>();
         var contextFactory = app.ServiceProvider.GetRequiredService<IContextFactory>();
+        var serviceProviderConfiguration = app.ServiceProvider.GetRequiredService<ServiceProviderConfiguration>();
+
         var context = contextFactory.Create([]);
         context.State.Id = jsonSchemaId;
         await schemaService.CreateAsync(context, cancellationToken);
         await schemaService.GetByIdAsync(context, cancellationToken);
         
+        serviceProviderConfiguration.Map.Add(new()
+        {
+            Type = typeof(T),
+            Resource = resource,
+            Service = typeof(TService)
+        });
+            
         // Cache the default jsonschema for model validation on deserialization purposes
         Schemas.Add(typeof(T), (string)context.Result!);
         

@@ -21,7 +21,7 @@ public partial class BulkResponseOperation
     /// The resource endpoint URL. REQUIRED in a response, except in the event of a POST failure.
     /// </summary>
     [JsonProperty("location")]
-    public Uri? Location { get; set; }
+    public string? Location { get; set; }
 
     /// <summary>
     /// The HTTP method of the current operation.

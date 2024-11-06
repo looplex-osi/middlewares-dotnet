@@ -12,7 +12,9 @@ namespace Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Configurations;
 /// configuration resource.
 /// </summary>
 public partial class ServiceProviderConfiguration
-{ 
+{
+    public virtual IList<ResourceMap> Map { get; private set; } = new List<ResourceMap>();
+    
     public static class Converter
     {
         public static readonly JsonSerializerSettings Settings = new()
@@ -34,4 +36,11 @@ public static partial class Serialize
     {
         return JsonConvert.SerializeObject(self, ServiceProviderConfiguration.Converter.Settings);
     }
+}
+
+public class ResourceMap
+{
+    public required Type Type { get; init; }
+    public required string Resource { get; init; }
+    public required Type Service { get; init; }
 }

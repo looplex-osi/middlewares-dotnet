@@ -16,6 +16,7 @@ using NSubstitute;
 using Looplex.DotNet.Middlewares.OAuth2.ExtensionMethods;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Services;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities;
+using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Configurations;
 using Microsoft.Extensions.Configuration;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.ExtensionMethods;
@@ -31,6 +32,7 @@ public class ScimV2RouteOptionsTests
     private IJwtService _jwtServiceMock = null!;
     private IHttpClientFactory _httpClientFactoryMock = null!;
     private ISchemaService _schemaServiceMock = null!;
+    private ServiceProviderConfiguration _serviceProviderConfigurationMock = null!;
     private IContext _context = null!;
     private HttpClient _client = null!;
     private IHost _host = null!;
@@ -57,6 +59,7 @@ public class ScimV2RouteOptionsTests
         _context.Result.Returns("mock_result");
         _context.Services.Returns(_serviceProviderMock); 
         _contextFactoryMock.Create(Arg.Any<IEnumerable<string>>()).Returns(_context);
+        _serviceProviderConfigurationMock = Substitute.For<ServiceProviderConfiguration>();
         _host = Host.CreateDefaultBuilder()
             .ConfigureWebHostDefaults(webBuilder =>
             {
@@ -70,6 +73,7 @@ public class ScimV2RouteOptionsTests
                         services.AddSingleton(_httpClientFactoryMock);
                         services.AddSingleton(_configurationMock);
                         services.AddSingleton(_schemaServiceMock);
+                        services.AddSingleton(_serviceProviderConfigurationMock);
 
                         services.AddOAuth2Services();
                     })

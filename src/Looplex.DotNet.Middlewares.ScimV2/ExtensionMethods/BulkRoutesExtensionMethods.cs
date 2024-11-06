@@ -20,7 +20,7 @@ public static class BulkRoutesExtensionMethods
         var service = httpContext.RequestServices.GetRequiredService<IBulkService>();
         
         using StreamReader reader = new(httpContext.Request.Body);
-        context.State.Resource = await reader.ReadToEndAsync(cancellationToken);
+        context.State.Request = await reader.ReadToEndAsync(cancellationToken);
 
         var id = (string)httpContext.Request.RouteValues["id"]!;
         context.State.Id = id;

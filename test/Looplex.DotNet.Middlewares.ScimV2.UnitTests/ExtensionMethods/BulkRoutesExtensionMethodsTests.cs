@@ -57,7 +57,7 @@ public class BulkRoutesExtensionMethodsTests
         await middleware(_context, _cancellationToken, () => Task.CompletedTask);
 
         // Assert
-        Assert.AreEqual(requestBody, _context.State.Resource);
+        Assert.AreEqual(requestBody, _context.State.Request);
         Assert.AreEqual(id, _context.State.Id);
         await _bulkService.Received(1).ExecuteBulkOperationsAsync(_context, _cancellationToken);
     }
