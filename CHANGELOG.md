@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="2.0.0"></a>
+## 2.0.0 (2024-11-12)
+
+### Features
+
+* added resourcetype service
+* added schemaService for retrieving SCIM api resources schemas
+* **bulkoperation:** added implementation of bulkoperation service
+* **bulkoperations:** added route for bulk operations
+* **bulkservice:** added some validations and added the execution of post operation
+* **schemaroutes:** added middleware to use schema routes
+* **scimv2:** added pagination middleware, added bulk operation objects
+* **scimv2:** added serverproviderconfiguration route
+
+### Bug Fixes
+
+* fix route names
+* **jsonutils:** moved to jsonutils on latest version of core package
+* **scimv2routeoptionstests:** fixed method not allowd for put test case
+
+### Breaking Changes
+
+* added schemaService for retrieving SCIM api resources schemas
+* **scimv2:** added pagination middleware, added bulk operation objects
+
 <a name="1.4.4"></a>
 ## 1.4.4 (2024-09-24)
 
