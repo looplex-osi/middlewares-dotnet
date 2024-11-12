@@ -3,7 +3,6 @@ using System.Net;
 using FluentAssertions;
 using Looplex.DotNet.Core.Application.Abstractions.Factories;
 using Looplex.DotNet.Core.Application.Abstractions.Services;
-using Looplex.DotNet.Core.Application.ExtensionMethods;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Services;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Configurations;
@@ -12,7 +11,6 @@ using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Messages;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Users;
 using Looplex.DotNet.Middlewares.ScimV2.Services;
 using Looplex.OpenForExtension.Abstractions.Contexts;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NSubstitute;
@@ -577,10 +575,10 @@ public class BulkServiceTests
         var visitor = BulkService.BulkIdVisitor(_bulkIdCrossReference);
 
         // Act
-        visitor(json["reference"]);
+        visitor(json["reference"]!);
 
         // Assert
-        Assert.AreEqual("123e4567-e89b-12d3-a456-426614174000", (string)json["reference"]);
+        Assert.AreEqual("123e4567-e89b-12d3-a456-426614174000", (string)json["reference"]!);
     }
 
     [TestMethod]
@@ -588,14 +586,14 @@ public class BulkServiceTests
     {
         // Arrange
         var json = JToken.Parse("{ \"reference\": \"someOtherId\" }");
-        var originalValue = (string)json["reference"];
+        var originalValue = (string)json["reference"]!;
         var visitor = BulkService.BulkIdVisitor(_bulkIdCrossReference);
 
         // Act
-        visitor(json["reference"]);
+        visitor(json["reference"]!);
 
         // Assert
-        Assert.AreEqual(originalValue, (string)json["reference"]);
+        Assert.AreEqual(originalValue, (string)json["reference"]!);
     }
 
     [TestMethod]
@@ -606,7 +604,7 @@ public class BulkServiceTests
         var visitor = BulkService.BulkIdVisitor(_bulkIdCrossReference);
 
         // Act & Assert
-        var ex = Assert.ThrowsException<Error>(() => visitor(json["reference"]));
+        var ex = Assert.ThrowsException<Error>(() => visitor(json["reference"]!));
         Assert.AreEqual("Bulk id unknownId not defined", ex.Message);
         Assert.AreEqual(ErrorScimType.InvalidValue, ex.ScimType);
         Assert.AreEqual((int)HttpStatusCode.BadRequest, ex.Status);
@@ -620,12 +618,12 @@ public class BulkServiceTests
         var visitor = BulkService.BulkIdVisitor(_bulkIdCrossReference);
 
         // Act
-        visitor(json["ref1"]);
-        visitor(json["ref2"]);
+        visitor(json["ref1"]!);
+        visitor(json["ref2"]!);
 
         // Assert
-        Assert.AreEqual("123e4567-e89b-12d3-a456-426614174000", (string)json["ref1"]);
-        Assert.AreEqual("456e1234-e89b-12d3-a456-426614174111", (string)json["ref2"]);
+        Assert.AreEqual("123e4567-e89b-12d3-a456-426614174000", (string)json["ref1"]!);
+        Assert.AreEqual("456e1234-e89b-12d3-a456-426614174111", (string)json["ref2"]!);
     }
     
     [TestMethod]
@@ -650,7 +648,7 @@ public class BulkServiceTests
         var createdId = "12345";
         
         _service.When(x => x.CreateAsync(Arg.Any<IContext>(), CancellationToken.None))
-            .Do((x) =>
+            .Do((_) =>
             {
                 _operationContext.Result = createdId;
             });
@@ -829,7 +827,7 @@ public class BulkServiceTests
 
         var createdUserId = Guid.NewGuid();
         _service.When(x => x.CreateAsync(Arg.Any<IContext>(), CancellationToken.None))
-            .Do((x) =>
+            .Do((_) =>
             {
                 _operationContext.Result = createdUserId.ToString();
             });
