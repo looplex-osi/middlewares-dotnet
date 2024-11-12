@@ -3,6 +3,7 @@ using Looplex.DotNet.Core.Application.Abstractions.Factories;
 using Looplex.DotNet.Core.Application.Abstractions.Services;
 using Looplex.DotNet.Core.Application.ExtensionMethods;
 using Looplex.DotNet.Core.Common.Exceptions;
+using Looplex.DotNet.Core.Common.Utils;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Services;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Configurations;
