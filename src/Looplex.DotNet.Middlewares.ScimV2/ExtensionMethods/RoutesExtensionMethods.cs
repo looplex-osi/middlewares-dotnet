@@ -54,7 +54,7 @@ public static class RoutesExtensionMethods
 
         await service.CreateAsync(context, cancellationToken);
         var id = context.Result;
-
+        
         httpContext.Response.StatusCode = (int)HttpStatusCode.Created;
         httpContext.Response.Headers.Location = $"{resource}/{id}";
     };
@@ -63,7 +63,6 @@ public static class RoutesExtensionMethods
         string resource)
         where TService : ICrudService => async (context, cancellationToken, _) =>
     {
-        // TODO
         HttpContext httpContext = context.State.HttpContext;
         var service = httpContext.RequestServices.GetRequiredService<TService>();
 
@@ -74,9 +73,6 @@ public static class RoutesExtensionMethods
         context.State.Operations = await reader.ReadToEndAsync(cancellationToken);
 
         await service.UpdateAsync(context, cancellationToken);
-
-        // TODO: The server MUST return a 200 OK (and the model in the body)
-        // if the "attributes" parameter is specified in the request.
 
         httpContext.Response.StatusCode = (int)HttpStatusCode.NoContent;
         httpContext.Response.Headers.Location = $"{resource}/{id}";

@@ -11,6 +11,7 @@ public static class ServicesExtensionMethods
     {
         services.AddSingleton<ISchemaService, SchemaService>();
         services.AddSingleton<IResourceTypeService, ResourceTypeService>();
+        services.AddSingleton<IBulkService, BulkService>();
 
         var config = new ServiceProviderConfiguration
         {

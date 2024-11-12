@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Messages;
 
@@ -15,7 +16,7 @@ public partial class BulkRequestOperation
     /// REQUIRED when 'method' is 'POST', 'PUT', or 'PATCH'.
     /// </summary>
     [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
-    public object? Data { get; set; }
+    public JToken? Data { get; set; }
 
     /// <summary>
     /// The HTTP method of the current operation.

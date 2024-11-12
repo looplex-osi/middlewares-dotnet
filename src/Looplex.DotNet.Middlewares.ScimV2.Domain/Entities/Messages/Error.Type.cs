@@ -8,8 +8,8 @@ public partial class Error : Exception
     public string Detail { get; private set; }
 
     [JsonProperty("scimType")]
-    public ErrorScimType ScimType { get; private set; }
+    public ErrorScimType? ScimType { get; private set; }
 
     [JsonProperty("status")]
-    public string Status { get; private set; }
+    public int Status { get; private set; }
 }

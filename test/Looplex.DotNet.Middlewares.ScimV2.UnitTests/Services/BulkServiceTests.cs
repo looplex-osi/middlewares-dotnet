@@ -1,14 +1,20 @@
 using System.Dynamic;
 using System.Net;
+using FluentAssertions;
+using Looplex.DotNet.Core.Application.Abstractions.Factories;
 using Looplex.DotNet.Core.Application.Abstractions.Services;
+using Looplex.DotNet.Core.Application.ExtensionMethods;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Services;
+using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Configurations;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Groups;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Messages;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Users;
 using Looplex.DotNet.Middlewares.ScimV2.Services;
 using Looplex.OpenForExtension.Abstractions.Contexts;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NSubstitute;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.Services;
@@ -23,6 +29,8 @@ public class BulkServiceTests
     private ICrudService _service = null!;
     private BulkResponse _bulkResponse = null!;
     private Dictionary<string, string> _bulkIdCrossReference = null!;
+    private IServiceProvider _serviceProvider = null!;
+    private IContextFactory _contextFactory = null!;
     
     [TestInitialize]
     public void Setup()
@@ -39,12 +47,29 @@ public class BulkServiceTests
         _operationContext = Substitute.For<IContext>();
         _service = Substitute.For<ICrudService>();
         _bulkResponse = new BulkResponse { Operations = new List<BulkResponseOperation>() };
-        _bulkIdCrossReference = new Dictionary<string, string>();
-
+        _bulkIdCrossReference = new Dictionary<string, string>
+        {
+            { "id1", "123e4567-e89b-12d3-a456-426614174000" },
+            { "id2", "456e1234-e89b-12d3-a456-426614174111" }
+        };
         // Set up dynamic state in contexts
         dynamic state = new ExpandoObject();
         _context.State.Returns(state);
         _operationContext.State.Returns(new ExpandoObject());
+        
+        _serviceProvider = Substitute.For<IServiceProvider>();
+        _contextFactory = Substitute.For<IContextFactory>();
+        
+        _serviceProvider.GetService(typeof(ServiceProviderConfiguration)).Returns(_serviceProviderConfiguration);
+        _serviceProvider.GetService(Arg.Is<Type>(t => typeof(ICrudService).IsAssignableFrom(t))).Returns(_service);
+        _contextFactory.Create(Arg.Any<IEnumerable<string>>()).Returns(_operationContext);
+        
+        if (!Schemas.ContainsKey(typeof(User)))
+            Schemas.Add(typeof(User), "{}");
+        if (!Schemas.ContainsKey(typeof(Group)))
+            Schemas.Add(typeof(Group), "{}");
+        if (!Schemas.ContainsKey(typeof(BulkRequest)))
+            Schemas.Add(typeof(BulkRequest), "{}");
     }
 
     [TestMethod]
@@ -101,7 +126,7 @@ public class BulkServiceTests
 
         Assert.AreEqual("Path /Users should refer to a specific resource when method is Delete", ex.Message);
         Assert.AreEqual(ErrorScimType.InvalidPath, ex.ScimType);
-        Assert.AreEqual(HttpStatusCode.BadRequest.ToString(), ex.Status);
+        Assert.AreEqual((int)HttpStatusCode.BadRequest, ex.Status);
     }
 
     [TestMethod]
@@ -120,7 +145,7 @@ public class BulkServiceTests
 
         Assert.AreEqual("Resource identifier invalid-guid is not valid", ex.Message);
         Assert.AreEqual(ErrorScimType.InvalidValue, ex.ScimType);
-        Assert.AreEqual(HttpStatusCode.BadRequest.ToString(), ex.Status);
+        Assert.AreEqual((int)HttpStatusCode.BadRequest, ex.Status);
     }
 
     [TestMethod]
@@ -139,7 +164,7 @@ public class BulkServiceTests
 
         Assert.AreEqual("Path NonExistentResource does not exist", ex.Message);
         Assert.AreEqual(ErrorScimType.InvalidPath, ex.ScimType);
-        Assert.AreEqual(HttpStatusCode.BadRequest.ToString(), ex.Status);
+        Assert.AreEqual((int)HttpStatusCode.BadRequest, ex.Status);
     }
     
     [TestMethod]
@@ -159,7 +184,7 @@ public class BulkServiceTests
 
         Assert.AreEqual($"Data should have value for method {operation.Method}", ex.Message);
         Assert.AreEqual(ErrorScimType.InvalidValue, ex.ScimType);
-        Assert.AreEqual(HttpStatusCode.BadRequest.ToString(), ex.Status);
+        Assert.AreEqual((int)HttpStatusCode.BadRequest, ex.Status);
     }
 
     [TestMethod]
@@ -170,7 +195,9 @@ public class BulkServiceTests
         {
             Method = Method.Post,
             BulkId = null,
-            Data = new { Name = "Test Data" },  // Include valid data for Post
+            Data = JsonConvert
+                .DeserializeObject<JToken>(JsonConvert
+                    .SerializeObject(new { Name = "Test Data" })),  // Include valid data for Post
             Path = ""
         };
 
@@ -180,7 +207,7 @@ public class BulkServiceTests
 
         Assert.AreEqual($"BulkId should have value for method {operation.Method}", ex.Message);
         Assert.AreEqual(ErrorScimType.InvalidValue, ex.ScimType);
-        Assert.AreEqual(HttpStatusCode.BadRequest.ToString(), ex.Status);
+        Assert.AreEqual((int)HttpStatusCode.BadRequest, ex.Status);
     }
 
     [TestMethod]
@@ -190,7 +217,9 @@ public class BulkServiceTests
         var operation = new BulkRequestOperation
         {
             Method = Method.Put,
-            Data = new { Name = "Valid Data" },
+            Data = JsonConvert
+                .DeserializeObject<JToken>(JsonConvert
+                    .SerializeObject(new { Name = "Test Data" })),
             Path = ""
         };
 
@@ -227,7 +256,7 @@ public class BulkServiceTests
 
         Assert.AreEqual("BulkIds id1 must be unique", ex.Message);
         Assert.AreEqual(ErrorScimType.Uniqueness, ex.ScimType);
-        Assert.AreEqual(HttpStatusCode.BadRequest.ToString(), ex.Status);
+        Assert.AreEqual((int)HttpStatusCode.BadRequest, ex.Status);
     }
 
     [TestMethod]
@@ -266,7 +295,9 @@ public class BulkServiceTests
             Method = Method.Post,
             Path = "/Users",
             BulkId = "bulkId1",
-            Data = new { Name = "John Doe" }
+            Data = JsonConvert
+                .DeserializeObject<JToken>(JsonConvert
+                    .SerializeObject(new { Name = "Test Data" }))
         };
 
         var resourceMap = new ResourceMap
@@ -278,11 +309,11 @@ public class BulkServiceTests
 
         // Mock service to set Result in context
         var createdId = "12345";
-        _context.Result = createdId;
+        _operationContext.Result = createdId;
 
         // Act
         await BulkService.ExecutePostMethod(
-            _context, CancellationToken.None, _operationContext, operation, _service, _bulkResponse, resourceMap, _bulkIdCrossReference);
+            _operationContext, operation, _service, _bulkResponse, resourceMap, CancellationToken.None);
 
         // Assert
         var serializedData = JsonConvert.SerializeObject(operation.Data);
@@ -295,8 +326,7 @@ public class BulkServiceTests
         Assert.AreEqual("Users/12345", responseOperation.Location);
         Assert.AreEqual((int)HttpStatusCode.Created, responseOperation.Status);
 
-        Assert.AreEqual(createdId, _bulkIdCrossReference[operation.BulkId]);
-        await _service.Received(1).CreateAsync(_context, CancellationToken.None);
+        await _service.Received(1).CreateAsync(_operationContext, CancellationToken.None);
     }
 
     [TestMethod]
@@ -320,11 +350,9 @@ public class BulkServiceTests
 
         // Mock service to set Result in context
         var createdId = "67890";
-        _context.Result = createdId;
-
+        _operationContext.Result = createdId;
         // Act
-        await BulkService.ExecutePostMethod(
-            _context, CancellationToken.None, _operationContext, operation, _service, _bulkResponse, resourceMap, _bulkIdCrossReference);
+        await BulkService.ExecutePostMethod(_operationContext, operation, _service, _bulkResponse, resourceMap, CancellationToken.None);
 
         // Assert
         Assert.AreEqual("null", _operationContext.State.Resource);
@@ -336,7 +364,543 @@ public class BulkServiceTests
         Assert.AreEqual("Users/67890", responseOperation.Location);
         Assert.AreEqual((int)HttpStatusCode.Created, responseOperation.Status);
 
-        Assert.AreEqual(createdId, _bulkIdCrossReference[operation.BulkId]);
-        await _service.Received(1).CreateAsync(_context, CancellationToken.None);
+        await _service.Received(1).CreateAsync(_operationContext, CancellationToken.None);
+    }
+    
+    [TestMethod]
+    public async Task ExecutePutMethod_ShouldSerializeDataAndAddOperationToBulkResponse()
+    {
+        // Arrange
+        var operation = new BulkRequestOperation
+        {
+            Method = Method.Put,
+            Path = "/Users/123e4567-e89b-12d3-a456-426614174000",
+            Data = JsonConvert
+                .DeserializeObject<JToken>(JsonConvert
+                    .SerializeObject(new { Name = "Jane Doe" }))
+        };
+
+        var resourceMap = new ResourceMap
+        {
+            Resource = "Users",
+            Type = typeof(User),
+            Service = typeof(IUserService)
+        };
+
+        var resourceUniqueId = Guid.Parse("123e4567-e89b-12d3-a456-426614174000");
+
+        // Mock UpdateAsync to set Result in operation context
+        var updatedId = "123e4567-e89b-12d3-a456-426614174000";
+        _operationContext.Result = updatedId;
+
+        // Act
+        await BulkService.ExecutePutMethod(
+            _operationContext, operation, _service, _bulkResponse, resourceMap, resourceUniqueId, CancellationToken.None);
+
+        // Assert
+        var serializedData = JsonConvert.SerializeObject(operation.Data);
+        Assert.AreEqual(serializedData, _operationContext.State.Resource);
+        Assert.AreEqual(resourceUniqueId.ToString(), _operationContext.State.Id);
+
+        Assert.AreEqual(1, _bulkResponse.Operations.Count);
+        var responseOperation = _bulkResponse.Operations[0];
+        Assert.AreEqual(Method.Put, responseOperation.Method);
+        Assert.AreEqual("/Users/123e4567-e89b-12d3-a456-426614174000", responseOperation.Path);
+        Assert.AreEqual("Users/123e4567-e89b-12d3-a456-426614174000", responseOperation.Location);
+        Assert.AreEqual((int)HttpStatusCode.NoContent, responseOperation.Status);
+
+        await _service.Received(1).UpdateAsync(_operationContext, CancellationToken.None);
+    }
+
+    [TestMethod]
+    public async Task ExecutePutMethod_ShouldHandleNullData()
+    {
+        // Arrange
+        var operation = new BulkRequestOperation
+        {
+            Method = Method.Put,
+            Path = "/Groups/456e1234-e89b-12d3-a456-426614174111",
+            Data = null
+        };
+
+        var resourceMap = new ResourceMap
+        {
+            Resource = "Groups",
+            Type = typeof(Group),
+            Service = typeof(IGroupService)
+        };
+
+        var resourceUniqueId = Guid.Parse("456e1234-e89b-12d3-a456-426614174111");
+
+        // Mock UpdateAsync to set Result in operation context
+        var updatedId = "456e1234-e89b-12d3-a456-426614174111";
+        _operationContext.Result = updatedId;
+
+        // Act
+        await BulkService.ExecutePutMethod(
+            _operationContext, operation, _service, _bulkResponse, resourceMap, resourceUniqueId, CancellationToken.None);
+
+        // Assert
+        Assert.AreEqual("null", _operationContext.State.Resource);
+        Assert.AreEqual(resourceUniqueId.ToString(), _operationContext.State.Id);
+
+        Assert.AreEqual(1, _bulkResponse.Operations.Count);
+        var responseOperation = _bulkResponse.Operations[0];
+        Assert.AreEqual(Method.Put, responseOperation.Method);
+        Assert.AreEqual("/Groups/456e1234-e89b-12d3-a456-426614174111", responseOperation.Path);
+        Assert.AreEqual("Groups/456e1234-e89b-12d3-a456-426614174111", responseOperation.Location);
+        Assert.AreEqual((int)HttpStatusCode.NoContent, responseOperation.Status);
+
+        await _service.Received(1).UpdateAsync(_operationContext, CancellationToken.None);
+    }
+    
+    [TestMethod]
+    public async Task ExecutePatchMethod_ShouldSerializeOperationsAndAddOperationToBulkResponse()
+    {
+        // Arrange
+        var operation = new BulkRequestOperation
+        {
+            Method = Method.Patch,
+            Path = "/Users/123e4567-e89b-12d3-a456-426614174000",
+            Data = JsonConvert
+                .DeserializeObject<JToken>(JsonConvert
+                    .SerializeObject(new { Patch = "updateData" }))
+        };
+
+        var resourceMap = new ResourceMap
+        {
+            Resource = "Users",
+            Type = typeof(User),
+            Service = typeof(IUserService)
+        };
+
+        var resourceUniqueId = Guid.Parse("123e4567-e89b-12d3-a456-426614174000");
+
+        // Mock UpdateAsync to set Result in operation context
+        var updatedId = "123e4567-e89b-12d3-a456-426614174000";
+        _operationContext.Result = updatedId;
+
+        // Act
+        await BulkService.ExecutePatchMethod(
+            _operationContext, operation, _service, _bulkResponse, resourceMap, resourceUniqueId, CancellationToken.None);
+
+        // Assert
+        var serializedData = JsonConvert.SerializeObject(operation.Data);
+        Assert.AreEqual(serializedData, _operationContext.State.Operations);
+        Assert.AreEqual(resourceUniqueId.ToString(), _operationContext.State.Id);
+
+        Assert.AreEqual(1, _bulkResponse.Operations.Count);
+        var responseOperation = _bulkResponse.Operations[0];
+        Assert.AreEqual(Method.Patch, responseOperation.Method);
+        Assert.AreEqual("/Users/123e4567-e89b-12d3-a456-426614174000", responseOperation.Path);
+        Assert.AreEqual("Users/123e4567-e89b-12d3-a456-426614174000", responseOperation.Location);
+        Assert.AreEqual((int)HttpStatusCode.NoContent, responseOperation.Status);
+
+        await _service.Received(1).UpdateAsync(_operationContext, CancellationToken.None);
+    }
+
+    [TestMethod]
+    public async Task ExecutePatchMethod_ShouldHandleNullData()
+    {
+        // Arrange
+        var operation = new BulkRequestOperation
+        {
+            Method = Method.Patch,
+            Path = "/Groups/456e1234-e89b-12d3-a456-426614174111",
+            Data = null
+        };
+
+        var resourceMap = new ResourceMap
+        {
+            Resource = "Groups",
+            Type = typeof(Group),
+            Service = typeof(IGroupService)
+        };
+
+        var resourceUniqueId = Guid.Parse("456e1234-e89b-12d3-a456-426614174111");
+
+        // Mock UpdateAsync to set Result in operation context
+        var updatedId = "456e1234-e89b-12d3-a456-426614174111";
+        _operationContext.Result = updatedId;
+
+        // Act
+        await BulkService.ExecutePatchMethod(
+            _operationContext, operation, _service, _bulkResponse, resourceMap, resourceUniqueId, CancellationToken.None);
+
+        // Assert
+        Assert.AreEqual("null", _operationContext.State.Operations);
+        Assert.AreEqual(resourceUniqueId.ToString(), _operationContext.State.Id);
+
+        Assert.AreEqual(1, _bulkResponse.Operations.Count);
+        var responseOperation = _bulkResponse.Operations[0];
+        Assert.AreEqual(Method.Patch, responseOperation.Method);
+        Assert.AreEqual("/Groups/456e1234-e89b-12d3-a456-426614174111", responseOperation.Path);
+        Assert.AreEqual("Groups/456e1234-e89b-12d3-a456-426614174111", responseOperation.Location);
+        Assert.AreEqual((int)HttpStatusCode.NoContent, responseOperation.Status);
+
+        await _service.Received(1).UpdateAsync(_operationContext, CancellationToken.None);
+    }
+    
+    [TestMethod]
+    public async Task ExecuteDeleteMethod_ShouldSetIdAndAddOperationToBulkResponse()
+    {
+        // Arrange
+        var operation = new BulkRequestOperation
+        {
+            Method = Method.Delete,
+            Path = "/Users/123e4567-e89b-12d3-a456-426614174000"
+        };
+
+        var resourceUniqueId = Guid.Parse("123e4567-e89b-12d3-a456-426614174000");
+
+        // Act
+        await BulkService.ExecuteDeleteMethod(
+            _operationContext, operation, _service, _bulkResponse, resourceUniqueId, CancellationToken.None);
+
+        // Assert
+        Assert.AreEqual(resourceUniqueId.ToString(), _operationContext.State.Id);
+
+        Assert.AreEqual(1, _bulkResponse.Operations.Count);
+        var responseOperation = _bulkResponse.Operations[0];
+        Assert.AreEqual(Method.Delete, responseOperation.Method);
+        Assert.AreEqual("/Users/123e4567-e89b-12d3-a456-426614174000", responseOperation.Path);
+        Assert.AreEqual((int)HttpStatusCode.NoContent, responseOperation.Status);
+
+        await _service.Received(1).DeleteAsync(_operationContext, CancellationToken.None);
+    }
+    
+    [TestMethod]
+    public void BulkIdVisitor_ShouldReplaceBulkId_WhenReferenceExists()
+    {
+        // Arrange
+        var json = JToken.Parse("{ \"reference\": \"bulkId:id1\" }");
+        var visitor = BulkService.BulkIdVisitor(_bulkIdCrossReference);
+
+        // Act
+        visitor(json["reference"]);
+
+        // Assert
+        Assert.AreEqual("123e4567-e89b-12d3-a456-426614174000", (string)json["reference"]);
+    }
+
+    [TestMethod]
+    public void BulkIdVisitor_ShouldNotModifyNode_WhenNoBulkIdPrefix()
+    {
+        // Arrange
+        var json = JToken.Parse("{ \"reference\": \"someOtherId\" }");
+        var originalValue = (string)json["reference"];
+        var visitor = BulkService.BulkIdVisitor(_bulkIdCrossReference);
+
+        // Act
+        visitor(json["reference"]);
+
+        // Assert
+        Assert.AreEqual(originalValue, (string)json["reference"]);
+    }
+
+    [TestMethod]
+    public void BulkIdVisitor_ShouldThrowError_WhenBulkIdReferenceDoesNotExist()
+    {
+        // Arrange
+        var json = JToken.Parse("{ \"reference\": \"bulkId:unknownId\" }");
+        var visitor = BulkService.BulkIdVisitor(_bulkIdCrossReference);
+
+        // Act & Assert
+        var ex = Assert.ThrowsException<Error>(() => visitor(json["reference"]));
+        Assert.AreEqual("Bulk id unknownId not defined", ex.Message);
+        Assert.AreEqual(ErrorScimType.InvalidValue, ex.ScimType);
+        Assert.AreEqual((int)HttpStatusCode.BadRequest, ex.Status);
+    }
+
+    [TestMethod]
+    public void BulkIdVisitor_ShouldHandleMultipleBulkIdReferences()
+    {
+        // Arrange
+        var json = JToken.Parse("{ \"ref1\": \"bulkId:id1\", \"ref2\": \"bulkId:id2\" }");
+        var visitor = BulkService.BulkIdVisitor(_bulkIdCrossReference);
+
+        // Act
+        visitor(json["ref1"]);
+        visitor(json["ref2"]);
+
+        // Assert
+        Assert.AreEqual("123e4567-e89b-12d3-a456-426614174000", (string)json["ref1"]);
+        Assert.AreEqual("456e1234-e89b-12d3-a456-426614174111", (string)json["ref2"]);
+    }
+    
+    [TestMethod]
+    public async Task ExecuteBulkOperationsAsync_ShouldProcessPostOperationSuccessfully()
+    {
+        // Arrange
+        var bulkRequest = new BulkRequest
+        {
+            Operations = new List<BulkRequestOperation>
+            {
+                new BulkRequestOperation
+                {
+                    Method = Method.Post,
+                    Path = "/Users",
+                    BulkId = "bulkId1",
+                    Data = new JObject { { "name", "John Doe" } }
+                }
+            }
+        };
+        _context.State.Request = bulkRequest.ToJson();
+
+        var createdId = "12345";
+        
+        _service.When(x => x.CreateAsync(Arg.Any<IContext>(), CancellationToken.None))
+            .Do((x) =>
+            {
+                _operationContext.Result = createdId;
+            });
+
+        // Act
+        var executeTask = new BulkService(_serviceProvider, _contextFactory)
+            .ExecuteBulkOperationsAsync(_context, CancellationToken.None);
+        await executeTask;
+
+        // Assert
+        var bulkResponse = JsonConvert.DeserializeObject<BulkResponse>((string)_context.Result!)!;
+        Assert.AreEqual(1, bulkResponse.Operations.Count);
+        Assert.AreEqual(Method.Post, bulkResponse.Operations[0].Method);
+        Assert.AreEqual("/Users", bulkResponse.Operations[0].Path);
+        Assert.AreEqual("Users/12345", bulkResponse.Operations[0].Location);
+        Assert.AreEqual((int)HttpStatusCode.Created, bulkResponse.Operations[0].Status);
+    }
+
+    [TestMethod]
+    public async Task ExecuteBulkOperationsAsync_ShouldProcessDeleteOperationSuccessfully()
+    {
+        // Arrange
+        var bulkRequest = new BulkRequest
+        {
+            Operations = new List<BulkRequestOperation>
+            {
+                new BulkRequestOperation
+                {
+                    Method = Method.Delete,
+                    Path = "/Users/123e4567-e89b-12d3-a456-426614174000"
+                }
+            }
+        };
+        _context.State.Request = bulkRequest.ToJson();
+
+        // Act
+        await new BulkService(_serviceProvider, _contextFactory)
+            .ExecuteBulkOperationsAsync(_context, CancellationToken.None);
+
+        // Assert
+        var bulkResponse = JsonConvert.DeserializeObject<BulkResponse>((string)_context.Result!)!;
+        Assert.AreEqual(1, bulkResponse.Operations.Count);
+        Assert.AreEqual(Method.Delete, bulkResponse.Operations[0].Method);
+        Assert.AreEqual("/Users/123e4567-e89b-12d3-a456-426614174000", bulkResponse.Operations[0].Path);
+        Assert.AreEqual((int)HttpStatusCode.NoContent, bulkResponse.Operations[0].Status);
+    }
+
+    [TestMethod]
+    public async Task ExecuteBulkOperationsAsync_ShouldHandleMissingBulkIdForPostOperation()
+    {
+        // Arrange
+        var bulkRequest = new BulkRequest
+        {
+            Operations = new List<BulkRequestOperation>
+            {
+                new BulkRequestOperation
+                {
+                    Method = Method.Post,
+                    Path = "/Users",
+                    Data = new JObject { { "name", "John Doe" } }
+                },
+                new BulkRequestOperation
+                {
+                    Method = Method.Post,
+                    Path = "/WillNotExecute",
+                    Data = null
+                }
+            },
+            FailOnErrors = 1
+        };
+        _context.State.Request = bulkRequest.ToJson();
+
+        // Act
+        await new BulkService(_serviceProvider, _contextFactory)
+            .ExecuteBulkOperationsAsync(_context, CancellationToken.None);
+        
+        // Assert
+        var bulkResponse = JsonConvert.DeserializeObject<BulkResponse>((string)_context.Result!)!;
+        bulkResponse.Operations.Count.Should().Be(1);
+        var error = bulkResponse.Operations[0].Response!.ToObject<Error>()!;
+        Assert.AreEqual("BulkId should have value for method Post", error.Detail);
+    }
+
+    [TestMethod]
+    public async Task ExecuteBulkOperationsAsync_ShouldAddErrorToBulkResponse_WhenResourceIdentifierIsInvalid()
+    {
+        // Arrange
+        var bulkRequest = new BulkRequest
+        {
+            Operations = new List<BulkRequestOperation>
+            {
+                new BulkRequestOperation
+                {
+                    Method = Method.Patch,
+                    Path = "/NonExistent/12345",
+                    Data = new JObject { { "updateField", "value" } }
+                }
+            },
+            FailOnErrors = 1
+        };
+        _context.State.Request = bulkRequest.ToJson();
+
+        // Act
+        await new BulkService(_serviceProvider, _contextFactory)
+            .ExecuteBulkOperationsAsync(_context, CancellationToken.None);
+
+        // Assert
+        var bulkResponse = JsonConvert.DeserializeObject<BulkResponse>((string)_context.Result!)!;
+        Assert.AreEqual(1, bulkResponse.Operations.Count);
+        Assert.AreEqual(Method.Patch, bulkResponse.Operations[0].Method);
+        Assert.AreEqual("/NonExistent/12345", bulkResponse.Operations[0].Path);
+        Assert.AreEqual((int)HttpStatusCode.BadRequest, bulkResponse.Operations[0].Status);
+        var error = bulkResponse.Operations[0].Response!.ToObject<Error>()!;
+        Assert.AreEqual("Resource identifier 12345 is not valid", error.Detail);
+    }
+
+    [TestMethod]
+    public async Task ExecuteBulkOperationsAsync_ShouldAddErrorToBulkResponse_WhenOperationFails()
+    {
+        // Arrange
+        var id = Guid.NewGuid();
+        var bulkRequest = new BulkRequest
+        {
+            Operations = new List<BulkRequestOperation>
+            {
+                new BulkRequestOperation
+                {
+                    Method = Method.Patch,
+                    Path = $"/NonExistent/{id}",
+                    Data = new JObject { { "updateField", "value" } }
+                }
+            },
+            FailOnErrors = 1
+        };
+        _context.State.Request = bulkRequest.ToJson();
+
+        // Act
+        await new BulkService(_serviceProvider, _contextFactory)
+            .ExecuteBulkOperationsAsync(_context, CancellationToken.None);
+
+        // Assert
+        var bulkResponse = JsonConvert.DeserializeObject<BulkResponse>((string)_context.Result!)!;
+        Assert.AreEqual(1, bulkResponse.Operations.Count);
+        Assert.AreEqual(Method.Patch, bulkResponse.Operations[0].Method);
+        Assert.AreEqual($"/NonExistent/{id}", bulkResponse.Operations[0].Path);
+        Assert.AreEqual((int)HttpStatusCode.BadRequest, bulkResponse.Operations[0].Status);
+        var error = bulkResponse.Operations[0].Response!.ToObject<Error>()!;
+        Assert.AreEqual("Path NonExistent does not exist", error.Detail);
+    }
+    
+    [TestMethod]
+    public async Task ExecuteBulkOperationsAsync_ShouldProcessMultipleOperationsWithBulkIdReference()
+    {
+        // Arrange
+        var groupId = Guid.NewGuid();
+        var bulkRequest = new BulkRequest
+        {
+            Operations = new List<BulkRequestOperation>
+            {
+                new BulkRequestOperation
+                {
+                    Method = Method.Post,
+                    Path = "/Users",
+                    BulkId = "bulkId1",
+                    Data = new JObject { { "name", "John Doe" } }
+                },
+                new BulkRequestOperation
+                {
+                    Method = Method.Put,
+                    Path = $"/Groups/{groupId}",
+                    Data = new JObject { { "userReference", "bulkId:bulkId1" } }
+                }
+            }
+        };
+        _context.State.Request = bulkRequest.ToJson();
+
+        var createdUserId = Guid.NewGuid();
+        _service.When(x => x.CreateAsync(Arg.Any<IContext>(), CancellationToken.None))
+            .Do((x) =>
+            {
+                _operationContext.Result = createdUserId.ToString();
+            });
+
+        // Act
+        await new BulkService(_serviceProvider, _contextFactory)
+            .ExecuteBulkOperationsAsync(_context, CancellationToken.None);
+
+        // Assert
+        var bulkResponse = JsonConvert.DeserializeObject<BulkResponse>((string)_context.Result!)!;
+
+        // Verify first operation was processed
+        Assert.AreEqual(2, bulkResponse.Operations.Count);
+        Assert.AreEqual(Method.Post, bulkResponse.Operations[0].Method);
+        Assert.AreEqual("/Users", bulkResponse.Operations[0].Path);
+        Assert.AreEqual($"Users/{createdUserId}", bulkResponse.Operations[0].Location);
+        Assert.AreEqual((int)HttpStatusCode.Created, bulkResponse.Operations[0].Status);
+
+        // Verify second operation processed with BulkId replaced
+        Assert.AreEqual(Method.Put, bulkResponse.Operations[1].Method);
+        Assert.AreEqual($"/Groups/{groupId}", bulkResponse.Operations[1].Path);
+        Assert.AreEqual((int)HttpStatusCode.NoContent, bulkResponse.Operations[1].Status);
+
+        await _service
+            .Received(1)
+            .UpdateAsync(
+                Arg.Is<IContext>(c => AssertThatBulkIdWasReplaced(c, createdUserId)), 
+                Arg.Any<CancellationToken>());
+    }
+
+    private bool AssertThatBulkIdWasReplaced(IContext context, Guid id)
+    {
+        var data = JsonConvert.DeserializeObject<JToken>((string)context.State.Resource!)!;
+        var value = data.SelectToken("userReference")?.Value<string>();
+        value.Should().Be(id.ToString());
+        return true;
+    }
+
+    [TestMethod]
+    public async Task ExecuteBulkOperationsAsync_ShouldThrowError_WhenBulkIdReferenceNotFound()
+    {
+        // Arrange
+        var bulkRequest = new BulkRequest
+        {
+            Operations = new List<BulkRequestOperation>
+            {
+                new BulkRequestOperation
+                {
+                    Method = Method.Post,
+                    Path = "/Users",
+                    Data = new JObject { { "name", "John Doe" } }
+                },
+                new BulkRequestOperation
+                {
+                    Method = Method.Put,
+                    Path = $"/Groups/{Guid.NewGuid()}",
+                    Data = new JObject { { "userReference", "bulkId:missingBulkId" } }
+                }
+            }
+        };
+        _context.State.Request = bulkRequest.ToJson();
+
+        // Act & Assert
+        await new BulkService(_serviceProvider, _contextFactory)
+                .ExecuteBulkOperationsAsync(_context, CancellationToken.None);
+
+        var bulkResponse = JsonConvert.DeserializeObject<BulkResponse>((string)_context.Result!)!;
+        Assert.AreEqual(2, bulkResponse.Operations.Count);
+        Assert.AreEqual((int)HttpStatusCode.BadRequest, bulkResponse.Operations[0].Status);
+        var error = bulkResponse.Operations[1].Response!.ToObject<Error>()!;
+        Assert.AreEqual(ErrorScimType.InvalidValue, error.ScimType);
+        Assert.AreEqual("Bulk id missingBulkId not defined", error.Detail);
     }
 }

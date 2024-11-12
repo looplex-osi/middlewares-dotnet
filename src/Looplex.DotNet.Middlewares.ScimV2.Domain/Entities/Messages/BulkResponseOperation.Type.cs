@@ -1,4 +1,5 @@
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Messages;
 
@@ -15,7 +16,7 @@ public partial class BulkResponseOperation
     /// REQUIRED when 'method' is 'POST', 'PUT', or 'PATCH'.
     /// </summary>
     [JsonProperty("data", NullValueHandling = NullValueHandling.Ignore)]
-    public object? Data { get; set; }
+    public JToken? Data { get; set; }
 
     /// <summary>
     /// The resource endpoint URL. REQUIRED in a response, except in the event of a POST failure.
@@ -40,13 +41,13 @@ public partial class BulkResponseOperation
     /// indicating an HTTP status other than 200.
     /// </summary>
     [JsonProperty("response", NullValueHandling = NullValueHandling.Ignore)]
-    public object? Response { get; set; }
+    public JToken? Response { get; set; }
 
     /// <summary>
     /// The HTTP response status code for the requested operation.
     /// </summary>
     [JsonProperty("status", NullValueHandling = NullValueHandling.Ignore)]
-    public long? Status { get; set; }
+    public int? Status { get; set; }
 
     /// <summary>
     /// The current resource version. Used if the service provider supports ETags and 'method' is

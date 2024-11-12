@@ -7,11 +7,13 @@ using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Services;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Configurations;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Messages;
+using Looplex.DotNet.Middlewares.ScimV2.Utils;
 using Looplex.OpenForExtension.Abstractions.Commands;
 using Looplex.OpenForExtension.Abstractions.Contexts;
 using Looplex.OpenForExtension.Abstractions.ExtensionMethods;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.Services;
 
@@ -19,11 +21,7 @@ public class BulkService(
     IServiceProvider serviceProvider,
     IContextFactory contextFactory) : IBulkService
 {
-    /// <summary>
-    /// This is a collection with the default json.schemas that the application will use in its services.
-    /// The action value of the json.schema is supposed to be resolved by an external service such as redis.
-    /// </summary>
-    internal static IList<string> SchemaIds = [];
+    internal const string BulkIdValuePrefix = "bulkId:";
     
     public async Task ExecuteBulkOperationsAsync(IContext context, CancellationToken cancellationToken)
     {
@@ -65,28 +63,74 @@ public class BulkService(
                     var service = (ICrudService)serviceProvider.GetRequiredService(resourceMap.Service);
                     var operationContext = contextFactory.Create([]);
                     operationContext.State.ParentContext = context;
-
-                    if (operation.Method == Domain.Entities.Messages.Method.Post)
+                    
+                    if (operation.Data != null)
                     {
-                        await ExecutePostMethod(
-                            context,
-                            cancellationToken,
+                        JsonUtils.Traverse(operation.Data, BulkIdVisitor(bulkIdCrossReference));
+                    }
+                    
+                    if (operation.Method == Method.Post)
+                    {
+                        var id = await ExecutePostMethod(
                             operationContext,
                             operation,
                             service,
                             bulkResponse,
                             resourceMap,
-                            bulkIdCrossReference);
+                            cancellationToken);
+
+                        bulkIdCrossReference[operation.BulkId!] = id;
                     }
-                    // TODO
+                    else if (operation.Method == Method.Put)
+                    {
+                        await ExecutePutMethod(
+                            operationContext,
+                            operation,
+                            service,
+                            bulkResponse,
+                            resourceMap,
+                            resourceUniqueId!.Value,
+                            cancellationToken);
+                    }
+                    else if (operation.Method == Method.Put)
+                    {
+                        await ExecutePatchMethod(
+                            operationContext,
+                            operation,
+                            service,
+                            bulkResponse,
+                            resourceMap,
+                            resourceUniqueId!.Value,
+                            cancellationToken);
+                    }
+                    else if (operation.Method == Method.Delete)
+                    {
+                        await ExecuteDeleteMethod(
+                            operationContext,
+                            operation,
+                            service,
+                            bulkResponse,
+                            resourceUniqueId!.Value,
+                            cancellationToken);
+                    }
                 }
                 catch (Exception e)
                 {
+                    if (e is not Error error)
+                        error = new Error(
+                            e.Message,
+                            (int)HttpStatusCode.InternalServerError);
+                    
                     errorCount++;
-                    if (errorCount >= bulkRequest.FailOnErrors)
+                    if (errorCount > bulkRequest.FailOnErrors)
+                        break;
+                    bulkResponse.Operations.Add(new ()
                     {
-                        // TODO
-                    }
+                        Method = operation.Method,
+                        Path = operation.Path,
+                        Status = error.Status,
+                        Response = error.ToJToken()
+                    });
                 }
             }
             
@@ -98,14 +142,38 @@ public class BulkService(
         await context.Plugins.ExecuteAsync<IReleaseUnmanagedResources>(context, cancellationToken);
     }
 
-    internal static async Task ExecutePostMethod(IContext context, CancellationToken cancellationToken,
+    internal static Action<JToken> BulkIdVisitor(Dictionary<string, string> bulkIdCrossReference)
+    {
+        return (node) =>
+        {
+            if (node.Type == JTokenType.String)
+            {
+                var nodeValue = node.Value<string>();
+
+                if (!string.IsNullOrWhiteSpace(nodeValue) && nodeValue.StartsWith(BulkIdValuePrefix))
+                {
+                    var key = nodeValue[BulkIdValuePrefix.Length..];
+
+                    if (!bulkIdCrossReference.TryGetValue(key, out var bulkIdValue))
+                        throw new Error(
+                            $"Bulk id {key} not defined",
+                            ErrorScimType.InvalidValue,
+                            (int)HttpStatusCode.BadRequest);
+                                    
+                    node.Replace(bulkIdValue);
+                }
+            }
+        };
+    }
+
+    internal static async Task<string> ExecutePostMethod(
         IContext operationContext, BulkRequestOperation operation, ICrudService service, BulkResponse bulkResponse,
-        ResourceMap resourceMap, Dictionary<string, string> bulkIdCrossReference)
+        ResourceMap resourceMap, CancellationToken cancellationToken)
     {
         operationContext.State.Resource = JsonConvert.SerializeObject(operation.Data!);
 
-        await service.CreateAsync(context, cancellationToken);
-        var id = (string)context.Result!;
+        await service.CreateAsync(operationContext, cancellationToken);
+        var id = (string)operationContext.Result!;
 
         bulkResponse.Operations.Add(new ()
         {
@@ -115,29 +183,84 @@ public class BulkService(
             Status = (int)HttpStatusCode.Created
         });
 
-        bulkIdCrossReference[operation.BulkId!] = id;
+        return id;
+    }
+    
+    internal static async Task ExecutePutMethod(
+        IContext operationContext, BulkRequestOperation operation, ICrudService service, BulkResponse bulkResponse,
+        ResourceMap resourceMap, Guid resourceUniqueId, CancellationToken cancellationToken)
+    {
+        operationContext.State.Id = resourceUniqueId.ToString();
+        operationContext.State.Resource = JsonConvert.SerializeObject(operation.Data!);
+
+        await service.UpdateAsync(operationContext, cancellationToken);
+        var id = (string)operationContext.Result!;
+
+        bulkResponse.Operations.Add(new ()
+        {
+            Method = operation.Method,
+            Path = operation.Path,
+            Location = $"{resourceMap.Resource}/{id}",
+            Status = (int)HttpStatusCode.NoContent
+        });
+    }
+    
+    internal static async Task ExecutePatchMethod(
+        IContext operationContext, BulkRequestOperation operation, ICrudService service, BulkResponse bulkResponse,
+        ResourceMap resourceMap, Guid resourceUniqueId, CancellationToken cancellationToken)
+    {
+        operationContext.State.Id = resourceUniqueId.ToString();
+        operationContext.State.Operations = JsonConvert.SerializeObject(operation.Data!);
+
+        await service.UpdateAsync(operationContext, cancellationToken);
+        var id = (string)operationContext.Result!;
+
+        bulkResponse.Operations.Add(new ()
+        {
+            Method = operation.Method,
+            Path = operation.Path,
+            Location = $"{resourceMap.Resource}/{id}",
+            Status = (int)HttpStatusCode.NoContent
+        });
+    }
+    
+    internal static async Task ExecuteDeleteMethod(
+        IContext operationContext, BulkRequestOperation operation, ICrudService service, BulkResponse bulkResponse,
+        Guid resourceUniqueId, CancellationToken cancellationToken)
+    {
+        operationContext.State.Id = resourceUniqueId.ToString();
+
+        await service.DeleteAsync(operationContext, cancellationToken);
+
+        bulkResponse.Operations.Add(new ()
+        {
+            Method = operation.Method,
+            Path = operation.Path,
+            Status = (int)HttpStatusCode.NoContent
+        });
     }
 
     internal static void ValidateOperation(BulkRequestOperation operation)
     {
         if (operation.Data == null &&
-            operation.Method != Domain.Entities.Messages.Method.Delete)
+            operation.Method != Method.Delete)
             throw new Error(
                 $"Data should have value for method {operation.Method}",
                 ErrorScimType.InvalidValue,
-                HttpStatusCode.BadRequest.ToString());
+                (int)HttpStatusCode.BadRequest);
 
         if (string.IsNullOrWhiteSpace(operation.BulkId) &&
-            operation.Method == Domain.Entities.Messages.Method.Post)
+            operation.Method == Method.Post)
             throw new Error(
                 $"BulkId should have value for method {operation.Method}",
                 ErrorScimType.InvalidValue,
-                HttpStatusCode.BadRequest.ToString());
+                (int)HttpStatusCode.BadRequest);
     }
 
     internal static void ValidateBulkIdsUniqueness(BulkRequest bulkRequest)
     {
         var nonUniqueBulkIds = bulkRequest.Operations
+            .Where(o => !string.IsNullOrWhiteSpace(o.BulkId))
             .GroupBy(o => o.BulkId)
             .Where(g => g.Count() > 1)
             .Select(g => g.Key)
@@ -148,7 +271,7 @@ public class BulkService(
             throw new Error(
                 $"BulkIds {bulkIds} must be unique",
                 ErrorScimType.Uniqueness,
-                HttpStatusCode.BadRequest.ToString());
+                (int)HttpStatusCode.BadRequest);
         }
     }
 
@@ -161,11 +284,11 @@ public class BulkService(
 
         var indexOfSlash = path.IndexOf('/');
 
-        if (indexOfSlash <= 0 && operation.Method != Domain.Entities.Messages.Method.Post)
+        if (indexOfSlash <= 0 && operation.Method != Method.Post)
             throw new Error(
                 $"Path {operation.Path} should refer to a specific resource when method is {operation.Method}",
                 ErrorScimType.InvalidPath,
-                HttpStatusCode.BadRequest.ToString());
+                (int)HttpStatusCode.BadRequest);
 
         var resource = path;
         Guid? resourceUniqueId = null;
@@ -183,7 +306,7 @@ public class BulkService(
                 throw new Error(
                     $"Resource identifier {resourceIdentifier} is not valid",
                     ErrorScimType.InvalidValue,
-                    HttpStatusCode.BadRequest.ToString());
+                    (int)HttpStatusCode.BadRequest);
         }
         
         var resourceMap = serviceProviderConfiguration.Map
@@ -193,7 +316,7 @@ public class BulkService(
             throw new Error(
                 $"Path {resource} does not exist",
                 ErrorScimType.InvalidPath,
-                HttpStatusCode.BadRequest.ToString());
+                (int)HttpStatusCode.BadRequest);
         
         return (resourceMap, resourceUniqueId);
     }
