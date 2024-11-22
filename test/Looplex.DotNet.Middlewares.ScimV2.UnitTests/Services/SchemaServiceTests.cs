@@ -1,6 +1,7 @@
 using System.Dynamic;
 using FluentAssertions;
 using Looplex.DotNet.Core.Application.Abstractions.Services;
+using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Providers;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Messages;
 using Looplex.DotNet.Middlewares.ScimV2.Services;
 using Looplex.OpenForExtension.Abstractions.Contexts;
@@ -15,21 +16,17 @@ namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.Services;
 public class SchemaServiceTests
 {
     private SchemaService _schemaService = null!;
-    private IConfiguration _configuration = null!;
-    private ICacheService _cacheService = null!;
-    private IRestClient _restClient = null!;
+    private IJsonSchemaProvider _jsonSchemaProvider = null!;
     private IContext _context = null!;
 
     [TestInitialize]
     public void Setup()
     {
         // Mock dependencies
-        _configuration = Substitute.For<IConfiguration>();
-        _cacheService = Substitute.For<ICacheService>();
-        _restClient = Substitute.For<IRestClient>();  // Mocking IRestClient
+        _jsonSchemaProvider = Substitute.For<IJsonSchemaProvider>();
 
         // Instantiate SchemaService with mocks
-        _schemaService = new SchemaService(_configuration, _cacheService, _restClient);
+        _schemaService = new SchemaService(_jsonSchemaProvider);
         
         _context = Substitute.For<IContext>();
         var state = new ExpandoObject();
@@ -43,8 +40,6 @@ public class SchemaServiceTests
     {
         // Arrange
         var mockResponse = new RestResponse { Content = "mockContent" };
-        _restClient.ExecuteAsync(Arg.Any<RestRequest>()).Returns(Task.FromResult(mockResponse));
-        var cancellationToken = CancellationToken.None;
         SchemaService.SchemaIds = new List<string>
         {
             "first.schema.json",
@@ -55,115 +50,17 @@ public class SchemaServiceTests
         _context.State.Pagination.StartIndex = 1;
         _context.State.Pagination.ItemsPerPage = 10;
         _context.State.Lang = "en";
-        _cacheService.TryGetCacheValueAsync("first.en.json", out Arg.Any<string>())
-            .Returns(call =>
-        {
-            call[1] = "cachedValue1";
-            return Task.FromResult(true); 
-        });
+        _jsonSchemaProvider.ResolveJsonSchemasAsync(Arg.Any<List<string>>(), Arg.Any<string>())
+            .Returns(["mockContent1", "mockContent2"]);
         
         // Act
-        await _schemaService.GetAllAsync(_context, cancellationToken);
+        await _schemaService.GetAllAsync(_context, CancellationToken.None);
 
         // Assert
         var result = JsonConvert.DeserializeObject<ListResponse>((string)_context.Result!)!;
         Assert.AreEqual(2, result.TotalResults);
-        result.Resources[0].ToString()!.Should().BeEquivalentTo("cachedValue1");
-        result.Resources[1].ToString()!.Should().BeEquivalentTo("mockContent");
-    }
-
-    [TestMethod]
-    public async Task GetAllAsync_Should_Return_JsonResult_When_Action_Not_Skipped_FallbackToNotLocalizedSchema()
-    {
-        var mockResponse = new RestResponse { Content = null };
-        _restClient.ExecuteAsync(Arg.Any<RestRequest>()).Returns(Task.FromResult(mockResponse));
-        // Arrange
-        var cancellationToken = CancellationToken.None;
-        SchemaService.SchemaIds = new List<string>
-        {
-            "first.schema.json"
-        };
-
-        _context.State.Pagination = new ExpandoObject();
-        _context.State.Pagination.StartIndex = 1;
-        _context.State.Pagination.ItemsPerPage = 10;
-        _context.State.Lang = "en";
-        _cacheService.TryGetCacheValueAsync("first.schema.json", out Arg.Any<string>())
-            .Returns(call =>
-            {
-                call[1] = "cachedValue";
-                return Task.FromResult(true); 
-            });
-        
-        // Act
-        await _schemaService.GetAllAsync(_context, cancellationToken);
-
-        // Assert
-        var result = JsonConvert.DeserializeObject<ListResponse>((string)_context.Result!)!;
-        Assert.AreEqual(1, result.TotalResults);
-        result.Resources[0].ToString()!.Should().BeEquivalentTo("cachedValue");
-    }
-
-    [TestMethod]
-    public async Task GetByIdAsync_Should_Throw_Exception_When_SchemaId_Not_Found()
-    {
-        // Arrange
-        var cancellationToken = CancellationToken.None;
-        SchemaService.SchemaIds = new List<string> { "schema1" };
-
-        _context.State.Id = "invalidSchema";
-        _context.State.Lang = "en";
-
-        // Act & Assert
-        await Assert.ThrowsExceptionAsync<InvalidOperationException>(() => 
-            _schemaService.GetByIdAsync(_context, cancellationToken));
-    }
-
-    [TestMethod]
-    public async Task GetByIdAsync_Should_Return_JsonSchema_When_SchemaId_Is_Found_And_Lang_IsNull()
-    {
-        // Arrange
-        var cancellationToken = CancellationToken.None;
-        SchemaService.SchemaIds = new List<string> { "first.schema.json" };
-
-        _context.State.Id = "first.schema.json";
-
-        _cacheService.TryGetCacheValueAsync("first.schema.json", out Arg.Any<string>())
-            .Returns(call =>
-            {
-                call[1] = "cachedValue";
-                return Task.FromResult(true); 
-            });
-
-        // Act
-        await _schemaService.GetByIdAsync(_context, cancellationToken);
-
-        // Assert
-        Assert.AreEqual("cachedValue", _context.Result);
-    }
-    
-    [TestMethod]
-    public async Task GetByIdAsync_Should_Return_JsonSchema_When_SchemaId_Is_Found_And_Lang_IsNotNull()
-    {
-        // Arrange
-        var cancellationToken = CancellationToken.None;
-        SchemaService.SchemaIds = new List<string> { "first.schema.json" };
-
-        _context.State.Id = "first.schema.json";
-        _context.State.Lang = "en";
-
-        _cacheService.TryGetCacheValueAsync("first.en.json", out Arg.Any<string>())
-            .Returns(call =>
-            {
-                call[1] = "cachedValue";
-                return Task.FromResult(true); 
-            });
-
-        // Act
-        await _schemaService.GetByIdAsync(_context, cancellationToken);
-
-        // Assert
-        Assert.AreEqual("cachedValue", _context.Result);
+        result.Resources[0].ToString()!.Should().BeEquivalentTo("mockContent1");
+        result.Resources[1].ToString()!.Should().BeEquivalentTo("mockContent2");
     }
 
     [TestMethod]
@@ -179,5 +76,20 @@ public class SchemaServiceTests
 
         // Assert
         Assert.IsTrue(SchemaService.SchemaIds.Contains("newSchema"));
+    }
+    
+    [TestMethod]
+    public async Task GetByIdAsync_Should_Throw_Exception_When_SchemaId_Not_Found()
+    {
+        // Arrange
+        var cancellationToken = CancellationToken.None;
+        SchemaService.SchemaIds = new List<string> { "schema1" };
+
+        _context.State.Id = "invalidSchema";
+        _context.State.Lang = "en";
+
+        // Act & Assert
+        await Assert.ThrowsExceptionAsync<InvalidOperationException>(() =>
+            _schemaService.GetByIdAsync(_context, cancellationToken));
     }
 }

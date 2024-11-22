@@ -2,9 +2,9 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 
-namespace Looplex.DotNet.Middlewares.ApiKeys.Domain.Entities.ApiKeys;
+namespace Looplex.DotNet.Middlewares.ApiKeys.Domain.Entities.ClientCredentials;
 
-public partial class ApiKey
+public partial class ClientCredential
 {
     #region Serialization
 
@@ -26,5 +26,5 @@ public partial class ApiKey
 
 public static class Serialize
 {
-    public static string ToJson(this ApiKey self) => JsonConvert.SerializeObject(self, ApiKey.Converter.Settings);
+    public static string ToJson(this ClientCredential self) => JsonConvert.SerializeObject(self, ClientCredential.Converter.Settings);
 }

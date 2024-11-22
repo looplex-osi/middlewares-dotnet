@@ -1,5 +1,7 @@
-﻿using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Services;
+﻿using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Providers;
+using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Services;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Configurations;
+using Looplex.DotNet.Middlewares.ScimV2.Providers;
 using Looplex.DotNet.Middlewares.ScimV2.Services;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -12,6 +14,7 @@ public static class ServicesExtensionMethods
         services.AddSingleton<ISchemaService, SchemaService>();
         services.AddSingleton<IResourceTypeService, ResourceTypeService>();
         services.AddSingleton<IBulkService, BulkService>();
+        services.AddSingleton<IJsonSchemaProvider, JsonSchemaProvider>();
 
         var config = new ServiceProviderConfiguration
         {

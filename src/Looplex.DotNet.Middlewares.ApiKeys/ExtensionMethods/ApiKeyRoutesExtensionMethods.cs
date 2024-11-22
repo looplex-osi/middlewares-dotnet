@@ -1,5 +1,5 @@
 ﻿using Looplex.DotNet.Middlewares.ApiKeys.Application.Abstractions.Services;
-using Looplex.DotNet.Middlewares.ApiKeys.Domain.Entities.ApiKeys;
+using Looplex.DotNet.Middlewares.ApiKeys.Domain.Entities.ClientCredentials;
 using Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods;
 using Microsoft.AspNetCore.Routing;
 
@@ -13,7 +13,7 @@ public static class ApiKeyRoutesExtensionMethods
         ScimV2RouteOptions? options = null,
         CancellationToken? cancellationToken = null)
     {
-        return app.UseScimV2RoutesAsync<ApiKey, IApiKeyService>(
+        return app.UseScimV2RoutesAsync<ClientCredential, IApiKeyService>(
             resource,
             jsonSchemaId,
             options ?? new ScimV2RouteOptions(),

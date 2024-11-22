@@ -2,9 +2,9 @@
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities;
 using Newtonsoft.Json;
 
-namespace Looplex.DotNet.Middlewares.ApiKeys.Domain.Entities.ApiKeys;
+namespace Looplex.DotNet.Middlewares.ApiKeys.Domain.Entities.ClientCredentials;
 
-public partial class ApiKey : Resource, IApiKey
+public partial class ClientCredential : Resource, IApiKey
 {
     [JsonProperty("clientName")]
     public virtual string? ClientName { get; set; }

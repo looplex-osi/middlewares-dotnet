@@ -30,7 +30,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="Entities\Schemas\ApiKey.1.0.schema.json">
+      <None Update="Entities\Schemas\ClientCredential.1.0.schema.json">
           <CopyToOutputDirectory>Always</CopyToOutputDirectory>
           <Pack>true</Pack>
           <PackagePath>schemas\</PackagePath>

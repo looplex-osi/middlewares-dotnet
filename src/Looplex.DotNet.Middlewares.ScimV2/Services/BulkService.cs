@@ -8,7 +8,6 @@ using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Services;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Configurations;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Messages;
-using Looplex.DotNet.Middlewares.ScimV2.Utils;
 using Looplex.OpenForExtension.Abstractions.Commands;
 using Looplex.OpenForExtension.Abstractions.Contexts;
 using Looplex.OpenForExtension.Abstractions.ExtensionMethods;

@@ -1,21 +1,15 @@
-using Looplex.DotNet.Core.Application.Abstractions.Services;
 using Looplex.DotNet.Core.Application.ExtensionMethods;
+using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Providers;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Services;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Messages;
 using Looplex.OpenForExtension.Abstractions.Commands;
 using Looplex.OpenForExtension.Abstractions.Contexts;
 using Looplex.OpenForExtension.Abstractions.ExtensionMethods;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
-using RestSharp;
-using Method = RestSharp.Method;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.Services;
 
-public class SchemaService(
-    IConfiguration configuration,
-    ICacheService cacheService,
-    IRestClient restClient) : ISchemaService
+public class SchemaService(IJsonSchemaProvider jsonSchemaProvider): ISchemaService
 {
     /// <summary>
     /// This is a collection with the default json.schemas that the application will use in its services.
@@ -47,7 +41,7 @@ public class SchemaService(
                 .Take(itemsPerPage)
                 .ToList();
 
-            var records = await ResolveJsonSchemasAsync(schemaIds, lang);
+            var records = await jsonSchemaProvider.ResolveJsonSchemasAsync(schemaIds, lang);
             
             var result = new ListResponse
             {
@@ -64,56 +58,6 @@ public class SchemaService(
         await context.Plugins.ExecuteAsync<IAfterAction>(context, cancellationToken);
 
         await context.Plugins.ExecuteAsync<IReleaseUnmanagedResources>(context, cancellationToken);
-    }
-
-    private async Task<List<string>> ResolveJsonSchemasAsync(List<string> schemaIds, string? lang = null)
-    {
-        var result = new List<string>();
-
-        foreach (var schemaId in schemaIds)
-        {
-            var jsonSchema = await ResolveJsonSchemaAsync(schemaId, lang);
-
-            if (string.IsNullOrWhiteSpace(jsonSchema))
-                throw new InvalidOperationException($"Json schema {lang} {schemaId} was not found.");
-            
-            result.Add(jsonSchema);
-        }
-
-        return result;
-    }
-    
-    private async Task<string?> ResolveJsonSchemaAsync(string schemaId, string? lang)
-    {
-        string? schema = null;
-        if (!string.IsNullOrWhiteSpace(lang))
-        {
-            var localizedSchemaId = schemaId.Replace("schema", lang);
-            schema = await ResolveJsonSchemaAsync(localizedSchemaId);
-        }
-
-        if (string.IsNullOrEmpty(schema))
-            schema = await ResolveJsonSchemaAsync(schemaId);
-
-        return schema;
-    }
-    
-    private async Task<string?> ResolveJsonSchemaAsync(string schemaId)
-    {
-        string? jsonSchema = null;
-        if (await cacheService.TryGetCacheValueAsync(schemaId, out var value))
-        {
-            jsonSchema = value;
-        }
-        else
-        {
-            var jsonSchemaCodeUrl = configuration["JsonSchemaCodeUrl"]!;
-            var request = new RestRequest($"{jsonSchemaCodeUrl}/{jsonSchema}", Method.Get);
-            var response = await restClient.ExecuteAsync(request);
-            jsonSchema = response.Content;
-        }
-
-        return jsonSchema;
     }
 
     /// <summary>
@@ -133,7 +77,7 @@ public class SchemaService(
 
         if (!SchemaIds.Contains(schemaId))
             throw new InvalidOperationException($"{schemaId} does not exists or is not configured for this app.");
-        var jsonSchema = await ResolveJsonSchemaAsync(schemaId, lang);
+        var jsonSchema = await jsonSchemaProvider.ResolveJsonSchemaAsync(schemaId, lang);
 
         if (string.IsNullOrWhiteSpace(jsonSchema))
             throw new InvalidOperationException($"Json schema {lang} {schemaId} was not found.");
