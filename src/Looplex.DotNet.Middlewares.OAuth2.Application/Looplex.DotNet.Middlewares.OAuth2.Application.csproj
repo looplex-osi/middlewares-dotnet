@@ -31,8 +31,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Looplex.DotNet.Core.Application" Version="2.1.0" />
-      <PackageReference Include="Looplex.DotNet.Core.Common" Version="2.1.0" />
+      <PackageReference Include="Looplex.DotNet.Core.Application" Version="2.1.1" />
+      <PackageReference Include="Looplex.DotNet.Core.Common" Version="2.1.1" />
       <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2" />
       <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />
       <PackageReference Include="Microsoft.IdentityModel.Protocols" Version="8.2.0" />

@@ -40,7 +40,7 @@ public class JsonSchemaProviderTests
             "second.schema.json"
         };
         var lang = "en";
-        _cacheService.TryGetCacheValueAsync("first.en.json", out Arg.Any<string>())
+        _cacheService.TryGetCacheValueAsync("first.en.json", out Arg.Any<string?>())
             .Returns(call =>
         {
             call[1] = "cachedValue1";
@@ -68,7 +68,7 @@ public class JsonSchemaProviderTests
             "first.schema.json"
         };
         var lang = "en";
-        _cacheService.TryGetCacheValueAsync("first.schema.json", out Arg.Any<string>())
+        _cacheService.TryGetCacheValueAsync("first.schema.json", out Arg.Any<string?>())
             .Returns(call =>
             {
                 call[1] = "cachedValue";
@@ -91,7 +91,7 @@ public class JsonSchemaProviderTests
         // Arrange
         var schemaId = "first.schema.json";
 
-        _cacheService.TryGetCacheValueAsync("first.schema.json", out Arg.Any<string>())
+        _cacheService.TryGetCacheValueAsync("first.schema.json", out Arg.Any<string?>())
             .Returns(call =>
             {
                 call[1] = "cachedValue";
@@ -112,7 +112,7 @@ public class JsonSchemaProviderTests
         var schemaId = "first.schema.json";
         var lang = "en";
 
-        _cacheService.TryGetCacheValueAsync("first.en.json", out Arg.Any<string>())
+        _cacheService.TryGetCacheValueAsync("first.en.json", out Arg.Any<string?>())
             .Returns(call =>
             {
                 call[1] = "cachedValue";
@@ -134,7 +134,7 @@ public class JsonSchemaProviderTests
         var jsonSchema1 = "{ \"type\": \"schema1\" }";
         var jsonSchema2 = "{ \"type\": \"schema2\" }";
 
-        string cacheValue1;
+        string? cacheValue1;
         _cacheService.TryGetCacheValueAsync("schema1", out cacheValue1)
             .Returns(x =>
             {
@@ -142,7 +142,7 @@ public class JsonSchemaProviderTests
                 return Task.FromResult(true);
             });
 
-        string cacheValue2;
+        string? cacheValue2;
         _cacheService.TryGetCacheValueAsync("schema2", out cacheValue2)
             .Returns(x =>
             {
