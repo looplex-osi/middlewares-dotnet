@@ -1,4 +1,5 @@
 using FluentAssertions;
+using Looplex.DotNet.Core.Application.Abstractions.Factories;
 using Looplex.DotNet.Core.Application.Abstractions.Services;
 using Looplex.DotNet.Middlewares.ScimV2.Providers;
 using Microsoft.Extensions.Configuration;
@@ -12,6 +13,7 @@ public class JsonSchemaProviderTests
 {
     private JsonSchemaProvider _jsonSchemaProvider = null!;
     private IConfiguration _configuration = null!;
+    private ICacheServiceFactory _cacheServiceFactory = null!;
     private ICacheService _cacheService = null!;
     private IRestClient _restClient = null!;
 
@@ -20,11 +22,13 @@ public class JsonSchemaProviderTests
     {
         // Mock dependencies
         _configuration = Substitute.For<IConfiguration>();
+        _cacheServiceFactory = Substitute.For<ICacheServiceFactory>();
         _cacheService = Substitute.For<ICacheService>();
         _restClient = Substitute.For<IRestClient>(); 
 
         // Instantiate JsonSchemaProvider with mocks
-        _jsonSchemaProvider = new JsonSchemaProvider(_configuration, _cacheService, _restClient);
+        _cacheServiceFactory.GetCacheService(Arg.Any<string>()).Returns(_cacheService);
+        _jsonSchemaProvider = new JsonSchemaProvider(_configuration, _cacheServiceFactory, _restClient);
     }
 
     [TestMethod]
