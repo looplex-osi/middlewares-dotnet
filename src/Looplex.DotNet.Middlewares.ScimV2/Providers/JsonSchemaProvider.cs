@@ -13,13 +13,13 @@ public class JsonSchemaProvider(
 {
     private readonly ICacheService _cacheService = cacheServiceFactory.GetCacheService("InMemory");
     
-    public async Task<List<string>> ResolveJsonSchemasAsync(List<string> schemaIds, string? lang = null)
+    public async Task<List<string>> ResolveJsonSchemasAsync(string ocpApimSubscriptionKey, List<string> schemaIds, string? lang = null)
     {
         var result = new List<string>();
 
         foreach (var schemaId in schemaIds)
         {
-            var jsonSchema = await ResolveJsonSchemaAsync(schemaId, lang);
+            var jsonSchema = await ResolveJsonSchemaAsync(ocpApimSubscriptionKey, schemaId, lang);
 
             if (string.IsNullOrWhiteSpace(jsonSchema))
                 throw new InvalidOperationException($"Json schema {lang} {schemaId} was not found.");
@@ -30,22 +30,22 @@ public class JsonSchemaProvider(
         return result;
     }
     
-    public async Task<string?> ResolveJsonSchemaAsync(string schemaId, string? lang)
+    public async Task<string?> ResolveJsonSchemaAsync(string ocpApimSubscriptionKey, string schemaId, string? lang)
     {
         string? schema = null;
         if (!string.IsNullOrWhiteSpace(lang))
         {
             var localizedSchemaId = schemaId.Replace("schema", lang);
-            schema = await ResolveJsonSchemaAsync(localizedSchemaId);
+            schema = await ResolveJsonSchemaAsync(ocpApimSubscriptionKey, localizedSchemaId);
         }
 
         if (string.IsNullOrEmpty(schema))
-            schema = await ResolveJsonSchemaAsync(schemaId);
+            schema = await ResolveJsonSchemaAsync(ocpApimSubscriptionKey, schemaId);
 
         return schema;
     }
     
-    private async Task<string?> ResolveJsonSchemaAsync(string schemaId)
+    private async Task<string?> ResolveJsonSchemaAsync(string ocpApimSubscriptionKey, string schemaId)
     {
         string? jsonSchema = null;
         if (await _cacheService.TryGetCacheValueAsync(schemaId, out var value))
@@ -55,10 +55,10 @@ public class JsonSchemaProvider(
         else
         {
             var jsonSchemaCodeUrl = configuration["JsonSchemaCodeUrl"]!;
-            var jsonSchemaCodeApiKey = configuration["JsonSchemaCodeApiKey"]!;
 
-            var request = new RestRequest($"{jsonSchemaCodeUrl}/{jsonSchema}", Method.Get);
-            request.AddHeader("Ocp-Apim-Subscription-Key", jsonSchemaCodeApiKey);
+            var request = new RestRequest($"{jsonSchemaCodeUrl}", Method.Get);
+            request.AddQueryParameter("id", schemaId);
+            request.AddHeader("Ocp-Apim-Subscription-Key", ocpApimSubscriptionKey);
             var response = await restClient.ExecuteAsync(request);
             jsonSchema = response.Content;
         }

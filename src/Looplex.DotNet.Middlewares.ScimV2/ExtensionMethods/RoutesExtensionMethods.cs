@@ -9,9 +9,11 @@ using Looplex.DotNet.Core.WebAPI.Routes;
 using Looplex.DotNet.Core.Common.Utils;
 using Looplex.DotNet.Middlewares.OAuth2.Middlewares;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Services;
+using Looplex.DotNet.Middlewares.ScimV2.Domain;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Configurations;
 using Looplex.DotNet.Middlewares.ScimV2.Middlewares;
+using Looplex.OpenForExtension.Abstractions.Contexts;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods;
 
@@ -23,6 +25,8 @@ public static class RoutesExtensionMethods
         HttpContext httpContext = context.State.HttpContext;
         var service = httpContext.RequestServices.GetRequiredService<TService>();
 
+        MapRequestParamsToContext(context, httpContext);
+        
         await service.GetAllAsync(context, cancellationToken);
 
         await httpContext.Response.WriteAsJsonAsync((string)context.Result!, HttpStatusCode.OK);
@@ -34,8 +38,7 @@ public static class RoutesExtensionMethods
         HttpContext httpContext = context.State.HttpContext;
         var service = httpContext.RequestServices.GetRequiredService<TService>();
 
-        var id = (string)httpContext.Request.RouteValues["id"]!;
-        context.State.Id = id;
+        MapRequestParamsToContext(context, httpContext);
 
         await service.GetByIdAsync(context, cancellationToken);
 
@@ -49,6 +52,8 @@ public static class RoutesExtensionMethods
         HttpContext httpContext = context.State.HttpContext;
         var service = httpContext.RequestServices.GetRequiredService<TService>();
 
+        MapRequestParamsToContext(context, httpContext);
+
         using StreamReader reader = new(httpContext.Request.Body);
         context.State.Resource = await reader.ReadToEndAsync(cancellationToken);
 
@@ -59,34 +64,29 @@ public static class RoutesExtensionMethods
         httpContext.Response.Headers.Location = $"{resource}/{id}";
     };
     
-    private static MiddlewareDelegate PutMiddleware<TService>(
-        string resource)
+    private static MiddlewareDelegate PutMiddleware<TService>()
         where TService : ICrudService => async (context, cancellationToken, _) =>
     {
         HttpContext httpContext = context.State.HttpContext;
         var service = httpContext.RequestServices.GetRequiredService<TService>();
 
-        var id = (string)httpContext.Request.RouteValues["id"]!;
-        context.State.Id = id;
-        
+        MapRequestParamsToContext(context, httpContext);
+
         using StreamReader reader = new(httpContext.Request.Body);
-        context.State.Operations = await reader.ReadToEndAsync(cancellationToken);
+        context.State.Resource = await reader.ReadToEndAsync(cancellationToken);
 
         await service.UpdateAsync(context, cancellationToken);
 
         httpContext.Response.StatusCode = (int)HttpStatusCode.NoContent;
-        httpContext.Response.Headers.Location = $"{resource}/{id}";
     };
-    
-    private static MiddlewareDelegate PatchMiddleware<TService>(
-        string resource)
+
+    private static MiddlewareDelegate PatchMiddleware<TService>()
         where TService : ICrudService => async (context, cancellationToken, _) =>
     {
         HttpContext httpContext = context.State.HttpContext;
         var service = httpContext.RequestServices.GetRequiredService<TService>();
 
-        var id = (string)httpContext.Request.RouteValues["id"]!;
-        context.State.Id = id;
+        MapRequestParamsToContext(context, httpContext);
         
         using StreamReader reader = new(httpContext.Request.Body);
         context.State.Operations = await reader.ReadToEndAsync(cancellationToken);
@@ -97,7 +97,6 @@ public static class RoutesExtensionMethods
         // if the "attributes" parameter is specified in the request.
 
         httpContext.Response.StatusCode = (int)HttpStatusCode.NoContent;
-        httpContext.Response.Headers.Location = $"{resource}/{id}";
     };
 
     private static MiddlewareDelegate DeleteMiddleware<TService>()
@@ -106,9 +105,8 @@ public static class RoutesExtensionMethods
         HttpContext httpContext = context.State.HttpContext;
         var service = httpContext.RequestServices.GetRequiredService<TService>();
 
-        var id = (string)httpContext.Request.RouteValues["id"]!;
-        context.State.Id = id;
-
+        MapRequestParamsToContext(context, httpContext);
+        
         await service.DeleteAsync(context, cancellationToken);
 
         httpContext.Response.StatusCode = (int)HttpStatusCode.NoContent;
@@ -116,7 +114,7 @@ public static class RoutesExtensionMethods
 
     public static async Task UseScimV2RoutesAsync<T, TService>(
         this IEndpointRouteBuilder app,
-        string resource,
+        string route,
         string jsonSchemaId,
         ScimV2RouteOptions options,
         CancellationToken cancellationToken)
@@ -135,19 +133,21 @@ public static class RoutesExtensionMethods
         serviceProviderConfiguration.Map.Add(new()
         {
             Type = typeof(T),
-            Resource = resource,
+            Resource = route,
             Service = typeof(TService)
         });
             
         // Cache the default jsonschema for model validation on deserialization purposes
         Schemas.Add(typeof(T), (string)context.Result!);
+
+        var id = ToLowerFirstLetter(nameof(T));
         
         List<MiddlewareDelegate> getMiddlewares = [
             AuthenticationMiddleware.AuthenticateMiddleware, ScimV2Middlewares.PaginationMiddleware];
         getMiddlewares.AddRange(options.OptionsForGet?.Middlewares ?? []);
         getMiddlewares.Add(GetMiddleware<TService>());
         app.MapGet(
-            resource,
+            route,
             new RouteBuilderOptions
             {
                 Services = options.OptionsForGet?.Services ?? [],
@@ -158,7 +158,7 @@ public static class RoutesExtensionMethods
         getByIdMiddlewares.AddRange(options.OptionsForGetById?.Middlewares ?? []);
         getByIdMiddlewares.Add(GetByIdMiddleware<TService>());
         app.MapGet(
-            $"{resource}/{{id}}",
+            $"{route}/{{{id}}}",
             new RouteBuilderOptions
             {
                 Services = options.OptionsForGetById?.Services ?? [],
@@ -167,9 +167,9 @@ public static class RoutesExtensionMethods
         
         List<MiddlewareDelegate> postMiddlewares = [AuthenticationMiddleware.AuthenticateMiddleware];
         postMiddlewares.AddRange(options.OptionsForPost?.Middlewares ?? []);
-        postMiddlewares.Add(PostMiddleware<TService>(resource));
+        postMiddlewares.Add(PostMiddleware<TService>(route));
         app.MapPost(
-            resource,
+            route,
             new RouteBuilderOptions
             {
                 Services = options.OptionsForPost?.Services ?? [],
@@ -178,9 +178,9 @@ public static class RoutesExtensionMethods
         
         List<MiddlewareDelegate> putMiddlewares = [AuthenticationMiddleware.AuthenticateMiddleware];
         putMiddlewares.AddRange(options.OptionsForPut?.Middlewares ?? []);
-        putMiddlewares.Add(PutMiddleware<TService>(resource));
+        putMiddlewares.Add(PutMiddleware<TService>());
         app.MapPut(
-            $"{resource}/{{id}}",
+            $"{route}/{{{id}}}",
             new RouteBuilderOptions
             {
                 Services = options.OptionsForPut?.Services ?? [],
@@ -189,9 +189,9 @@ public static class RoutesExtensionMethods
 
         List<MiddlewareDelegate> patchMiddlewares = [AuthenticationMiddleware.AuthenticateMiddleware];
         patchMiddlewares.AddRange(options.OptionsForPatch?.Middlewares ?? []);
-        patchMiddlewares.Add(PatchMiddleware<TService>(resource));
+        patchMiddlewares.Add(PatchMiddleware<TService>());
         app.MapPatch(
-            $"{resource}/{{id}}",
+            $"{route}/{{{id}}}",
             new RouteBuilderOptions
             {
                 Services = options.OptionsForPatch?.Services ?? [],
@@ -202,11 +202,30 @@ public static class RoutesExtensionMethods
         deleteMiddlewares.AddRange(options.OptionsForDelete?.Middlewares ?? []);
         deleteMiddlewares.Add(DeleteMiddleware<TService>());
         app.MapDelete(
-            $"{resource}/{{id}}",
+            $"{route}/{{{id}}}",
             new RouteBuilderOptions
             {
                 Services = options.OptionsForDelete?.Services ?? [],
                 Middlewares = deleteMiddlewares.ToArray()
             });
+    }
+
+    private static void MapRequestParamsToContext(IContext context, HttpContext httpContext)
+    {
+        ((IScimV2Context)context).RouteValues = httpContext.Request.RouteValues
+            .Select(rv => new KeyValuePair<string, object?>(rv.Key, rv.Value))
+            .ToDictionary();
+        ((IScimV2Context)context).Query = httpContext.Request.Query
+            .Select(q => new KeyValuePair<string, string>(q.Key, q.Value.ToString())).ToDictionary();
+        ((IScimV2Context)context).Headers = httpContext.Request.Headers
+            .Select(q => new KeyValuePair<string, string>(q.Key, q.Value.ToString())).ToDictionary();
+    }
+    
+    private static string ToLowerFirstLetter(string input)
+    {
+        if (string.IsNullOrEmpty(input) || char.IsLower(input[0]))
+            return input;
+
+        return char.ToLower(input[0]) + input.Substring(1);
     }
 }

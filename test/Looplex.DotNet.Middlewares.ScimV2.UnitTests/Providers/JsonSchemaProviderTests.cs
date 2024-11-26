@@ -44,6 +44,7 @@ public class JsonSchemaProviderTests
             "second.schema.json"
         };
         var lang = "en";
+        var ocpApimSubscriptionKey = "ocpApimSubscriptionKey";
         _cacheService.TryGetCacheValueAsync("first.en.json", out Arg.Any<string?>())
             .Returns(call =>
         {
@@ -52,7 +53,7 @@ public class JsonSchemaProviderTests
         });
         
         // Act
-        var schemas = await _jsonSchemaProvider.ResolveJsonSchemasAsync(schemaIds, lang);
+        var schemas = await _jsonSchemaProvider.ResolveJsonSchemasAsync(ocpApimSubscriptionKey, schemaIds, lang);
 
         // Assert
         Assert.AreEqual(2, schemas.Count);
@@ -72,6 +73,7 @@ public class JsonSchemaProviderTests
             "first.schema.json"
         };
         var lang = "en";
+        var ocpApimSubscriptionKey = "ocpApimSubscriptionKey";
         _cacheService.TryGetCacheValueAsync("first.schema.json", out Arg.Any<string?>())
             .Returns(call =>
             {
@@ -80,7 +82,7 @@ public class JsonSchemaProviderTests
             });
         
         // Act
-        var schemas = await _jsonSchemaProvider.ResolveJsonSchemasAsync(schemaIds, lang);
+        var schemas = await _jsonSchemaProvider.ResolveJsonSchemasAsync(ocpApimSubscriptionKey, schemaIds, lang);
 
         // Assert
         Assert.AreEqual(1, schemas.Count);
@@ -94,6 +96,7 @@ public class JsonSchemaProviderTests
     {
         // Arrange
         var schemaId = "first.schema.json";
+        var ocpApimSubscriptionKey = "ocpApimSubscriptionKey";
 
         _cacheService.TryGetCacheValueAsync("first.schema.json", out Arg.Any<string?>())
             .Returns(call =>
@@ -103,7 +106,7 @@ public class JsonSchemaProviderTests
             });
 
         // Act
-        var schema = await _jsonSchemaProvider.ResolveJsonSchemaAsync(schemaId, null);
+        var schema = await _jsonSchemaProvider.ResolveJsonSchemaAsync(ocpApimSubscriptionKey, schemaId, null);
 
         // Assert
         Assert.AreEqual("cachedValue", schema);
@@ -115,6 +118,7 @@ public class JsonSchemaProviderTests
         // Arrange
         var schemaId = "first.schema.json";
         var lang = "en";
+        var ocpApimSubscriptionKey = "ocpApimSubscriptionKey";
 
         _cacheService.TryGetCacheValueAsync("first.en.json", out Arg.Any<string?>())
             .Returns(call =>
@@ -124,7 +128,7 @@ public class JsonSchemaProviderTests
             });
 
         // Act
-        var schema = await _jsonSchemaProvider.ResolveJsonSchemaAsync(schemaId, lang);
+        var schema = await _jsonSchemaProvider.ResolveJsonSchemaAsync(ocpApimSubscriptionKey, schemaId, lang);
 
         // Assert
         Assert.AreEqual("cachedValue", schema);
@@ -155,7 +159,7 @@ public class JsonSchemaProviderTests
             });
 
         // Act
-        var result = await _jsonSchemaProvider.ResolveJsonSchemasAsync(schemaIds);
+        var result = await _jsonSchemaProvider.ResolveJsonSchemasAsync("", schemaIds);
 
         // Assert
         result.Should().BeEquivalentTo(new List<string> { jsonSchema1, jsonSchema2 });

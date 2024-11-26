@@ -1,11 +1,9 @@
 using System.Dynamic;
 using FluentAssertions;
-using Looplex.DotNet.Core.Application.Abstractions.Services;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Providers;
+using Looplex.DotNet.Middlewares.ScimV2.Domain;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Messages;
 using Looplex.DotNet.Middlewares.ScimV2.Services;
-using Looplex.OpenForExtension.Abstractions.Contexts;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using NSubstitute;
 using RestSharp;
@@ -17,7 +15,7 @@ public class SchemaServiceTests
 {
     private SchemaService _schemaService = null!;
     private IJsonSchemaProvider _jsonSchemaProvider = null!;
-    private IContext _context = null!;
+    private IScimV2Context _context = null!;
 
     [TestInitialize]
     public void Setup()
@@ -26,9 +24,9 @@ public class SchemaServiceTests
         _jsonSchemaProvider = Substitute.For<IJsonSchemaProvider>();
 
         // Instantiate SchemaService with mocks
-        _schemaService = new SchemaService(_jsonSchemaProvider);
+        _schemaService = new(_jsonSchemaProvider);
         
-        _context = Substitute.For<IContext>();
+        _context = Substitute.For<IScimV2Context>();
         var state = new ExpandoObject();
         _context.State.Returns(state);
         var roles = new Dictionary<string, dynamic>();
@@ -50,7 +48,13 @@ public class SchemaServiceTests
         _context.State.Pagination.StartIndex = 1;
         _context.State.Pagination.ItemsPerPage = 10;
         _context.State.Lang = "en";
-        _jsonSchemaProvider.ResolveJsonSchemasAsync(Arg.Any<List<string>>(), Arg.Any<string>())
+        _context.Headers = new Dictionary<string, string>
+        {
+            {
+                "Ocp-Apim-Subscription-Key", "key"
+            }
+        };
+        _jsonSchemaProvider.ResolveJsonSchemasAsync("key", Arg.Any<List<string>>(), Arg.Any<string>())
             .Returns(["mockContent1", "mockContent2"]);
         
         // Act
@@ -87,7 +91,13 @@ public class SchemaServiceTests
 
         _context.State.Id = "invalidSchema";
         _context.State.Lang = "en";
-
+        _context.Headers = new Dictionary<string, string>
+        {
+            {
+                "Ocp-Apim-Subscription-Key", "key"
+            }
+        };
+        
         // Act & Assert
         await Assert.ThrowsExceptionAsync<InvalidOperationException>(() =>
             _schemaService.GetByIdAsync(_context, cancellationToken));
