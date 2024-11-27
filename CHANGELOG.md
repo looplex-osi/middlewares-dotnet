@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="2.0.4"></a>
+## 2.0.4 (2024-11-27)
+
+### Bug Fixes
+
+* context now have route, query and header values. added apim key from -h to jsonschemaprovider
+* **routesextensionmethodstests:** fixed tests for scim with multiple route values on endpoint
+* **schemaservice:** add validation when header apimsubscriptionkey is not in the request
+
 <a name="2.0.3"></a>
 ## 2.0.3 (2024-11-25)
 
