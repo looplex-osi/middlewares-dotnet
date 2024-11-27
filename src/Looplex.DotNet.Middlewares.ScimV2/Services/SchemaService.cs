@@ -1,3 +1,4 @@
+using System.Net;
 using Looplex.DotNet.Core.Application.ExtensionMethods;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Providers;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Services;
@@ -12,6 +13,8 @@ namespace Looplex.DotNet.Middlewares.ScimV2.Services;
 
 public class SchemaService(IJsonSchemaProvider jsonSchemaProvider): ISchemaService
 {
+    const string ApimSubscriptionKey = "Ocp-Apim-Subscription-Key";
+
     /// <summary>
     /// This is a collection with the default json.schemas that the application will use in its services.
     /// The action value of the json.schema is supposed to be resolved by an external service such as redis.
@@ -25,9 +28,11 @@ public class SchemaService(IJsonSchemaProvider jsonSchemaProvider): ISchemaServi
         var startIndex = context.GetRequiredValue<int>("Pagination.StartIndex");
         var itemsPerPage = context.GetRequiredValue<int>("Pagination.ItemsPerPage");
         var lang = context.GetValue<string?>("Lang");
-        var ocpApimSubscriptionKey = ((IScimV2Context)context).Headers["Ocp-Apim-Subscription-Key"];
         await context.Plugins.ExecuteAsync<IHandleInput>(context, cancellationToken);
 
+        if (!((IScimV2Context)context).Headers.TryGetValue(ApimSubscriptionKey, out var ocpApimSubscriptionKey))
+            throw new Error($"Missing header {ApimSubscriptionKey} in request.", (int)HttpStatusCode.Forbidden);
+        
         await context.Plugins.ExecuteAsync<IValidateInput>(context, cancellationToken);
 
         await context.Plugins.ExecuteAsync<IDefineRoles>(context, cancellationToken);
@@ -75,9 +80,11 @@ public class SchemaService(IJsonSchemaProvider jsonSchemaProvider): ISchemaServi
 
         var schemaId = context.GetRequiredValue<string>("Id");
         var lang = context.GetValue<string?>("Lang");
-        var ocpApimSubscriptionKey = ((IScimV2Context)context).Headers["Ocp-Apim-Subscription-Key"];
         await context.Plugins.ExecuteAsync<IHandleInput>(context, cancellationToken);
 
+        if (!((IScimV2Context)context).Headers.TryGetValue(ApimSubscriptionKey, out var ocpApimSubscriptionKey))
+            throw new Error($"Missing header {ApimSubscriptionKey} in request.", (int)HttpStatusCode.Forbidden);
+        
         if (!SchemaIds.Contains(schemaId))
             throw new InvalidOperationException($"{schemaId} does not exists or is not configured for this app.");
         var jsonSchema = await jsonSchemaProvider.ResolveJsonSchemaAsync(ocpApimSubscriptionKey, schemaId, lang);
