@@ -11,10 +11,10 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods;
-using Looplex.OpenForExtension.Abstractions.Contexts;
 using NSubstitute;
 using Looplex.DotNet.Middlewares.OAuth2.ExtensionMethods;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Services;
+using Looplex.DotNet.Middlewares.ScimV2.Domain;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Configurations;
 using Microsoft.Extensions.Configuration;
@@ -22,7 +22,7 @@ using Microsoft.Extensions.Configuration;
 namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.ExtensionMethods;
 
 [TestClass]
-public class ScimV2RouteOptionsTests
+public class RoutesExtensionMethodsTests
 {
     private IConfiguration _configurationMock = null!;
     private ICrudService _crudServiceMock = null!;
@@ -33,7 +33,7 @@ public class ScimV2RouteOptionsTests
     private IHttpClientFactory _httpClientFactoryMock = null!;
     private ISchemaService _schemaServiceMock = null!;
     private ServiceProviderConfiguration _serviceProviderConfigurationMock = null!;
-    private IContext _context = null!;
+    private IScimV2Context _context = null!;
     private HttpClient _client = null!;
     private IHost _host = null!;
 
@@ -53,7 +53,7 @@ public class ScimV2RouteOptionsTests
         _serviceProviderMock.GetService(typeof(IConfiguration)).Returns(_configurationMock);
         _serviceProviderMock.GetService(typeof(IJwtService)).Returns(_jwtServiceMock);  
         _schemaServiceMock = Substitute.For<ISchemaService>();
-        _context = Substitute.For<IContext>();
+        _context = Substitute.For<IScimV2Context>();
         var state = new ExpandoObject();
         _context.State.Returns(state);
         _context.Result.Returns("mock_result");
@@ -84,7 +84,7 @@ public class ScimV2RouteOptionsTests
                         app.UseEndpoints(endpoints =>
                         {
                             endpoints.UseScimV2RoutesAsync<Car, ICrudService>(
-                                "cars",
+                                "domains/{domainId}/brands/{brandId}/cars",
                                 "example/car.schema.json",
                                 new ScimV2RouteOptions(),
                                 CancellationToken.None).GetAwaiter().GetResult();
@@ -112,15 +112,28 @@ public class ScimV2RouteOptionsTests
             {
                 _context.State.Pagination.TotalCount = 0;
             });
-        var url = "/cars?startIndex=1&count=10"; 
-
+        var url = "domains/admin/brands/ferrari/cars?startIndex=1&count=10&param1=1&param2=2"; 
+        HttpContent content = new StringContent("resourceContent", Encoding.UTF8, "application/text");
+        using var request = new HttpRequestMessage(HttpMethod.Get, url);
+        request.Content = content;
+        request.Headers.Add("Header-1", "11");
+        request.Headers.Add("Header-2", "22");
+        
         // Act
-        var response = await _client.GetAsync(url);
+        var response = await _client.SendAsync(request);
 
         // Assert
         Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
         var responseString = await response.Content.ReadAsStringAsync();
         Assert.IsTrue(responseString.Contains("mock_result"));
+        Assert.AreEqual("admin", _context.RouteValues["domainId"]);
+        Assert.AreEqual("ferrari", _context.RouteValues["brandId"]);
+        Assert.AreEqual("1", _context.Query["param1"]);
+        Assert.AreEqual("2", _context.Query["param2"]);
+        Assert.AreEqual("1", _context.Query["startIndex"]);
+        Assert.AreEqual("10", _context.Query["count"]);
+        Assert.AreEqual("11", _context.Headers["Header-1"]);
+        Assert.AreEqual("22", _context.Headers["Header-2"]);
         Assert.AreEqual(1, _context.State.Pagination.StartIndex);
         Assert.AreEqual(10, _context.State.Pagination.ItemsPerPage);
     }
@@ -129,16 +142,25 @@ public class ScimV2RouteOptionsTests
     public async Task GetById_Endpoint_Returns_Mock_Message()
     {
         // Arrange
-        var url = "/cars/id_car"; 
-
+        var url = "domains/admin/brands/ferrari/cars/id_car?param1=1&param2=2"; 
+        using var request = new HttpRequestMessage(HttpMethod.Get, url);
+        request.Headers.Add("Header-1", "11");
+        request.Headers.Add("Header-2", "22");
+        
         // Act
-        var response = await _client.GetAsync(url);
+        var response = await _client.SendAsync(request);
 
         // Assert
         Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
         var responseString = await response.Content.ReadAsStringAsync();
         Assert.IsTrue(responseString.Contains("mock_result"));
-        Assert.AreEqual("id_car", _context.State.Id);
+        Assert.AreEqual("admin", _context.RouteValues["domainId"]);
+        Assert.AreEqual("ferrari", _context.RouteValues["brandId"]);
+        Assert.AreEqual("id_car", _context.RouteValues["carId"]);
+        Assert.AreEqual("1", _context.Query["param1"]);
+        Assert.AreEqual("2", _context.Query["param2"]);
+        Assert.AreEqual("11", _context.Headers["Header-1"]);
+        Assert.AreEqual("22", _context.Headers["Header-2"]);
         await _crudServiceMock.Received(1).GetByIdAsync(_context, Arg.Any<CancellationToken>());
     }
     
@@ -146,18 +168,28 @@ public class ScimV2RouteOptionsTests
     public async Task Post_Endpoint_Returns_Mock_Message()
     {
         // Arrange
-        var url = "/cars"; 
+        var url = "domains/admin/brands/ferrari/cars?param1=1&param2=2"; 
         HttpContent content = new StringContent("resourceContent", Encoding.UTF8, "application/text");
-        
+        using var request = new HttpRequestMessage(HttpMethod.Post, url);
+        request.Content = content;
+        request.Headers.Add("Header-1", "11");
+        request.Headers.Add("Header-2", "22");
+
         // Act
-        var response = await _client.PostAsync(url, content);
+        var response = await _client.SendAsync(request);
 
         // Assert
         Assert.AreEqual("resourceContent", _context.State.Resource);
         Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
         var responseString = await response.Content.ReadAsStringAsync();
         Assert.AreEqual(string.Empty, responseString);
-        Assert.AreEqual("cars/mock_result", response.Headers.Location!.ToString());
+        Assert.AreEqual("/domains/admin/brands/ferrari/cars/mock_result", response.Headers.Location!.ToString());
+        Assert.AreEqual("admin", _context.RouteValues["domainId"]);
+        Assert.AreEqual("ferrari", _context.RouteValues["brandId"]);
+        Assert.AreEqual("1", _context.Query["param1"]);
+        Assert.AreEqual("2", _context.Query["param2"]);
+        Assert.AreEqual("11", _context.Headers["Header-1"]);
+        Assert.AreEqual("22", _context.Headers["Header-2"]);
         await _crudServiceMock.Received(1).CreateAsync(_context, Arg.Any<CancellationToken>());
     }
     
@@ -165,18 +197,27 @@ public class ScimV2RouteOptionsTests
     public async Task Put_Endpoint_Returns_Mock_Message()
     {
         // Arrange
-        var url = "/cars/id_car"; 
-        HttpContent content = new StringContent("operationsContent", Encoding.UTF8, "application/text");
+        var url = "domains/admin/brands/ferrari/cars/id_car?param1=1&param2=2"; 
+        HttpContent content = new StringContent("resourceContent", Encoding.UTF8, "application/text");
+        using var request = new HttpRequestMessage(HttpMethod.Put, url);
+        request.Content = content;
+        request.Headers.Add("Header-1", "11");
+        request.Headers.Add("Header-2", "22");
         
         // Act
-        var response = await _client.PutAsync(url, content);
+        var response = await _client.SendAsync(request);
         
         // Assert
         Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode);
         var responseString = await response.Content.ReadAsStringAsync();
         Assert.AreEqual(string.Empty, responseString);
-        Assert.AreEqual("id_car", _context.State.Id);
-        Assert.AreEqual("cars/id_car", response.Headers.Location!.ToString());
+        Assert.AreEqual("admin", _context.RouteValues["domainId"]);
+        Assert.AreEqual("ferrari", _context.RouteValues["brandId"]);
+        Assert.AreEqual("id_car", _context.RouteValues["carId"]);
+        Assert.AreEqual("1", _context.Query["param1"]);
+        Assert.AreEqual("2", _context.Query["param2"]);
+        Assert.AreEqual("11", _context.Headers["Header-1"]);
+        Assert.AreEqual("22", _context.Headers["Header-2"]);
         await _crudServiceMock.Received(1).UpdateAsync(_context, Arg.Any<CancellationToken>());
     }
     
@@ -184,19 +225,28 @@ public class ScimV2RouteOptionsTests
     public async Task Patch_Endpoint_Returns_Mock_Message()
     {
         // Arrange
-        var url = "/cars/id_car"; 
+        var url = "domains/admin/brands/ferrari/cars/id_car?param1=1&param2=2"; 
         HttpContent content = new StringContent("operationsContent", Encoding.UTF8, "application/text");
+        using var request = new HttpRequestMessage(HttpMethod.Patch, url);
+        request.Content = content;
+        request.Headers.Add("Header-1", "11");
+        request.Headers.Add("Header-2", "22");
         
         // Act
-        var response = await _client.PatchAsync(url, content);
+        var response = await _client.SendAsync(request);
         
         // Assert
         Assert.AreEqual("operationsContent", _context.State.Operations);
         Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode);
         var responseString = await response.Content.ReadAsStringAsync();
         Assert.AreEqual(string.Empty, responseString);
-        Assert.AreEqual("id_car", _context.State.Id);
-        Assert.AreEqual("cars/id_car", response.Headers.Location!.ToString());
+        Assert.AreEqual("admin", _context.RouteValues["domainId"]);
+        Assert.AreEqual("ferrari", _context.RouteValues["brandId"]);
+        Assert.AreEqual("id_car", _context.RouteValues["carId"]);
+        Assert.AreEqual("1", _context.Query["param1"]);
+        Assert.AreEqual("2", _context.Query["param2"]);
+        Assert.AreEqual("11", _context.Headers["Header-1"]);
+        Assert.AreEqual("22", _context.Headers["Header-2"]);
         await _crudServiceMock.Received(1).PatchAsync(_context, Arg.Any<CancellationToken>());
     }
     
@@ -204,17 +254,25 @@ public class ScimV2RouteOptionsTests
     public async Task Delete_Endpoint_Returns_Mock_Message()
     {
         // Arrange
-        var url = "/cars/id_car"; 
-        HttpContent content = new StringContent("operationsContent", Encoding.UTF8, "application/text");
+        var url = "domains/admin/brands/ferrari/cars/id_car?param1=1&param2=2"; 
+        using var request = new HttpRequestMessage(HttpMethod.Delete, url);
+        request.Headers.Add("Header-1", "11");
+        request.Headers.Add("Header-2", "22");
         
         // Act
-        var response = await _client.DeleteAsync(url);
+        var response = await _client.SendAsync(request);
         
         // Assert
         Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode);
         var responseString = await response.Content.ReadAsStringAsync();
         Assert.AreEqual(string.Empty, responseString);
-        Assert.AreEqual("id_car", _context.State.Id);
+        Assert.AreEqual("admin", _context.RouteValues["domainId"]);
+        Assert.AreEqual("ferrari", _context.RouteValues["brandId"]);
+        Assert.AreEqual("id_car", _context.RouteValues["carId"]);
+        Assert.AreEqual("1", _context.Query["param1"]);
+        Assert.AreEqual("2", _context.Query["param2"]);
+        Assert.AreEqual("11", _context.Headers["Header-1"]);
+        Assert.AreEqual("22", _context.Headers["Header-2"]);
         await _crudServiceMock.Received(1).DeleteAsync(_context, Arg.Any<CancellationToken>());
     }
 

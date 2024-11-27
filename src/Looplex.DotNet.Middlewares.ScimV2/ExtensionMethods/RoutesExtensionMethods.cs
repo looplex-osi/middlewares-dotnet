@@ -59,9 +59,8 @@ public static class RoutesExtensionMethods
 
         await service.CreateAsync(context, cancellationToken);
         var id = context.Result;
-        
         httpContext.Response.StatusCode = (int)HttpStatusCode.Created;
-        httpContext.Response.Headers.Location = $"{resource}/{id}";
+        httpContext.Response.Headers.Location = $"{httpContext.Request.Path.Value}/{id}";
     };
     
     private static MiddlewareDelegate PutMiddleware<TService>()
@@ -140,7 +139,7 @@ public static class RoutesExtensionMethods
         // Cache the default jsonschema for model validation on deserialization purposes
         Schemas.Add(typeof(T), (string)context.Result!);
 
-        var id = ToLowerFirstLetter(nameof(T));
+        var id = $"{ToLowerFirstLetter(typeof(T).Name)}Id";
         
         List<MiddlewareDelegate> getMiddlewares = [
             AuthenticationMiddleware.AuthenticateMiddleware, ScimV2Middlewares.PaginationMiddleware];
