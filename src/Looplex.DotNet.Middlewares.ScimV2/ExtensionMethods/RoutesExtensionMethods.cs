@@ -45,8 +45,7 @@ public static class RoutesExtensionMethods
         await httpContext.Response.WriteAsJsonAsync((string)context.Result!, HttpStatusCode.OK);
     };
 
-    private static MiddlewareDelegate PostMiddleware<TService>(
-        string resource)
+    private static MiddlewareDelegate PostMiddleware<TService>()
         where TService : ICrudService => async (context, cancellationToken, _) =>
     {
         HttpContext httpContext = context.State.HttpContext;
@@ -166,7 +165,7 @@ public static class RoutesExtensionMethods
         
         List<MiddlewareDelegate> postMiddlewares = [AuthenticationMiddleware.AuthenticateMiddleware];
         postMiddlewares.AddRange(options.OptionsForPost?.Middlewares ?? []);
-        postMiddlewares.Add(PostMiddleware<TService>(route));
+        postMiddlewares.Add(PostMiddleware<TService>());
         app.MapPost(
             route,
             new RouteBuilderOptions
