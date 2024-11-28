@@ -1,5 +1,4 @@
 using FluentAssertions;
-using Looplex.DotNet.Core.Application.Abstractions.Factories;
 using Looplex.DotNet.Core.Application.Abstractions.Services;
 using Looplex.DotNet.Middlewares.ScimV2.Providers;
 using Microsoft.Extensions.Configuration;
@@ -13,8 +12,7 @@ public class JsonSchemaProviderTests
 {
     private JsonSchemaProvider _jsonSchemaProvider = null!;
     private IConfiguration _configuration = null!;
-    private ICacheServiceFactory _cacheServiceFactory = null!;
-    private ICacheService _cacheService = null!;
+    private IRedisService _redisService = null!;
     private IRestClient _restClient = null!;
 
     [TestInitialize]
@@ -22,13 +20,11 @@ public class JsonSchemaProviderTests
     {
         // Mock dependencies
         _configuration = Substitute.For<IConfiguration>();
-        _cacheServiceFactory = Substitute.For<ICacheServiceFactory>();
-        _cacheService = Substitute.For<ICacheService>();
+        _redisService = Substitute.For<IRedisService>();
         _restClient = Substitute.For<IRestClient>(); 
 
         // Instantiate JsonSchemaProvider with mocks
-        _cacheServiceFactory.GetCacheService(Arg.Any<string>()).Returns(_cacheService);
-        _jsonSchemaProvider = new JsonSchemaProvider(_configuration, _cacheServiceFactory, _restClient);
+        _jsonSchemaProvider = new JsonSchemaProvider(_configuration, _redisService, _restClient);
     }
 
     [TestMethod]
@@ -45,12 +41,8 @@ public class JsonSchemaProviderTests
         };
         var lang = "en";
         var ocpApimSubscriptionKey = "ocpApimSubscriptionKey";
-        _cacheService.TryGetCacheValueAsync("first.en.json", out Arg.Any<string?>())
-            .Returns(call =>
-        {
-            call[1] = "cachedValue1";
-            return Task.FromResult(true); 
-        });
+        _redisService.GetAsync("first.en.json")
+            .Returns("cachedValue1");
         
         // Act
         var schemas = await _jsonSchemaProvider.ResolveJsonSchemasAsync(ocpApimSubscriptionKey, schemaIds, lang);
@@ -74,12 +66,8 @@ public class JsonSchemaProviderTests
         };
         var lang = "en";
         var ocpApimSubscriptionKey = "ocpApimSubscriptionKey";
-        _cacheService.TryGetCacheValueAsync("first.schema.json", out Arg.Any<string?>())
-            .Returns(call =>
-            {
-                call[1] = "cachedValue";
-                return Task.FromResult(true); 
-            });
+        _redisService.GetAsync("first.schema.json")
+            .Returns("cachedValue");
         
         // Act
         var schemas = await _jsonSchemaProvider.ResolveJsonSchemasAsync(ocpApimSubscriptionKey, schemaIds, lang);
@@ -97,14 +85,10 @@ public class JsonSchemaProviderTests
         // Arrange
         var schemaId = "first.schema.json";
         var ocpApimSubscriptionKey = "ocpApimSubscriptionKey";
-
-        _cacheService.TryGetCacheValueAsync("first.schema.json", out Arg.Any<string?>())
-            .Returns(call =>
-            {
-                call[1] = "cachedValue";
-                return Task.FromResult(true);
-            });
-
+        
+        _redisService.GetAsync("first.schema.json")
+            .Returns("cachedValue");
+        
         // Act
         var schema = await _jsonSchemaProvider.ResolveJsonSchemaAsync(ocpApimSubscriptionKey, schemaId, null);
 
@@ -119,13 +103,9 @@ public class JsonSchemaProviderTests
         var schemaId = "first.schema.json";
         var lang = "en";
         var ocpApimSubscriptionKey = "ocpApimSubscriptionKey";
-
-        _cacheService.TryGetCacheValueAsync("first.en.json", out Arg.Any<string?>())
-            .Returns(call =>
-            {
-                call[1] = "cachedValue";
-                return Task.FromResult(true);
-            });
+        
+        _redisService.GetAsync("first.en.json")
+            .Returns("cachedValue");
 
         // Act
         var schema = await _jsonSchemaProvider.ResolveJsonSchemaAsync(ocpApimSubscriptionKey, schemaId, lang);
@@ -142,22 +122,11 @@ public class JsonSchemaProviderTests
         var jsonSchema1 = "{ \"type\": \"schema1\" }";
         var jsonSchema2 = "{ \"type\": \"schema2\" }";
 
-        string? cacheValue1;
-        _cacheService.TryGetCacheValueAsync("schema1", out cacheValue1)
-            .Returns(x =>
-            {
-                x[1] = jsonSchema1;
-                return Task.FromResult(true);
-            });
-
-        string? cacheValue2;
-        _cacheService.TryGetCacheValueAsync("schema2", out cacheValue2)
-            .Returns(x =>
-            {
-                x[1] = jsonSchema2;
-                return Task.FromResult(true);
-            });
-
+        _redisService.GetAsync("schema1")
+            .Returns(jsonSchema1);
+        _redisService.GetAsync("schema2")
+            .Returns(jsonSchema2);
+        
         // Act
         var result = await _jsonSchemaProvider.ResolveJsonSchemasAsync("", schemaIds);
 

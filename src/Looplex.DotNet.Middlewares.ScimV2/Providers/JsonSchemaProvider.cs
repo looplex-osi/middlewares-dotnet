@@ -1,4 +1,3 @@
-using Looplex.DotNet.Core.Application.Abstractions.Factories;
 using Looplex.DotNet.Core.Application.Abstractions.Services;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Providers;
 using Microsoft.Extensions.Configuration;
@@ -8,11 +7,9 @@ namespace Looplex.DotNet.Middlewares.ScimV2.Providers;
 
 public class JsonSchemaProvider(
     IConfiguration configuration,
-    ICacheServiceFactory cacheServiceFactory,
+    IRedisService redisService,
     IRestClient restClient) : IJsonSchemaProvider
 {
-    private readonly ICacheService _cacheService = cacheServiceFactory.GetCacheService("InMemory");
-    
     public async Task<List<string>> ResolveJsonSchemasAsync(string ocpApimSubscriptionKey, List<string> schemaIds, string? lang = null)
     {
         var result = new List<string>();
@@ -47,12 +44,8 @@ public class JsonSchemaProvider(
     
     private async Task<string?> ResolveJsonSchemaAsync(string ocpApimSubscriptionKey, string schemaId)
     {
-        string? jsonSchema = null;
-        if (await _cacheService.TryGetCacheValueAsync(schemaId, out var value))
-        {
-            jsonSchema = value;
-        }
-        else
+        string? jsonSchema = await redisService.GetAsync(schemaId);
+        if (string.IsNullOrEmpty(jsonSchema))
         {
             var jsonSchemaCodeUrl = configuration["JsonSchemaCodeUrl"]!;
 
