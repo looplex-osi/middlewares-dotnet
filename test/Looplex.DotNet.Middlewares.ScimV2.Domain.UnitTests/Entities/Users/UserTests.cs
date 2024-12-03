@@ -8,13 +8,6 @@ namespace Looplex.DotNet.Middlewares.ScimV2.Domain.UnitTests.Entities.Users;
 [TestClass]
 public class UserTests
 {
-    [TestInitialize]
-    public void Init()
-    {
-        if (!Schemas.ContainsKey(typeof(User)))
-            Schemas.Add(typeof(User), File.ReadAllText("./Entities/Schemas/User.1.0.schema.json"));
-    }
-        
     [TestMethod]
     [DataRow("id")]
     [DataRow("userName")]
@@ -24,9 +17,10 @@ public class UserTests
         var json = @"{
               
             }";
-            
+        var jsonSchema = File.ReadAllText("./Entities/Schemas/User.1.0.schema.json");
+
         // Act
-        _ = Resource.FromJson<User>(json, out var messages);
+        _ = Resource.FromJson<User>(json, jsonSchema, out var messages);
             
         // Assert
         Assert.IsFalse(messages.Count == 0);
@@ -148,9 +142,10 @@ public class UserTests
                 }
             ]
         };
-            
+        var jsonSchema = File.ReadAllText("./Entities/Schemas/User.1.0.schema.json");
+
         // Act
-        var user = Resource.FromJson<User>(json, out var messages);
+        var user = Resource.FromJson<User>(json, jsonSchema, out var messages);
             
         // Assert
         Assert.IsTrue(messages.Count == 0);

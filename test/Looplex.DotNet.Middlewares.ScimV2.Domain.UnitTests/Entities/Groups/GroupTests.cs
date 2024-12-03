@@ -9,13 +9,6 @@ namespace Looplex.DotNet.Middlewares.ScimV2.Domain.UnitTests.Entities.Groups;
 [TestClass]
 public class GroupTests
 {
-    [TestInitialize]
-    public void Init()
-    {
-        if (!Schemas.ContainsKey(typeof(Group)))
-            Schemas.Add(typeof(Group), File.ReadAllText("./Entities/Schemas/Group.1.0.schema.json"));
-    }
-        
     [TestMethod]
     [DataRow("id")]
     [DataRow("displayName")]
@@ -25,9 +18,10 @@ public class GroupTests
         var json = @"{
               
             }";
-            
+        var jsonSchema = File.ReadAllText("./Entities/Schemas/Group.1.0.schema.json");
+
         // Act
-        _ = Resource.FromJson<Group>(json, out var messages);
+        _ = Resource.FromJson<Group>(json, jsonSchema, out var messages);
             
         // Assert
         Assert.IsFalse(messages.Count == 0);
@@ -63,9 +57,10 @@ public class GroupTests
                 }
             }
         };
-            
+        var jsonSchema = File.ReadAllText("./Entities/Schemas/Group.1.0.schema.json");
+
         // Act
-        var group = Resource.FromJson<Group>(json, out var messages);
+        var group = Resource.FromJson<Group>(json, jsonSchema, out var messages);
             
         // Assert
         Assert.IsTrue(messages.Count == 0);

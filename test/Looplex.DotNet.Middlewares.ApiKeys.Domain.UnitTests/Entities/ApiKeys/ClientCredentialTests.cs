@@ -7,13 +7,6 @@ namespace Looplex.DotNet.Middlewares.ApiKeys.Domain.UnitTests.Entities.ApiKeys;
 [TestClass]
 public class ClientCredentialTests
 {
-    [TestInitialize]
-    public void Init()
-    {
-        if (!Schemas.ContainsKey(typeof(ClientCredential)))
-            Schemas.Add(typeof(ClientCredential), File.ReadAllText("./Entities/Schemas/ClientCredential.1.0.schema.json"));
-    }
-
     [TestMethod]
     [DataRow("clientName")]
     [DataRow("expirationTime")]
@@ -24,9 +17,10 @@ public class ClientCredentialTests
         var json = @"{
               
             }";
-            
+        var jsonSchema = File.ReadAllText("./Entities/Schemas/ClientCredential.1.0.schema.json");
+
         // Act
-        var client = Resource.FromJson<ClientCredential>(json, out var messages);
+        var client = Resource.FromJson<ClientCredential>(json, jsonSchema, out var messages);
             
         // Assert
         Assert.IsFalse(messages.Count == 0);
@@ -46,9 +40,10 @@ public class ClientCredentialTests
             ExpirationTime = DateTimeOffset.Parse("2025-07-17T12:34:56Z"),
             NotBefore = DateTimeOffset.Parse("2023-07-17T12:34:56Z")
         };
-            
+        var jsonSchema = File.ReadAllText("./Entities/Schemas/ClientCredential.1.0.schema.json");
+
         // Act
-        var client = Resource.FromJson<ClientCredential>(json, out var messages);
+        var client = Resource.FromJson<ClientCredential>(json, jsonSchema, out var messages);
             
         // Assert
         Assert.IsTrue(messages.Count == 0);

@@ -31,9 +31,11 @@ public class JsonSchemaProviderTests
     public async Task ResolveJsonSchemasAsync_Should_Return_Schemas()
     {
         // Arrange
+        var section = Substitute.For<IConfigurationSection>();
+        section.Value = "false";
+        _configuration.GetSection("JsonSchemaIgnoreWhenNotFound").Returns(section);
         var mockResponse = new RestResponse { Content = "mockContent" };
         _restClient.ExecuteAsync(Arg.Any<RestRequest>()).Returns(Task.FromResult(mockResponse));
-        var cancellationToken = CancellationToken.None;
         var schemaIds = new List<string>
         {
             "first.schema.json",
@@ -56,10 +58,12 @@ public class JsonSchemaProviderTests
     [TestMethod]
     public async Task ResolveJsonSchemasAsync_Should_Return_Schemas_FallbackToNotLocalizedSchema()
     {
+        // Arrange
+        var section = Substitute.For<IConfigurationSection>();
+        section.Value = "false";
+        _configuration.GetSection("JsonSchemaIgnoreWhenNotFound").Returns(section);
         var mockResponse = new RestResponse { Content = null };
         _restClient.ExecuteAsync(Arg.Any<RestRequest>()).Returns(Task.FromResult(mockResponse));
-        // Arrange
-        var cancellationToken = CancellationToken.None;
         var schemaIds = new List<string>
         {
             "first.schema.json"
@@ -74,15 +78,16 @@ public class JsonSchemaProviderTests
 
         // Assert
         Assert.AreEqual(1, schemas.Count);
-        schemas[0].ToString()!.Should().BeEquivalentTo("cachedValue");
+        schemas[0]!.Should().BeEquivalentTo("cachedValue");
     }
-
     
-
     [TestMethod]
     public async Task ResolveJsonSchemaAsync_Should_Return_Schema_When_SchemaId_Is_Found_And_Lang_IsNull()
     {
         // Arrange
+        var section = Substitute.For<IConfigurationSection>();
+        section.Value = "false";
+        _configuration.GetSection("JsonSchemaIgnoreWhenNotFound").Returns(section);
         var schemaId = "first.schema.json";
         var ocpApimSubscriptionKey = "ocpApimSubscriptionKey";
         
@@ -90,7 +95,7 @@ public class JsonSchemaProviderTests
             .Returns("cachedValue");
         
         // Act
-        var schema = await _jsonSchemaProvider.ResolveJsonSchemaAsync(ocpApimSubscriptionKey, schemaId, null);
+        var schema = await _jsonSchemaProvider.ResolveJsonSchemaAsync(ocpApimSubscriptionKey, schemaId);
 
         // Assert
         Assert.AreEqual("cachedValue", schema);
@@ -100,6 +105,9 @@ public class JsonSchemaProviderTests
     public async Task GetByIdAsync_Should_Return_JsonSchema_When_SchemaId_Is_Found_And_Lang_IsNotNull()
     {
         // Arrange
+        var section = Substitute.For<IConfigurationSection>();
+        section.Value = "false";
+        _configuration.GetSection("JsonSchemaIgnoreWhenNotFound").Returns(section);
         var schemaId = "first.schema.json";
         var lang = "en";
         var ocpApimSubscriptionKey = "ocpApimSubscriptionKey";
@@ -118,6 +126,9 @@ public class JsonSchemaProviderTests
     public async Task ResolveJsonSchemasAsync_ShouldReturnJsonSchemas_WhenSchemasAreFound()
     {
         // Arrange
+        var section = Substitute.For<IConfigurationSection>();
+        section.Value = "false";
+        _configuration.GetSection("JsonSchemaIgnoreWhenNotFound").Returns(section);
         var schemaIds = new List<string> { "schema1", "schema2" };
         var jsonSchema1 = "{ \"type\": \"schema1\" }";
         var jsonSchema2 = "{ \"type\": \"schema2\" }";
@@ -132,5 +143,44 @@ public class JsonSchemaProviderTests
 
         // Assert
         result.Should().BeEquivalentTo(new List<string> { jsonSchema1, jsonSchema2 });
+    }
+    
+    [TestMethod]
+    public async Task ResolveJsonSchemaAsync_Should_Return_Empty_Schema_When_SchemaId_Is_Found()
+    {
+        // Arrange
+        var mockResponse = new RestResponse { Content = null };
+        _restClient.ExecuteAsync(Arg.Any<RestRequest>()).Returns(Task.FromResult(mockResponse));
+        var section = Substitute.For<IConfigurationSection>();
+        section.Value = "true";
+        _configuration.GetSection("JsonSchemaIgnoreWhenNotFound").Returns(section);
+        var schemaId = "first.schema.json";
+        var ocpApimSubscriptionKey = "ocpApimSubscriptionKey";
+        
+        // Act
+        var schema = await _jsonSchemaProvider.ResolveJsonSchemaAsync(ocpApimSubscriptionKey, schemaId);
+
+        // Assert
+        Assert.AreEqual("{}", schema);
+    }
+    
+    [TestMethod]
+    public async Task ResolveJsonSchemaAsync_Should_ThrowException_When_SchemaId_Is_Found()
+    {
+        // Arrange
+        var mockResponse = new RestResponse { Content = null };
+        _restClient.ExecuteAsync(Arg.Any<RestRequest>()).Returns(Task.FromResult(mockResponse));
+        var section = Substitute.For<IConfigurationSection>();
+        section.Value = "false";
+        _configuration.GetSection("JsonSchemaIgnoreWhenNotFound").Returns(section);
+        var schemaId = "first.schema.json";
+        var ocpApimSubscriptionKey = "ocpApimSubscriptionKey";
+        
+        // Act
+        var action = () => _jsonSchemaProvider.ResolveJsonSchemaAsync(ocpApimSubscriptionKey, schemaId);
+
+        // Assert
+        var ex = await Assert.ThrowsExceptionAsync<InvalidOperationException>(action);
+        ex.Message.Should().Be("Json schema first.schema.json was not found.");
     }
 }

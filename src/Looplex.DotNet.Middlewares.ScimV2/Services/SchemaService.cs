@@ -52,7 +52,7 @@ public class SchemaService(IJsonSchemaProvider jsonSchemaProvider): ISchemaServi
             
             var result = new ListResponse
             {
-                Resources = records.Select(r => (object)r).ToList(),
+                Resources = records.Where(r => r != null).Select(r => (object)r!).ToList(),
                 StartIndex = startIndex,
                 ItemsPerPage = itemsPerPage,
                 TotalResults = SchemaIds.Count

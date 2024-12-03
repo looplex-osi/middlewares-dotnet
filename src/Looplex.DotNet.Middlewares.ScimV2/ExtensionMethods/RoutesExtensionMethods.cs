@@ -134,9 +134,6 @@ public static class RoutesExtensionMethods
             Resource = route,
             Service = typeof(TService)
         });
-            
-        // Cache the default jsonschema for model validation on deserialization purposes
-        Schemas.Add(typeof(T), (string)context.Result!);
 
         var id = $"{ToLowerFirstLetter(typeof(T).Name)}Id";
         
@@ -224,6 +221,6 @@ public static class RoutesExtensionMethods
         if (string.IsNullOrEmpty(input) || char.IsLower(input[0]))
             return input;
 
-        return char.ToLower(input[0]) + input.Substring(1);
+        return char.ToLower(input[0]) + input[1..];
     }
 }

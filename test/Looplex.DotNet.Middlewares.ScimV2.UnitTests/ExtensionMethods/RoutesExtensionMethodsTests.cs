@@ -79,7 +79,6 @@ public class RoutesExtensionMethodsTests
                     })
                     .Configure(app =>
                     {
-                        Schemas.Map.Clear();
                         app.UseRouting();
                         app.UseEndpoints(endpoints =>
                         {

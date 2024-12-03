@@ -4,13 +4,16 @@ using Looplex.DotNet.Core.Application.Abstractions.Services;
 using Looplex.DotNet.Core.Application.ExtensionMethods;
 using Looplex.DotNet.Core.Common.Exceptions;
 using Looplex.DotNet.Core.Common.Utils;
+using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Providers;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Services;
+using Looplex.DotNet.Middlewares.ScimV2.Domain;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Configurations;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Messages;
 using Looplex.OpenForExtension.Abstractions.Commands;
 using Looplex.OpenForExtension.Abstractions.Contexts;
 using Looplex.OpenForExtension.Abstractions.ExtensionMethods;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -19,17 +22,27 @@ namespace Looplex.DotNet.Middlewares.ScimV2.Services;
 
 public class BulkService(
     IServiceProvider serviceProvider,
-    IContextFactory contextFactory) : IBulkService
+    IContextFactory contextFactory,
+    IConfiguration configuration,
+    IJsonSchemaProvider jsonSchemaProvider) : IBulkService
 {
-    internal const string BulkIdValuePrefix = "bulkId:";
+    const string ApimSubscriptionKey = "Ocp-Apim-Subscription-Key";
+    
+    const string BulkIdValuePrefix = "bulkId:";
     
     public async Task ExecuteBulkOperationsAsync(IContext context, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         var serviceProviderConfiguration = serviceProvider.GetRequiredService<ServiceProviderConfiguration>();
-
+        var schemaId = configuration["JsonSchemaIdForBulkOperation"]!;
+        
+        if (!((IScimV2Context)context).Headers.TryGetValue(ApimSubscriptionKey, out var ocpApimSubscriptionKey))
+            throw new Error($"Missing header {ApimSubscriptionKey} in request.", (int)HttpStatusCode.Forbidden);
+        
+        var jsonSchema = await jsonSchemaProvider.ResolveJsonSchemaAsync(ocpApimSubscriptionKey, schemaId);
+        
         var json = context.GetRequiredValue<string>("Request");
-        var bulkRequest = Resource.FromJson<BulkRequest>(json, out var messages);
+        var bulkRequest = Resource.FromJson<BulkRequest>(json, jsonSchema, out var messages);
         var bulkResponse = new BulkResponse();
         await context.Plugins.ExecuteAsync<IHandleInput>(context, cancellationToken);
 
@@ -134,7 +147,7 @@ public class BulkService(
                 }
             }
             
-            context.Result = bulkResponse.ToJson();;
+            context.Result = bulkResponse.ToJson();
         }
 
         await context.Plugins.ExecuteAsync<IAfterAction>(context, cancellationToken);

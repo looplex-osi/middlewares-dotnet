@@ -31,15 +31,18 @@ public abstract partial class Resource
     
     #region Serialization
     
-    public static T FromJson<T>(string json, out IList<string> messages)
+    public static T FromJson<T>(string json, string? jsonSchema, out IList<string> messages)
     {
         JsonTextReader reader = new(new StringReader(json));
 
         JSchemaValidatingReader validatingReader = new(reader);
-        validatingReader.Schema = JSchema.Parse(Schemas.Get(typeof(T)));
 
         IList<string> localMessages = [];
-        validatingReader.ValidationEventHandler += (o, a) => localMessages.Add(a.Message);
+        if (!string.IsNullOrWhiteSpace(jsonSchema))
+        {
+            validatingReader.Schema = JSchema.Parse(jsonSchema);
+            validatingReader.ValidationEventHandler += (o, a) => localMessages.Add(a.Message);
+        }
         messages = localMessages;
 
         JsonSerializer serializer = new();
@@ -47,28 +50,4 @@ public abstract partial class Resource
     }
     
     #endregion
-}
-
-/// <summary>
-/// This class has a map of scimResource:jsonSchema and it is used for model validation on deserialization
-/// in the scim resource's services 
-/// </summary>
-public static class Schemas
-{
-    internal static readonly IDictionary<Type, string> Map = new Dictionary<Type, string>();
-
-    public static void Add(Type type, string schema)
-    {
-        Map.Add(type, schema);
-    }
-    
-    public static bool ContainsKey(Type type)
-    {
-        return Map.ContainsKey(type);
-    }
-    
-    public static string Get(Type type)
-    {
-        return Map[type];
-    }
 }
