@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="2.1.0"></a>
+## 2.1.0 (2024-12-03)
+
+### Features
+
+* upgraded core packages
+
+### Bug Fixes
+
+* **routesextensionmethods:** json schema is now lazy loaded and not on server startup
+
 <a name="2.0.4"></a>
 ## 2.0.4 (2024-11-27)
 
