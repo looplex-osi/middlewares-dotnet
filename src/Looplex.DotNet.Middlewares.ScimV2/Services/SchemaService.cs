@@ -11,8 +11,6 @@ namespace Looplex.DotNet.Middlewares.ScimV2.Services;
 
 public class SchemaService(IJsonSchemaProvider jsonSchemaProvider): ISchemaService
 {
-    const string ApimSubscriptionKey = "Ocp-Apim-Subscription-Key";
-
     /// <summary>
     /// This is a collection with the default json.schemas that the application will use in its services.
     /// The action value of the json.schema is supposed to be resolved by an external service such as redis.
