@@ -632,7 +632,7 @@ public class BulkServiceTests
     {
         // Arrange
         _jsonSchemaProvider
-            .ResolveJsonSchemaAsync("ocpApimSubscriptionKey", "bulkJsonSchemaId")
+            .ResolveJsonSchemaAsync(Arg.Any<IScimV2Context>(), "bulkJsonSchemaId")
             .Returns("{}");
         var bulkRequest = new BulkRequest
         {
@@ -677,7 +677,7 @@ public class BulkServiceTests
     {
         // Arrange
         _jsonSchemaProvider
-            .ResolveJsonSchemaAsync("ocpApimSubscriptionKey", "bulkJsonSchemaId")
+            .ResolveJsonSchemaAsync(Arg.Any<IScimV2Context>(), "bulkJsonSchemaId")
             .Returns("{}");
         var bulkRequest = new BulkRequest
         {
@@ -710,7 +710,7 @@ public class BulkServiceTests
     {
         // Arrange
         _jsonSchemaProvider
-            .ResolveJsonSchemaAsync("ocpApimSubscriptionKey", "bulkJsonSchemaId")
+            .ResolveJsonSchemaAsync(Arg.Any<IScimV2Context>(), "bulkJsonSchemaId")
             .Returns("{}");
         var bulkRequest = new BulkRequest
         {
@@ -750,7 +750,7 @@ public class BulkServiceTests
     {
         // Arrange
         _jsonSchemaProvider
-            .ResolveJsonSchemaAsync("ocpApimSubscriptionKey", "bulkJsonSchemaId")
+            .ResolveJsonSchemaAsync(Arg.Any<IScimV2Context>(), "bulkJsonSchemaId")
             .Returns("{}");
         var bulkRequest = new BulkRequest
         {
@@ -787,7 +787,7 @@ public class BulkServiceTests
     {
         // Arrange
         _jsonSchemaProvider
-            .ResolveJsonSchemaAsync("ocpApimSubscriptionKey", "bulkJsonSchemaId")
+            .ResolveJsonSchemaAsync(Arg.Any<IScimV2Context>(), "bulkJsonSchemaId")
             .Returns("{}");
         var id = Guid.NewGuid();
         var bulkRequest = new BulkRequest
@@ -824,7 +824,7 @@ public class BulkServiceTests
     {
         // Arrange
         _jsonSchemaProvider
-            .ResolveJsonSchemaAsync("ocpApimSubscriptionKey", "bulkJsonSchemaId")
+            .ResolveJsonSchemaAsync(Arg.Any<IScimV2Context>(), "bulkJsonSchemaId")
             .Returns("{}");
         var groupId = Guid.NewGuid();
         var bulkRequest = new BulkRequest
@@ -895,7 +895,7 @@ public class BulkServiceTests
     {
         // Arrange
         _jsonSchemaProvider
-            .ResolveJsonSchemaAsync("ocpApimSubscriptionKey", "bulkJsonSchemaId")
+            .ResolveJsonSchemaAsync(Arg.Any<IScimV2Context>(), "bulkJsonSchemaId")
             .Returns("{}");
         var bulkRequest = new BulkRequest
         {

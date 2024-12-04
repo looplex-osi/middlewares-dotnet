@@ -6,7 +6,6 @@ using Looplex.DotNet.Core.Common.Exceptions;
 using Looplex.DotNet.Core.Common.Utils;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Providers;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Services;
-using Looplex.DotNet.Middlewares.ScimV2.Domain;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Configurations;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Messages;
@@ -26,20 +25,15 @@ public class BulkService(
     IConfiguration configuration,
     IJsonSchemaProvider jsonSchemaProvider) : IBulkService
 {
-    const string ApimSubscriptionKey = "Ocp-Apim-Subscription-Key";
-    
     const string BulkIdValuePrefix = "bulkId:";
     
     public async Task ExecuteBulkOperationsAsync(IContext context, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
         var serviceProviderConfiguration = serviceProvider.GetRequiredService<ServiceProviderConfiguration>();
+        
         var schemaId = configuration["JsonSchemaIdForBulkOperation"]!;
-        
-        if (!((IScimV2Context)context).Headers.TryGetValue(ApimSubscriptionKey, out var ocpApimSubscriptionKey))
-            throw new Error($"Missing header {ApimSubscriptionKey} in request.", (int)HttpStatusCode.Forbidden);
-        
-        var jsonSchema = await jsonSchemaProvider.ResolveJsonSchemaAsync(ocpApimSubscriptionKey, schemaId);
+        var jsonSchema = await jsonSchemaProvider.ResolveJsonSchemaAsync(context, schemaId);
         
         var json = context.GetRequiredValue<string>("Request");
         var bulkRequest = Resource.FromJson<BulkRequest>(json, jsonSchema, out var messages);

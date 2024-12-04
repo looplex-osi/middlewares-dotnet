@@ -1,6 +1,9 @@
 using FluentAssertions;
 using Looplex.DotNet.Core.Application.Abstractions.Services;
+using Looplex.DotNet.Middlewares.ScimV2.Domain;
+using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Messages;
 using Looplex.DotNet.Middlewares.ScimV2.Providers;
+using Looplex.OpenForExtension.Abstractions.Contexts;
 using Microsoft.Extensions.Configuration;
 using NSubstitute;
 using RestSharp;
@@ -14,6 +17,7 @@ public class JsonSchemaProviderTests
     private IConfiguration _configuration = null!;
     private IRedisService _redisService = null!;
     private IRestClient _restClient = null!;
+    private IScimV2Context _context = null!;
 
     [TestInitialize]
     public void Setup()
@@ -22,7 +26,9 @@ public class JsonSchemaProviderTests
         _configuration = Substitute.For<IConfiguration>();
         _redisService = Substitute.For<IRedisService>();
         _restClient = Substitute.For<IRestClient>(); 
-
+        _context = Substitute.For<IScimV2Context>();
+        _context.Headers = [];
+        
         // Instantiate JsonSchemaProvider with mocks
         _jsonSchemaProvider = new JsonSchemaProvider(_configuration, _redisService, _restClient);
     }
@@ -42,12 +48,12 @@ public class JsonSchemaProviderTests
             "second.schema.json"
         };
         var lang = "en";
-        var ocpApimSubscriptionKey = "ocpApimSubscriptionKey";
+        _context.Headers.Add("Ocp-Apim-Subscription-Key", "ocpApimSubscriptionKey");
         _redisService.GetAsync("first.en.json")
             .Returns("cachedValue1");
         
         // Act
-        var schemas = await _jsonSchemaProvider.ResolveJsonSchemasAsync(ocpApimSubscriptionKey, schemaIds, lang);
+        var schemas = await _jsonSchemaProvider.ResolveJsonSchemasAsync(_context, schemaIds, lang);
 
         // Assert
         Assert.AreEqual(2, schemas.Count);
@@ -69,12 +75,12 @@ public class JsonSchemaProviderTests
             "first.schema.json"
         };
         var lang = "en";
-        var ocpApimSubscriptionKey = "ocpApimSubscriptionKey";
+        _context.Headers.Add("Ocp-Apim-Subscription-Key", "ocpApimSubscriptionKey");
         _redisService.GetAsync("first.schema.json")
             .Returns("cachedValue");
         
         // Act
-        var schemas = await _jsonSchemaProvider.ResolveJsonSchemasAsync(ocpApimSubscriptionKey, schemaIds, lang);
+        var schemas = await _jsonSchemaProvider.ResolveJsonSchemasAsync(_context, schemaIds, lang);
 
         // Assert
         Assert.AreEqual(1, schemas.Count);
@@ -89,13 +95,13 @@ public class JsonSchemaProviderTests
         section.Value = "false";
         _configuration.GetSection("JsonSchemaIgnoreWhenNotFound").Returns(section);
         var schemaId = "first.schema.json";
-        var ocpApimSubscriptionKey = "ocpApimSubscriptionKey";
+        _context.Headers.Add("Ocp-Apim-Subscription-Key", "ocpApimSubscriptionKey");
         
         _redisService.GetAsync("first.schema.json")
             .Returns("cachedValue");
         
         // Act
-        var schema = await _jsonSchemaProvider.ResolveJsonSchemaAsync(ocpApimSubscriptionKey, schemaId);
+        var schema = await _jsonSchemaProvider.ResolveJsonSchemaAsync(_context, schemaId);
 
         // Assert
         Assert.AreEqual("cachedValue", schema);
@@ -110,13 +116,13 @@ public class JsonSchemaProviderTests
         _configuration.GetSection("JsonSchemaIgnoreWhenNotFound").Returns(section);
         var schemaId = "first.schema.json";
         var lang = "en";
-        var ocpApimSubscriptionKey = "ocpApimSubscriptionKey";
+        _context.Headers.Add("Ocp-Apim-Subscription-Key", "ocpApimSubscriptionKey");
         
         _redisService.GetAsync("first.en.json")
             .Returns("cachedValue");
 
         // Act
-        var schema = await _jsonSchemaProvider.ResolveJsonSchemaAsync(ocpApimSubscriptionKey, schemaId, lang);
+        var schema = await _jsonSchemaProvider.ResolveJsonSchemaAsync(_context, schemaId, lang);
 
         // Assert
         Assert.AreEqual("cachedValue", schema);
@@ -132,6 +138,7 @@ public class JsonSchemaProviderTests
         var schemaIds = new List<string> { "schema1", "schema2" };
         var jsonSchema1 = "{ \"type\": \"schema1\" }";
         var jsonSchema2 = "{ \"type\": \"schema2\" }";
+        _context.Headers.Add("Ocp-Apim-Subscription-Key", "ocpApimSubscriptionKey");
 
         _redisService.GetAsync("schema1")
             .Returns(jsonSchema1);
@@ -139,7 +146,7 @@ public class JsonSchemaProviderTests
             .Returns(jsonSchema2);
         
         // Act
-        var result = await _jsonSchemaProvider.ResolveJsonSchemasAsync("", schemaIds);
+        var result = await _jsonSchemaProvider.ResolveJsonSchemasAsync(_context, schemaIds);
 
         // Assert
         result.Should().BeEquivalentTo(new List<string> { jsonSchema1, jsonSchema2 });
@@ -155,10 +162,10 @@ public class JsonSchemaProviderTests
         section.Value = "true";
         _configuration.GetSection("JsonSchemaIgnoreWhenNotFound").Returns(section);
         var schemaId = "first.schema.json";
-        var ocpApimSubscriptionKey = "ocpApimSubscriptionKey";
+        _context.Headers.Add("Ocp-Apim-Subscription-Key", "ocpApimSubscriptionKey");
         
         // Act
-        var schema = await _jsonSchemaProvider.ResolveJsonSchemaAsync(ocpApimSubscriptionKey, schemaId);
+        var schema = await _jsonSchemaProvider.ResolveJsonSchemaAsync(_context, schemaId);
 
         // Assert
         Assert.AreEqual("{}", schema);
@@ -174,13 +181,48 @@ public class JsonSchemaProviderTests
         section.Value = "false";
         _configuration.GetSection("JsonSchemaIgnoreWhenNotFound").Returns(section);
         var schemaId = "first.schema.json";
-        var ocpApimSubscriptionKey = "ocpApimSubscriptionKey";
+        _context.Headers.Add("Ocp-Apim-Subscription-Key", "ocpApimSubscriptionKey");
         
         // Act
-        var action = () => _jsonSchemaProvider.ResolveJsonSchemaAsync(ocpApimSubscriptionKey, schemaId);
+        var action = () => _jsonSchemaProvider.ResolveJsonSchemaAsync(_context, schemaId);
 
         // Assert
         var ex = await Assert.ThrowsExceptionAsync<InvalidOperationException>(action);
         ex.Message.Should().Be("Json schema first.schema.json was not found.");
+    }
+    
+    [TestMethod]
+    public async Task ResolveJsonSchemaAsync_Should_ThrowException_When_ContextIsNotScimV2Context()
+    {
+        // Arrange
+        var section = Substitute.For<IConfigurationSection>();
+        section.Value = "false";
+        _configuration.GetSection("JsonSchemaIgnoreWhenNotFound").Returns(section);
+        var schemaId = "first.schema.json";
+        var context = Substitute.For<IContext>();
+        
+        // Act
+        var action = () => _jsonSchemaProvider.ResolveJsonSchemaAsync(context, schemaId);
+
+        // Assert
+        var ex = await Assert.ThrowsExceptionAsync<ArgumentException>(action);
+        ex.Message.Should().Be("context is not a scim v2 context (Parameter 'context')");
+    }
+    
+    [TestMethod]
+    public async Task ResolveJsonSchemaAsync_Should_ThrowException_When_ContextDoesNotHaveApimHeader()
+    {
+        // Arrange
+        var section = Substitute.For<IConfigurationSection>();
+        section.Value = "false";
+        _configuration.GetSection("JsonSchemaIgnoreWhenNotFound").Returns(section);
+        var schemaId = "first.schema.json";
+        
+        // Act
+        var action = () => _jsonSchemaProvider.ResolveJsonSchemaAsync(_context, schemaId);
+
+        // Assert
+        var ex = await Assert.ThrowsExceptionAsync<Error>(action);
+        ex.Message.Should().Be("Missing header Ocp-Apim-Subscription-Key in request.");
     }
 }

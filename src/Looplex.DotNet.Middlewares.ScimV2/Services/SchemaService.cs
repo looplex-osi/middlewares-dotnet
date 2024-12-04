@@ -1,8 +1,6 @@
-using System.Net;
 using Looplex.DotNet.Core.Application.ExtensionMethods;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Providers;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Services;
-using Looplex.DotNet.Middlewares.ScimV2.Domain;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Messages;
 using Looplex.OpenForExtension.Abstractions.Commands;
 using Looplex.OpenForExtension.Abstractions.Contexts;
@@ -30,9 +28,6 @@ public class SchemaService(IJsonSchemaProvider jsonSchemaProvider): ISchemaServi
         var lang = context.GetValue<string?>("Lang");
         await context.Plugins.ExecuteAsync<IHandleInput>(context, cancellationToken);
 
-        if (!((IScimV2Context)context).Headers.TryGetValue(ApimSubscriptionKey, out var ocpApimSubscriptionKey))
-            throw new Error($"Missing header {ApimSubscriptionKey} in request.", (int)HttpStatusCode.Forbidden);
-        
         await context.Plugins.ExecuteAsync<IValidateInput>(context, cancellationToken);
 
         await context.Plugins.ExecuteAsync<IDefineRoles>(context, cancellationToken);
@@ -48,7 +43,7 @@ public class SchemaService(IJsonSchemaProvider jsonSchemaProvider): ISchemaServi
                 .Take(itemsPerPage)
                 .ToList();
 
-            var records = await jsonSchemaProvider.ResolveJsonSchemasAsync(ocpApimSubscriptionKey, schemaIds, lang);
+            var records = await jsonSchemaProvider.ResolveJsonSchemasAsync(context, schemaIds, lang);
             
             var result = new ListResponse
             {
@@ -82,12 +77,9 @@ public class SchemaService(IJsonSchemaProvider jsonSchemaProvider): ISchemaServi
         var lang = context.GetValue<string?>("Lang");
         await context.Plugins.ExecuteAsync<IHandleInput>(context, cancellationToken);
 
-        if (!((IScimV2Context)context).Headers.TryGetValue(ApimSubscriptionKey, out var ocpApimSubscriptionKey))
-            throw new Error($"Missing header {ApimSubscriptionKey} in request.", (int)HttpStatusCode.Forbidden);
-        
         if (!SchemaIds.Contains(schemaId))
             throw new InvalidOperationException($"{schemaId} does not exists or is not configured for this app.");
-        var jsonSchema = await jsonSchemaProvider.ResolveJsonSchemaAsync(ocpApimSubscriptionKey, schemaId, lang);
+        var jsonSchema = await jsonSchemaProvider.ResolveJsonSchemaAsync(context, schemaId, lang);
 
         if (string.IsNullOrWhiteSpace(jsonSchema))
             throw new InvalidOperationException($"Json schema {lang} {schemaId} was not found.");

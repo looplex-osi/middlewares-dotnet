@@ -6,7 +6,6 @@ using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Messages;
 using Looplex.DotNet.Middlewares.ScimV2.Services;
 using Newtonsoft.Json;
 using NSubstitute;
-using RestSharp;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.Services;
 
@@ -37,7 +36,6 @@ public class SchemaServiceTests
     public async Task GetAllAsync_Should_Return_JsonResult_When_Action_Not_Skipped()
     {
         // Arrange
-        var mockResponse = new RestResponse { Content = "mockContent" };
         SchemaService.SchemaIds = new List<string>
         {
             "first.schema.json",
@@ -54,7 +52,7 @@ public class SchemaServiceTests
                 "Ocp-Apim-Subscription-Key", "key"
             }
         };
-        _jsonSchemaProvider.ResolveJsonSchemasAsync("key", Arg.Any<List<string>>(), Arg.Any<string>())
+        _jsonSchemaProvider.ResolveJsonSchemasAsync(Arg.Any<IScimV2Context>(), Arg.Any<List<string>>(), Arg.Any<string>())
             .Returns(["mockContent1", "mockContent2"]);
         
         // Act

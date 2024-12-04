@@ -1,7 +1,12 @@
+using System.Net;
 using Looplex.DotNet.Core.Application.Abstractions.Services;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Providers;
+using Looplex.DotNet.Middlewares.ScimV2.Domain;
+using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Messages;
+using Looplex.OpenForExtension.Abstractions.Contexts;
 using Microsoft.Extensions.Configuration;
 using RestSharp;
+using Method = RestSharp.Method;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.Providers;
 
@@ -14,13 +19,13 @@ public class JsonSchemaProvider(
     private const string JsonSchemaCodeUrlKey = "JsonSchemaCodeUrl";
     private const string OcpApimSubscriptionKeyHeader = "Ocp-Apim-Subscription-Key";
 
-    public async Task<List<string?>> ResolveJsonSchemasAsync(string ocpApimSubscriptionKey, List<string> schemaIds, string? lang = null)
+    public async Task<List<string?>> ResolveJsonSchemasAsync(IContext context, List<string> schemaIds, string? lang = null)
     {
         var result = new List<string?>();
         
         foreach (var schemaId in schemaIds)
         {
-            var jsonSchema = await ResolveJsonSchemaAsync(ocpApimSubscriptionKey, schemaId, lang);
+            var jsonSchema = await ResolveJsonSchemaAsync(context, schemaId, lang);
             
             result.Add(jsonSchema);
         }
@@ -28,9 +33,17 @@ public class JsonSchemaProvider(
         return result;
     }
     
-    public async Task<string?> ResolveJsonSchemaAsync(string ocpApimSubscriptionKey, string schemaId, string? lang = null)
+    public async Task<string?> ResolveJsonSchemaAsync(IContext context, string schemaId, string? lang = null)
     {
+        var scimContext = context as IScimV2Context;
+        if (scimContext == null)
+            throw new ArgumentException("context is not a scim v2 context", nameof(context));
+        
         string? jsonSchema = null;
+        
+        if (!(scimContext).Headers.TryGetValue(OcpApimSubscriptionKeyHeader, out var ocpApimSubscriptionKey))
+            throw new Error($"Missing header {OcpApimSubscriptionKeyHeader} in request.", (int)HttpStatusCode.Forbidden);
+            
         var jsonSchemaIgnoreWhenNotFound = configuration.GetValue<bool>(JsonSchemaIgnoreWhenNotFoundKey);
         
         if (!string.IsNullOrWhiteSpace(lang))
