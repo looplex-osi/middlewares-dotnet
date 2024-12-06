@@ -1,19 +1,27 @@
 using System.Dynamic;
+using System.Net;
+using Looplex.DotNet.Core.Application.Abstractions.Providers;
+using Looplex.DotNet.Core.Application.Abstractions.Services;
+using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Messages;
 using Looplex.OpenForExtension.Abstractions.Plugins;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.Domain;
 
-public class DefaultScimV2Context : IScimV2Context
+public class DefaultScimV2Context(
+    IServiceProvider services,
+    ISqlDatabaseProvider sqlDatabaseProvider) : IScimV2Context
 {
+    const string LooplexTenantKeyHeader = "X-looplex-tenant";
+    
     public bool SkipDefaultAction { get; set; } = false;
 
     public object State { get; } = new ExpandoObject();
 
     public IDictionary<string, object> Roles { get; } = new Dictionary<string, object>();
 
-    public IList<IPlugin> Plugins { get; private init; } = [];
+    public IList<IPlugin> Plugins { get; } = [];
 
-    public IServiceProvider Services { get; private init; } = null!;
+    public IServiceProvider Services { get; } = services;
 
     public object? Result { get; set; }
 
@@ -22,13 +30,25 @@ public class DefaultScimV2Context : IScimV2Context
     public Dictionary<string, string> Query { get; set; } = [];
 
     public Dictionary<string, string> Headers { get; set; } = [];
-    
-    public static IScimV2Context Create(IList<IPlugin> plugins, IServiceProvider services)
+
+    private ISqlDatabaseService? _sqlDatabaseService = null;
+
+    public async Task<ISqlDatabaseService> GetSqlDatabaseService()
     {
-        return new DefaultScimV2Context()
+        if (_sqlDatabaseService == null)
         {
-            Plugins = plugins,
-            Services = services
-        };
+            if (!Headers.TryGetValue(LooplexTenantKeyHeader, out var domain))
+                throw new Error(
+                    $"{LooplexTenantKeyHeader} not found in context header.",
+                    (int)HttpStatusCode.BadRequest);
+            if (string.IsNullOrWhiteSpace(domain))
+                throw new Error(
+                    $"Domain should not be null or empty.",
+                    (int)HttpStatusCode.BadRequest);
+
+            _sqlDatabaseService = await sqlDatabaseProvider.GetDatabaseAsync(domain);
+        }
+
+        return _sqlDatabaseService;
     }
 }

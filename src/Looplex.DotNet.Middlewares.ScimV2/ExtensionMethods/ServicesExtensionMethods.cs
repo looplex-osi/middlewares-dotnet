@@ -15,7 +15,7 @@ public static class ServicesExtensionMethods
         services.AddSingleton<IResourceTypeService, ResourceTypeService>();
         services.AddSingleton<IBulkService, BulkService>();
         services.AddSingleton<IJsonSchemaProvider, JsonSchemaProvider>();
-
+        
         var config = new ServiceProviderConfiguration
         {
             Patch = new()
