@@ -31,7 +31,7 @@ public class DefaultScimV2Context(
 
     public Dictionary<string, string> Headers { get; set; } = [];
 
-    private ISqlDatabaseService? _sqlDatabaseService = null;
+    private ISqlDatabaseService? _sqlDatabaseService;
 
     public async Task<ISqlDatabaseService> GetSqlDatabaseService()
     {
