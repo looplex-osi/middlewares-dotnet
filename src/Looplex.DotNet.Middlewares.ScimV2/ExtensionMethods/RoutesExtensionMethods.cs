@@ -126,8 +126,6 @@ public static class RoutesExtensionMethods
         var context = contextFactory.Create([]);
         context.State.Id = jsonSchemaId;
         await schemaService.CreateAsync(context, cancellationToken);
-        await schemaService.GetByIdAsync(context, cancellationToken);
-        
         serviceProviderConfiguration.Map.Add(new()
         {
             Type = typeof(T),
