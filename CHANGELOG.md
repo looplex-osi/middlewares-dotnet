@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="2.1.4"></a>
+## 2.1.4 (2024-12-06)
+
+### Bug Fixes
+
+* **routesextensionmethods:** removed unused call to schemasservice.getbyid
+
 <a name="2.1.3"></a>
 ## 2.1.3 (2024-12-06)
 
