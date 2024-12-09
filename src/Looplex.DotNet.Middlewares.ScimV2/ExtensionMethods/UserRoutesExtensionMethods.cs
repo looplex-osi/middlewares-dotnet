@@ -8,7 +8,7 @@ public static class UserRoutesExtensionMethods
 {
     public static Task UseUserRoutesAsync(this IEndpointRouteBuilder app,
         string jsonSchemaId,
-        string resource = "users",
+        string resource = "Users",
         ScimV2RouteOptions? options = null,
         CancellationToken? cancellationToken = null)
     {

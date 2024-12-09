@@ -8,7 +8,7 @@ public static class GroupRoutesExtensionMethods
 {
     public static Task UseGroupRoutesAsync(this IEndpointRouteBuilder app,
         string jsonSchemaId,
-        string resource = "users",
+        string resource = "Groups",
         ScimV2RouteOptions? options = null,
         CancellationToken? cancellationToken = null)
     {
