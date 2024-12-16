@@ -1,46 +1,36 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <IsPackable>true</IsPackable>
-        <PackageId>Looplex.DotNet.Middlewares.ScimV2.Domain</PackageId>
-        <Authors>Guilherme Câmara</Authors>
-        <Company>Looplex</Company>
-        <PackageTags>Looplex;Middleware;ScimV2;Domain;</PackageTags>
-        <Description>
-            Defines domain entities for SCIM v2 resources and also the User and Groups resource types entities.
-        </Description>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-        <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>true</IsPackable>
+    <PackageId>Looplex.DotNet.Middlewares.ScimV2.Domain</PackageId>
+    <Authors>Guilherme Câmara</Authors>
+    <Company>Looplex</Company>
+    <PackageTags>Looplex;Middleware;ScimV2;Domain;</PackageTags>
+    <Description>
+      Defines domain entities for SCIM v2 resources and also the User and Groups resource types entities.
+    </Description>
+  </PropertyGroup>
 
-    <Target Name="PostPackNugetDeploy" AfterTargets="Pack" Condition="'$(Configuration)' == 'Debug' And '$(OS)' == 'Windows_NT'">
-        <Exec Command="nuget add &quot;$(OutputPath)$(PackageId).$(PackageVersion).nupkg&quot; -source C:\local-nuget-feed" />
-    </Target>
-    <Target Name="PostPackNugetDeploy" AfterTargets="Pack" Condition="'$(Configuration)' == 'Debug' And '$(OS)' == 'Unix'">
-        <Exec Command="dotnet nuget push &quot;$(OutputPath)$(PackageId).$(PackageVersion).nupkg&quot; --source ~/.aspnet/local-nuget-feed" />
-    </Target>
-    
-    <ItemGroup>
-      <PackageReference Include="Looplex.DotNet.Core.Application.Abstractions" Version="3.0.1" />
-      <PackageReference Include="Looplex.DotNet.Core.Domain" Version="3.0.1" />
-      <PackageReference Include="Looplex.OpenForExtension" Version="1.1.1" />
-      <PackageReference Include="Microsoft.Extensions.Primitives" Version="8.0.0" />
-      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-      <PackageReference Include="Newtonsoft.Json.Schema" Version="4.0.1" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Looplex.DotNet.Core.Application.Abstractions" Version="3.0.1"/>
+    <PackageReference Include="Looplex.DotNet.Core.Domain" Version="3.0.1"/>
+    <PackageReference Include="Looplex.OpenForExtension" Version="1.1.1"/>
+    <PackageReference Include="Microsoft.Extensions.Primitives" Version="8.0.0"/>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
+    <PackageReference Include="Newtonsoft.Json.Schema" Version="4.0.1"/>
+  </ItemGroup>
 
-    <ItemGroup>
-      <None Update="Entities\Schemas\Group.1.0.schema.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="Entities\Schemas\User.1.0.schema.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Remove="Entities\Schemas\ServerProviderConfiguration.1.0.schema.json" />
-    </ItemGroup>
+  <ItemGroup>
+    <None Update="Entities\Schemas\Group.1.0.schema.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Entities\Schemas\User.1.0.schema.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Remove="Entities\Schemas\ServerProviderConfiguration.1.0.schema.json"/>
+  </ItemGroup>
 
 </Project>

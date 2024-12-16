@@ -4,35 +4,25 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-	<IsPackable>true</IsPackable>
-	<PackageId>Looplex.DotNet.Middlewares.ScimV2</PackageId>
-	<Authors>Guilherme Câmara</Authors>
-	<Company>Looplex</Company>
-	<PackageTags>Looplex;Middleware;ScimV2;</PackageTags>
-	<Description>
-		Defines SCIM v2 apis for the User and Groups resource types.
-	</Description>
-	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-	<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <IsPackable>true</IsPackable>
+    <PackageId>Looplex.DotNet.Middlewares.ScimV2</PackageId>
+    <Authors>Guilherme Câmara</Authors>
+    <Company>Looplex</Company>
+    <PackageTags>Looplex;Middleware;ScimV2;</PackageTags>
+    <Description>
+      Defines SCIM v2 apis for the User and Groups resource types.
+    </Description>
   </PropertyGroup>
-	
-  <Target Name="PostPackNugetDeploy" AfterTargets="Pack" Condition="'$(Configuration)' == 'Debug' And '$(OS)' == 'Windows_NT'">
-    <Exec Command="nuget add &quot;$(OutputPath)$(PackageId).$(PackageVersion).nupkg&quot; -source C:\local-nuget-feed" />
-  </Target>
-  <Target Name="PostPackNugetDeploy" AfterTargets="Pack" Condition="'$(Configuration)' == 'Debug' And '$(OS)' == 'Unix'">
-    <Exec Command="dotnet nuget push &quot;$(OutputPath)$(PackageId).$(PackageVersion).nupkg&quot; --source ~/.aspnet/local-nuget-feed" />
-  </Target>
-    
+
   <ItemGroup>
-	<PackageReference Include="Looplex.DotNet.Core.WebAPI" Version="3.0.1" />
-	<PackageReference Include="RestSharp" Version="112.1.0" />
+    <PackageReference Include="Looplex.DotNet.Core.WebAPI" Version="3.0.1"/>
+    <PackageReference Include="RestSharp" Version="112.1.0"/>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Looplex.DotNet.Middlewares.OAuth2\Looplex.DotNet.Middlewares.OAuth2.csproj" />
-    <ProjectReference Include="..\Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions\Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.csproj" />
-    <ProjectReference Include="..\Looplex.DotNet.Middlewares.ScimV2.Domain\Looplex.DotNet.Middlewares.ScimV2.Domain.csproj" />
+    <ProjectReference Include="..\Looplex.DotNet.Middlewares.OAuth2\Looplex.DotNet.Middlewares.OAuth2.csproj"/>
+    <ProjectReference Include="..\Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions\Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.csproj"/>
+    <ProjectReference Include="..\Looplex.DotNet.Middlewares.ScimV2.Domain\Looplex.DotNet.Middlewares.ScimV2.Domain.csproj"/>
   </ItemGroup>
 
   <ItemGroup>

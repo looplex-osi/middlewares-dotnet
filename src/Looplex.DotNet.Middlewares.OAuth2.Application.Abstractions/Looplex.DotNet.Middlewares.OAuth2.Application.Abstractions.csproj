@@ -1,36 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <IsPackable>true</IsPackable>
-        <PackageId>Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions</PackageId>
-        <Authors>Guilherme Câmara</Authors>
-        <Company>Looplex</Company>
-        <PackageTags>Looplex;Middleware;OAuth2;Application;</PackageTags>
-        <Description>
-            Defines the domain interfaces and services for using OAuth2 authentication.
-        </Description>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-        <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>true</IsPackable>
+    <PackageId>Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions</PackageId>
+    <Authors>Guilherme Câmara</Authors>
+    <Company>Looplex</Company>
+    <PackageTags>Looplex;Middleware;OAuth2;Application;</PackageTags>
+    <Description>
+      Defines the domain interfaces and services for using OAuth2 authentication.
+    </Description>
+  </PropertyGroup>
 
-    <Target Name="PostPackNugetDeploy" AfterTargets="Pack" Condition="'$(Configuration)' == 'Debug' And '$(OS)' == 'Windows_NT'">
-        <Exec Command="nuget add &quot;$(OutputPath)$(PackageId).$(PackageVersion).nupkg&quot; -source C:\local-nuget-feed" />
-    </Target>
-    <Target Name="PostPackNugetDeploy" AfterTargets="Pack" Condition="'$(Configuration)' == 'Debug' And '$(OS)' == 'Unix'">
-        <Exec Command="dotnet nuget push &quot;$(OutputPath)$(PackageId).$(PackageVersion).nupkg&quot; --source ~/.aspnet/local-nuget-feed" />
-    </Target>
-    
-    <ItemGroup>
-      <PackageReference Include="Looplex.DotNet.Core.Application.Abstractions" Version="3.0.1" />
-      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    </ItemGroup>
-    
-    <ItemGroup>
-      <ProjectReference Include="..\Looplex.DotNet.Middlewares.OAuth2.Domain\Looplex.DotNet.Middlewares.OAuth2.Domain.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Looplex.DotNet.Core.Application.Abstractions" Version="3.0.1"/>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Looplex.DotNet.Middlewares.OAuth2.Domain\Looplex.DotNet.Middlewares.OAuth2.Domain.csproj"/>
+  </ItemGroup>
 
 </Project>

@@ -1,43 +1,33 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-    <PropertyGroup>
-        <TargetFramework>net8.0</TargetFramework>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
-        <IsPackable>true</IsPackable>
-        <PackageId>Looplex.DotNet.Middlewares.OAuth2.Application</PackageId>
-        <Authors>Guilherme Câmara</Authors>
-        <Company>Looplex</Company>
-        <PackageTags>Looplex;Middleware;OAuth2;Application;</PackageTags>
-        <Description>
-            Defines the domain rules and services implementations for using OAuth2 authentication.
-        </Description>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-        <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-    </PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>true</IsPackable>
+    <PackageId>Looplex.DotNet.Middlewares.OAuth2.Application</PackageId>
+    <Authors>Guilherme Câmara</Authors>
+    <Company>Looplex</Company>
+    <PackageTags>Looplex;Middleware;OAuth2;Application;</PackageTags>
+    <Description>
+      Defines the domain rules and services implementations for using OAuth2 authentication.
+    </Description>
+  </PropertyGroup>
 
-    <Target Name="PostPackNugetDeploy" AfterTargets="Pack" Condition="'$(Configuration)' == 'Debug' And '$(OS)' == 'Windows_NT'">
-        <Exec Command="nuget add &quot;$(OutputPath)$(PackageId).$(PackageVersion).nupkg&quot; -source C:\local-nuget-feed" />
-    </Target>
-    <Target Name="PostPackNugetDeploy" AfterTargets="Pack" Condition="'$(Configuration)' == 'Debug' And '$(OS)' == 'Unix'">
-        <Exec Command="dotnet nuget push &quot;$(OutputPath)$(PackageId).$(PackageVersion).nupkg&quot; --source ~/.aspnet/local-nuget-feed" />
-    </Target>
-    
-    <ItemGroup>
-      <ProjectReference Include="..\Looplex.DotNet.Middlewares.ApiKeys.Application.Abstractions\Looplex.DotNet.Middlewares.ApiKeys.Application.Abstractions.csproj" />
-      <ProjectReference Include="..\Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions\Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.csproj" />
-      <ProjectReference Include="..\Looplex.DotNet.Middlewares.OAuth2.Domain\Looplex.DotNet.Middlewares.OAuth2.Domain.csproj" />
-    </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Looplex.DotNet.Middlewares.ApiKeys.Application.Abstractions\Looplex.DotNet.Middlewares.ApiKeys.Application.Abstractions.csproj"/>
+    <ProjectReference Include="..\Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions\Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.csproj"/>
+    <ProjectReference Include="..\Looplex.DotNet.Middlewares.OAuth2.Domain\Looplex.DotNet.Middlewares.OAuth2.Domain.csproj"/>
+  </ItemGroup>
 
-    <ItemGroup>
-      <PackageReference Include="Looplex.DotNet.Core.Application" Version="3.0.1" />
-      <PackageReference Include="Looplex.DotNet.Core.Common" Version="3.0.1" />
-      <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2" />
-      <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1" />
-      <PackageReference Include="Microsoft.IdentityModel.Protocols" Version="8.2.0" />
-      <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.2.0" />
-      <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Looplex.DotNet.Core.Application" Version="3.0.1"/>
+    <PackageReference Include="Looplex.DotNet.Core.Common" Version="3.0.1"/>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2"/>
+    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1"/>
+    <PackageReference Include="Microsoft.IdentityModel.Protocols" Version="8.2.0"/>
+    <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.2.0"/>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
+  </ItemGroup>
 
 </Project>
