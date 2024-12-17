@@ -1,0 +1,10 @@
+# Define permissions for groups
+p, group_admins,pikachu, cars, read
+p, group_admins,pikachu2, cars, write
+p, group_admins,pikachu, cars, delete
+
+p, group_users, cars, read
+
+# Assign users to groups
+g, user1Id, group_admins
+# g, user1Id, group_users
