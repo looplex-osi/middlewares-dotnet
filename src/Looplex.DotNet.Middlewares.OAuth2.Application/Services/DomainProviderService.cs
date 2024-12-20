@@ -12,7 +12,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.Application.Services
     {
         public string GetDomainFromHeader(HttpContext httpContext)
         {
-            return httpContext.Request.Headers["X-looplex-tenant"];
+            return httpContext?.Request?.Headers["X-looplex-tenant"];
         }
     }
 }
