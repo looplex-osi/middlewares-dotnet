@@ -18,6 +18,8 @@ using Looplex.DotNet.Middlewares.ScimV2.Domain;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Configurations;
 using Microsoft.Extensions.Configuration;
+using Looplex.DotNet.Middlewares.OAuth2.Application.Services;
+using Microsoft.AspNetCore.Http;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.ExtensionMethods;
 
@@ -37,10 +39,16 @@ public class RoutesExtensionMethodsTests
     private IScimV2Context _context = null!;
     private HttpClient _client = null!;
     private IHost _host = null!;
+    private IDomainProviderService _domainProviderService = null!;
+    private IRBACService _rbacService = null;
 
     [TestInitialize]
     public void Initialize()
     {
+        _domainProviderService = Substitute.For<IDomainProviderService>();
+        _domainProviderService.GetDomainFromHeader(Arg.Any<HttpContext>()).Returns("testDomain");
+        _rbacService = Substitute.For<IRBACService>();
+        _rbacService.CheckPermission(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>()).Returns(true);
         _configurationMock = Substitute.For<IConfiguration>();
         _crudServiceMock = Substitute.For<ICrudService>();
         _apiKeyServiceMock = Substitute.For<IApiKeyService>();
@@ -50,7 +58,12 @@ public class RoutesExtensionMethodsTests
         _jwtServiceMock
             .ValidateToken(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(true);
+        _jwtServiceMock
+            .GetUserIdFromToken(Arg.Any<string>())
+            .Returns("testUserId");
         _httpClientFactoryMock = Substitute.For<IHttpClientFactory>();
+        _serviceProviderMock.GetService(typeof(IDomainProviderService)).Returns(_domainProviderService);
+        _serviceProviderMock.GetService(typeof(IRBACService)).Returns(_rbacService);
         _serviceProviderMock.GetService(typeof(IConfiguration)).Returns(_configurationMock);
         _serviceProviderMock.GetService(typeof(IJwtService)).Returns(_jwtServiceMock);  
         _schemaServiceMock = Substitute.For<ISchemaService>();
