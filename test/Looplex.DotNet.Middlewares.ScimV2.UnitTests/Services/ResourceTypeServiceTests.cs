@@ -100,11 +100,13 @@ public class ResourceTypeServiceTests
         };
         _context.State.ResourceType = resourceType;
 
+        var count = ResourceTypeService.ResourceTypes.Count;
+
         // Act
         await _resourceTypeService.CreateAsync(_context, _cancellationToken);
 
         // Assert
-        Assert.AreEqual(1, ResourceTypeService.ResourceTypes.Count);
-        Assert.AreEqual("newResource", ResourceTypeService.ResourceTypes.First().Id);
+        Assert.AreEqual(1 + count, ResourceTypeService.ResourceTypes.Count);
+        Assert.AreEqual("newResource", ResourceTypeService.ResourceTypes.Last().Id);
     }
 }

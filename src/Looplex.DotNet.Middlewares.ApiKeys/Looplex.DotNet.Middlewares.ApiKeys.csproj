@@ -4,29 +4,19 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-	<IsPackable>true</IsPackable>
-	<PackageId>Looplex.DotNet.Middlewares.ApiKeys</PackageId>
-	<Authors>Guilherme Câmara</Authors>
-	<Company>Looplex</Company>
-	<PackageTags>Looplex;Middleware;ApiKeys;</PackageTags>
-	<Description>
-		Defines SCIM v2 apis for the api-keys resource type.
-	</Description>
-	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-	<AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <IsPackable>true</IsPackable>
+    <PackageId>Looplex.DotNet.Middlewares.ApiKeys</PackageId>
+    <Authors>Guilherme Câmara</Authors>
+    <Company>Looplex</Company>
+    <PackageTags>Looplex;Middleware;ApiKeys;</PackageTags>
+    <Description>
+      Defines SCIM v2 apis for the api-keys resource type.
+    </Description>
   </PropertyGroup>
 
-  <Target Name="PostPackNugetDeploy" AfterTargets="Pack" Condition="'$(Configuration)' == 'Debug' And '$(OS)' == 'Windows_NT'">
-    <Exec Command="nuget add &quot;$(OutputPath)$(PackageId).$(PackageVersion).nupkg&quot; -source C:\local-nuget-feed" />
-  </Target>
-  <Target Name="PostPackNugetDeploy" AfterTargets="Pack" Condition="'$(Configuration)' == 'Debug' And '$(OS)' == 'Unix'">
-    <Exec Command="dotnet nuget push &quot;$(OutputPath)$(PackageId).$(PackageVersion).nupkg&quot; --source ~/.aspnet/local-nuget-feed" />
-  </Target>
-    
   <ItemGroup>
-    <ProjectReference Include="..\Looplex.DotNet.Middlewares.ApiKeys.Domain\Looplex.DotNet.Middlewares.ApiKeys.Domain.csproj" />
-    <ProjectReference Include="..\Looplex.DotNet.Middlewares.ScimV2\Looplex.DotNet.Middlewares.ScimV2.csproj" />
+    <ProjectReference Include="..\Looplex.DotNet.Middlewares.ApiKeys.Domain\Looplex.DotNet.Middlewares.ApiKeys.Domain.csproj"/>
+    <ProjectReference Include="..\Looplex.DotNet.Middlewares.ScimV2\Looplex.DotNet.Middlewares.ScimV2.csproj"/>
   </ItemGroup>
 
 </Project>
