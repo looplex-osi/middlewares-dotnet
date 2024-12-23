@@ -50,15 +50,15 @@ namespace Looplex.DotNet.Middlewares.OAuth2.Middlewares
             await next();
         });
         private static readonly Dictionary<string, string> HttpMethodToActionMap = new()
-{
-    { "GET", "read" },
-    { "HEAD", "read" },
-    { "OPTIONS", "read" },
-    { "POST", "write" },
-    { "PUT", "write" },
-    { "PATCH", "write" },
-    { "DELETE", "delete" }
-};
+        {
+            { "GET", "read" },
+            { "HEAD", "read" },
+            { "OPTIONS", "read" },
+            { "POST", "write" },
+            { "PUT", "write" },
+            { "PATCH", "write" },
+            { "DELETE", "delete" }
+        };
         private static string ConvertHttpMethodToRbacAction(IContext context)
         {
             HttpContext httpContext = context.State.HttpContext;

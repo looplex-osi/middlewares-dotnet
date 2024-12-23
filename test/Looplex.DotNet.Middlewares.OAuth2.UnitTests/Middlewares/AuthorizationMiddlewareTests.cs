@@ -209,7 +209,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Middlewares
 
             (string?)getResourceFromURL.Invoke(null, new object[] { _context }));
 
-            Assert.AreEqual("HttpMethod not found", ex.InnerException!.Message);
+            Assert.AreEqual("Value cannot be null. (Parameter 'HTTP method is null')", ex.InnerException!.Message);
         }
 
 
