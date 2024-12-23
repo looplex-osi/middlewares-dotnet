@@ -1,5 +1,4 @@
-﻿using Castle.Core.Logging;
-using Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.Services;
+﻿using Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.Services;
 using Looplex.DotNet.Middlewares.OAuth2.Application.Services;
 using Looplex.DotNet.Middlewares.OAuth2.Middlewares;
 using Looplex.OpenForExtension.Abstractions.Contexts;
@@ -17,6 +16,7 @@ using System.Threading.Tasks;
 using Casbin;
 using System.Reflection;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 
 namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Middlewares
 {
@@ -25,10 +25,11 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Middlewares
     {
         private IConfiguration _configuration = null!;
         private IJwtService _jwtService = null!;
-        private IRbacService _rbacService = null;
+        private IRbacService _rbacService = null!;
         private HttpContext _httpContext = null!;
         private IContext _context = null!;
         private Func<Task> _next = null!;
+        private ILogger<CasbinRbacService> _logger = null;
 
         [TestInitialize]
         public void SetUp()
@@ -39,7 +40,8 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Middlewares
 
             string directory = Directory.GetCurrentDirectory();
             var enforcer = new Enforcer(directory + "/model.conf", directory +"/policy.csv");
-            _rbacService = new CasbinRbacService(enforcer);
+            _logger = Substitute.For<ILogger<CasbinRbacService>>();
+            _rbacService = new CasbinRbacService(enforcer, _logger);
             _httpContext = new DefaultHttpContext();
 
             // Set up configuration values
