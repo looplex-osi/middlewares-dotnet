@@ -33,4 +33,13 @@
       <ProjectReference Include="..\..\src\Looplex.DotNet.Middlewares.ScimV2\Looplex.DotNet.Middlewares.ScimV2.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="model.conf">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="policy.csv">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>

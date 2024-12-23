@@ -14,7 +14,7 @@ public static partial class AuthenticationMiddleware
     {
         cancellationToken.ThrowIfCancellationRequested();
         
-        var configuration = context.Services.GetService<IConfiguration>()!;
+        var configuration = context.Services.GetRequiredService<IConfiguration>();
         var audience = configuration["Audience"]!;
         var issuer = configuration["Issuer"]!;
 

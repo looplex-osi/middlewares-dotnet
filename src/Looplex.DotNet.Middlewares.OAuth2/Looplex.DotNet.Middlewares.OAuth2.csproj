@@ -16,20 +16,18 @@
 
   <ItemGroup>
     <PackageReference Include="Looplex.DotNet.Core.WebAPI" Version="3.0.4" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Looplex.DotNet.Middlewares.ApiKeys.Application.Abstractions\Looplex.DotNet.Middlewares.ApiKeys.Application.Abstractions.csproj"/>
-    <ProjectReference Include="..\Looplex.DotNet.Middlewares.OAuth2.Application\Looplex.DotNet.Middlewares.OAuth2.Application.csproj"/>
-    <ProjectReference Include="..\Looplex.DotNet.Middlewares.OAuth2.Domain\Looplex.DotNet.Middlewares.OAuth2.Domain.csproj"/>
+    <ProjectReference Include="..\Looplex.DotNet.Middlewares.ApiKeys.Application.Abstractions\Looplex.DotNet.Middlewares.ApiKeys.Application.Abstractions.csproj" />
+    <ProjectReference Include="..\Looplex.DotNet.Middlewares.OAuth2.Application\Looplex.DotNet.Middlewares.OAuth2.Application.csproj" />
+    <ProjectReference Include="..\Looplex.DotNet.Middlewares.OAuth2.Domain\Looplex.DotNet.Middlewares.OAuth2.Domain.csproj" />
+    <ProjectReference Include="..\Looplex.DotNet.Middlewares.ScimV2.Domain\Looplex.DotNet.Middlewares.ScimV2.Domain.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <None Update="model.conf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="policy.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

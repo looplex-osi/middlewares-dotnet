@@ -20,6 +20,8 @@ using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Configurations;
 using Microsoft.Extensions.Configuration;
 using Looplex.DotNet.Middlewares.OAuth2.Application.Services;
 using Microsoft.AspNetCore.Http;
+using Casbin;
+using System.IO;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.ExtensionMethods;
 
@@ -39,16 +41,17 @@ public class RoutesExtensionMethodsTests
     private IScimV2Context _context = null!;
     private HttpClient _client = null!;
     private IHost _host = null!;
-    private IDomainProviderService _domainProviderService = null!;
-    private IRBACService _rbacService = null;
+    private IRbacService _rbacService = null;
+    private IEnforcer _enforcer = null;
 
     [TestInitialize]
     public void Initialize()
     {
-        _domainProviderService = Substitute.For<IDomainProviderService>();
-        _domainProviderService.GetDomainFromHeader(Arg.Any<HttpContext>()).Returns("testDomain");
-        _rbacService = Substitute.For<IRBACService>();
-        _rbacService.CheckPermission(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>()).Returns(true);
+        _rbacService = Substitute.For<IRbacService>();
+        string directory = Directory.GetCurrentDirectory();
+        _enforcer = Substitute.For<IEnforcer>();
+        //_enforcer.Enforce<string,string,string,string>(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>()).Returns(true);
+        _rbacService.CheckPermissionAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>()).Returns(Task.FromResult(true));
         _configurationMock = Substitute.For<IConfiguration>();
         _crudServiceMock = Substitute.For<ICrudService>();
         _apiKeyServiceMock = Substitute.For<IApiKeyService>();
@@ -62,8 +65,7 @@ public class RoutesExtensionMethodsTests
             .GetUserIdFromToken(Arg.Any<string>())
             .Returns("testUserId");
         _httpClientFactoryMock = Substitute.For<IHttpClientFactory>();
-        _serviceProviderMock.GetService(typeof(IDomainProviderService)).Returns(_domainProviderService);
-        _serviceProviderMock.GetService(typeof(IRBACService)).Returns(_rbacService);
+        _serviceProviderMock.GetService(typeof(IRbacService)).Returns(_rbacService);
         _serviceProviderMock.GetService(typeof(IConfiguration)).Returns(_configurationMock);
         _serviceProviderMock.GetService(typeof(IJwtService)).Returns(_jwtServiceMock);  
         _schemaServiceMock = Substitute.For<ISchemaService>();
@@ -73,6 +75,7 @@ public class RoutesExtensionMethodsTests
         _context.State.Returns(state);
         _context.Result.Returns("mock_result");
         _context.Services.Returns(_serviceProviderMock);
+        _context.GetDomain().Returns("testDomain");
         var routeValues = new Dictionary<string, object?>();
         _context.RouteValues.Returns(routeValues);
         _contextFactoryMock.Create(Arg.Any<IEnumerable<string>>()).Returns(_context);
@@ -93,7 +96,7 @@ public class RoutesExtensionMethodsTests
                         services.AddSingleton(_resourceTypeServiceMock);
                         services.AddSingleton(_serviceProviderConfigurationMock);
 
-                        services.AddOAuth2Services();
+                        services.AddOAuth2Services(_enforcer);
                     })
                     .Configure(app =>
                     {

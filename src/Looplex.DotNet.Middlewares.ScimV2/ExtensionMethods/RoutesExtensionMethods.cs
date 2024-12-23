@@ -153,7 +153,7 @@ public static class RoutesExtensionMethods
         var id = $"{ToLowerFirstLetter(typeof(T).Name)}Id";
         
         List<MiddlewareDelegate> getMiddlewares = [
-            AuthenticationMiddleware.AuthenticateMiddleware, ScimV2Middlewares.PaginationMiddleware, AuthorizationMiddleware.AuthorizeMiddleware];
+            AuthenticationMiddleware.AuthenticateMiddleware, AuthorizationMiddleware.AuthorizeMiddleware, ScimV2Middlewares.PaginationMiddleware];
         getMiddlewares.AddRange(options.OptionsForGet?.Middlewares ?? []);
         getMiddlewares.Add(GetMiddleware<TService>());
         app.MapGet(

@@ -1,6 +1,7 @@
 ﻿using Looplex.DotNet.Core.Middlewares;
 using Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.Factories;
 using Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.Services;
+using Looplex.DotNet.Middlewares.ScimV2.Domain;
 using Looplex.OpenForExtension.Abstractions.Contexts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -12,6 +13,7 @@ using System.Linq;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Schema;
 
 namespace Looplex.DotNet.Middlewares.OAuth2.Middlewares
 {
@@ -20,16 +22,11 @@ namespace Looplex.DotNet.Middlewares.OAuth2.Middlewares
         public static readonly MiddlewareDelegate AuthorizeMiddleware = new(async (context, cancellationToken, next) =>
         {
             cancellationToken.ThrowIfCancellationRequested();
-            //Get user from jwtToken
             
-            string userId;
+            string? userId;
             userId = GetUserIdFromToken(context);
 
-
-            //Get domain from header
-
-            string domain = GetDomainFromHeader(context);
-
+            string? domain = ((IScimV2Context)context).GetDomain();
             bool authorized = false;
 
             if (!string.IsNullOrEmpty(domain) && !string.IsNullOrEmpty(userId))
@@ -38,11 +35,10 @@ namespace Looplex.DotNet.Middlewares.OAuth2.Middlewares
                 string resource = GetResourceFromURL(context);
                 //Get action
                 string action;
-                action = ConvertActionToMethod(context);
-                var rbacService = context.Services.GetService<IRBACService>();
-                authorized = await rbacService.CheckPermission(userId, domain, resource, action);
+                action = ConvertHttpMethodToRbacAction(context);
+                var rbacService = context.Services.GetRequiredService<IRbacService>();
+                authorized = await rbacService.CheckPermissionAsync(userId, domain, resource, action);
             }
-
 
             if (!authorized)
             {
@@ -52,15 +48,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.Middlewares
             await next();
         });
 
-        private static string GetDomainFromHeader(IContext context)
-        {
-            HttpContext httpContext = context.State.HttpContext;
-            var domainProviderService = context.Services.GetService<IDomainProviderService>()!;
-
-            return  domainProviderService.GetDomainFromHeader(httpContext);
-        }
-
-        private static string ConvertActionToMethod(IContext context)
+        private static string ConvertHttpMethodToRbacAction(IContext context)
         {
             HttpContext httpContext = context.State.HttpContext;
             string action;
@@ -102,15 +90,14 @@ namespace Looplex.DotNet.Middlewares.OAuth2.Middlewares
             return resource;
         }
 
-        private static string GetUserIdFromToken(IContext context)
+        private static string? GetUserIdFromToken(IContext context)
         {
             HttpContext httpContext = context.State.HttpContext;
-            var configuration = context.Services.GetService<IConfiguration>()!;
-            var audience = configuration["Audience"]!;
-            var issuer = configuration["Issuer"]!;
+            var configuration = context.Services.GetRequiredService<IConfiguration>()!;
+            var audience = configuration["Audience"];
+            var issuer = configuration["Issuer"];
 
             string accesToken = string.Empty;
-
 
             string? authorization = httpContext.Request.Headers.Authorization;
 
@@ -118,9 +105,9 @@ namespace Looplex.DotNet.Middlewares.OAuth2.Middlewares
             {
                 accesToken = authorization["Bearer ".Length..].Trim();
             }
-            var jwtService = context.Services.GetService<IJwtService>()!;
+            var jwtService = context.Services.GetService<IJwtService>();
 
-            string userId = jwtService.GetUserIdFromToken(accesToken);
+            string userId = jwtService!.GetUserIdFromToken(accesToken);
 
             return userId;
         }
