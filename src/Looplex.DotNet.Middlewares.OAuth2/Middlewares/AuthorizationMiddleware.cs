@@ -1,7 +1,9 @@
 ﻿using Looplex.DotNet.Core.Middlewares;
 using Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.Factories;
 using Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.Services;
+using Looplex.DotNet.Middlewares.OAuth2.Application.Services;
 using Looplex.DotNet.Middlewares.ScimV2.Domain;
+using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Users;
 using Looplex.OpenForExtension.Abstractions.Contexts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
@@ -22,7 +24,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.Middlewares
         public static readonly MiddlewareDelegate AuthorizeMiddleware = new(async (context, cancellationToken, next) =>
         {
             cancellationToken.ThrowIfCancellationRequested();
-            
+
             string? userId;
             userId = GetUserIdFromToken(context);
 
@@ -47,29 +49,25 @@ namespace Looplex.DotNet.Middlewares.OAuth2.Middlewares
 
             await next();
         });
-
+        private static readonly Dictionary<string, string> HttpMethodToActionMap = new()
+{
+    { "GET", "read" },
+    { "HEAD", "read" },
+    { "OPTIONS", "read" },
+    { "POST", "write" },
+    { "PUT", "write" },
+    { "PATCH", "write" },
+    { "DELETE", "delete" }
+};
         private static string ConvertHttpMethodToRbacAction(IContext context)
         {
             HttpContext httpContext = context.State.HttpContext;
-            string action;
-            switch (httpContext.Request.Method)
-            {
-                case "POST":
-                case "PUT":
-                case "PATCH":
-                    action = "write";
-                    break;
-                case "DELETE":
-                    action = "delete";
-                    break;
-                case "GET":
-                    action = "read";
-                    break;
-                default:
-                    throw new Exception("HttpMethod not found");
-            }
+            string method = httpContext.Request.Method?.ToUpperInvariant()
+                ?? throw new ArgumentNullException("HTTP method is null");
 
-            return action;
+            return HttpMethodToActionMap.TryGetValue(method, out var action)
+                ? action
+                : throw new NotSupportedException($"HTTP method '{method}' is not supported");
         }
 
         private static string GetResourceFromURL(IContext context)
@@ -90,26 +88,35 @@ namespace Looplex.DotNet.Middlewares.OAuth2.Middlewares
             return resource;
         }
 
+        private const string BearerPrefix = "Bearer ";
+
         private static string? GetUserIdFromToken(IContext context)
         {
             HttpContext httpContext = context.State.HttpContext;
-            var configuration = context.Services.GetRequiredService<IConfiguration>()!;
-            var audience = configuration["Audience"];
-            var issuer = configuration["Issuer"];
-
-            string accesToken = string.Empty;
+            var configuration = context.Services.GetRequiredService<IConfiguration>();
+            var audience = configuration["Audience"]
+                    ?? throw new InvalidOperationException("Audience configuration is missing");
+            var issuer = configuration["Issuer"]
+                    ?? throw new InvalidOperationException("Issuer configuration is missing");
 
             string? authorization = httpContext.Request.Headers.Authorization;
-
-            if (!string.IsNullOrEmpty(authorization) && authorization.StartsWith("Bearer "))
+            if (string.IsNullOrEmpty(authorization))
             {
-                accesToken = authorization["Bearer ".Length..].Trim();
+                throw new HttpRequestException("Authorization header is missing", null, HttpStatusCode.Unauthorized);
             }
-            var jwtService = context.Services.GetService<IJwtService>();
+            if (!authorization.StartsWith(BearerPrefix, StringComparison.OrdinalIgnoreCase))
+            {
+                throw new HttpRequestException("Invalid authorization scheme", null, HttpStatusCode.Unauthorized);
+            }
 
-            string? userId = jwtService!.GetUserIdFromToken(accesToken);
+            string accessToken = authorization[BearerPrefix.Length..].Trim();
+            if (string.IsNullOrEmpty(accessToken))
+            {
+                throw new HttpRequestException("Access token is empty", null, HttpStatusCode.Unauthorized);
+            }
 
-            return userId;
+            var jwtService = context.Services.GetRequiredService<IJwtService>();
+            return jwtService.GetUserIdFromToken(accessToken);
         }
     }
 }
