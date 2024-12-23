@@ -41,8 +41,8 @@ public class RoutesExtensionMethodsTests
     private IScimV2Context _context = null!;
     private HttpClient _client = null!;
     private IHost _host = null!;
-    private IRbacService _rbacService = null;
-    private IEnforcer _enforcer = null;
+    private IRbacService _rbacService = null!;
+    private IEnforcer _enforcer = null!;
 
     [TestInitialize]
     public void Initialize()

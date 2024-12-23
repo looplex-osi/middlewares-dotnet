@@ -38,7 +38,7 @@ public sealed class JwtService : IJwtService
         return tokenHandler.WriteToken(token);
     }
 
-    public string GetUserIdFromToken(string accessToken)
+    public string? GetUserIdFromToken(string accessToken)
     {
         JwtSecurityTokenHandler tokenHandler = new JwtSecurityTokenHandler();
 

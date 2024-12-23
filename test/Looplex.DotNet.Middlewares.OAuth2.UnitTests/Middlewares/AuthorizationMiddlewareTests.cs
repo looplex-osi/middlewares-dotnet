@@ -29,7 +29,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Middlewares
         private HttpContext _httpContext = null!;
         private IContext _context = null!;
         private Func<Task> _next = null!;
-        private ILogger<CasbinRbacService> _logger = null;
+        private ILogger<CasbinRbacService> _logger = null!;
 
         [TestInitialize]
         public void SetUp()
@@ -66,31 +66,31 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Middlewares
         }
 
         [TestMethod]
-        public async Task AuthenticateMiddleware_GetResourceFromURL_LastPathAsID()
+        public  void AuthenticateMiddleware_GetResourceFromURL_LastPathAsID()
         {
             
-            MethodInfo getResourceFromURL = typeof(AuthorizationMiddleware).GetMethod("GetResourceFromURL", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Instance);
+            MethodInfo getResourceFromURL = typeof(AuthorizationMiddleware).GetMethod("GetResourceFromURL", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Instance)!;
 
             getResourceFromURL.Should().NotBeNull();
             HttpContext httpContext = _context.State.HttpContext;
             httpContext.Request.Path = "/cases/24/andamentos/32";
 
-            string result = (string)getResourceFromURL.Invoke(null, new object[] {_context });
+            string? result = (string?)getResourceFromURL.Invoke(null, new object[] {_context });
 
             result.Should().Be("andamentos/32");
         }
 
         [TestMethod]
-        public async Task AuthenticateMiddleware_GetResourceFromURL_LastPathAsResource()
+        public void AuthenticateMiddleware_GetResourceFromURL_LastPathAsResource()
         {
 
-            MethodInfo getResourceFromURL = typeof(AuthorizationMiddleware).GetMethod("GetResourceFromURL", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Instance);
+            MethodInfo getResourceFromURL = typeof(AuthorizationMiddleware).GetMethod("GetResourceFromURL", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Instance)!;
 
             getResourceFromURL.Should().NotBeNull();
             HttpContext httpContext = _context.State.HttpContext;
             httpContext.Request.Path = "/cases/24/andamentos";
 
-            string result = (string)getResourceFromURL.Invoke(null, new object[] { _context });
+            string? result = (string?)getResourceFromURL.Invoke(null, new object[] { _context });
 
             result.Should().Be("andamentos");
         }
@@ -98,16 +98,16 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Middlewares
 
 
         [TestMethod]
-        public async Task AuthenticateMiddleware_GetResourceFromURL_SingleElementPath()
+        public void AuthenticateMiddleware_GetResourceFromURL_SingleElementPath()
         {
 
-            MethodInfo getResourceFromURL = typeof(AuthorizationMiddleware).GetMethod("GetResourceFromURL", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Instance);
+            MethodInfo getResourceFromURL = typeof(AuthorizationMiddleware).GetMethod("GetResourceFromURL", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Instance)!;
 
             getResourceFromURL.Should().NotBeNull();
             HttpContext httpContext = _context.State.HttpContext;
             httpContext.Request.Path = "/cases";
 
-            string result = (string)getResourceFromURL.Invoke(null, new object[] { _context });
+            string? result = (string?)getResourceFromURL.Invoke(null, new object[] { _context });
 
             result.Should().Be("cases");
         }
@@ -130,7 +130,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Middlewares
 
 
         [TestMethod]
-        public async Task AuthenticateMiddleware_GetUserIdFromToken_SuccessExample()
+        public void AuthenticateMiddleware_GetUserIdFromToken_SuccessExample()
         {
 
             MethodInfo? getResourceFromURL = typeof(AuthorizationMiddleware).GetMethod("GetUserIdFromToken", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Instance);
@@ -145,79 +145,79 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Middlewares
         }
 
         [TestMethod]
-        public async Task AuthenticateMiddleware_ConvertHttpMethodToRbacAction_GET()
+        public void AuthenticateMiddleware_ConvertHttpMethodToRbacAction_GET()
         {
 
-            MethodInfo getResourceFromURL = typeof(AuthorizationMiddleware).GetMethod("ConvertHttpMethodToRbacAction", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Instance);
+            MethodInfo getResourceFromURL = typeof(AuthorizationMiddleware).GetMethod("ConvertHttpMethodToRbacAction", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Instance)!;
 
             getResourceFromURL.Should().NotBeNull();
             HttpContext httpContext = _context.State.HttpContext;
             httpContext.Request.Method = "GET";
 
-            string result = (string)getResourceFromURL.Invoke(null, new object[] { _context });
+            string? result = (string?)getResourceFromURL.Invoke(null, new object[] { _context });
 
             result.Should().Be("read");
         }
 
         [TestMethod]
-        public async Task AuthenticateMiddleware_ConvertHttpMethodToRbacAction_POST()
+        public void AuthenticateMiddleware_ConvertHttpMethodToRbacAction_POST()
         {
 
-            MethodInfo getResourceFromURL = typeof(AuthorizationMiddleware).GetMethod("ConvertHttpMethodToRbacAction", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Instance);
+            MethodInfo getResourceFromURL = typeof(AuthorizationMiddleware).GetMethod("ConvertHttpMethodToRbacAction", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Instance)!;
 
             getResourceFromURL.Should().NotBeNull();
             HttpContext httpContext = _context.State.HttpContext;
             httpContext.Request.Method = "POST";
 
-            string result = (string)getResourceFromURL.Invoke(null, new object[] { _context });
+            string? result = (string?)getResourceFromURL.Invoke(null, new object[] { _context });
 
             result.Should().Be("write");
         }
 
         [TestMethod]
-        public async Task AuthenticateMiddleware_ConvertHttpMethodToRbacAction_PUT()
+        public void AuthenticateMiddleware_ConvertHttpMethodToRbacAction_PUT()
         {
 
-            MethodInfo getResourceFromURL = typeof(AuthorizationMiddleware).GetMethod("ConvertHttpMethodToRbacAction", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Instance);
+            MethodInfo getResourceFromURL = typeof(AuthorizationMiddleware).GetMethod("ConvertHttpMethodToRbacAction", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Instance)!;
 
             getResourceFromURL.Should().NotBeNull();
             HttpContext httpContext = _context.State.HttpContext;
             httpContext.Request.Method = "PUT";
 
-            string result = (string)getResourceFromURL.Invoke(null, new object[] { _context });
+            string? result = (string?)getResourceFromURL.Invoke(null, new object[] { _context });
 
             result.Should().Be("write");
         }
         [TestMethod]
-        public async Task AuthenticateMiddleware_ConvertHttpMethodToRbacAction_DELETE()
+        public void AuthenticateMiddleware_ConvertHttpMethodToRbacAction_DELETE()
         {
 
-            MethodInfo getResourceFromURL = typeof(AuthorizationMiddleware).GetMethod("ConvertHttpMethodToRbacAction", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Instance);
+            MethodInfo getResourceFromURL = typeof(AuthorizationMiddleware).GetMethod("ConvertHttpMethodToRbacAction", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Instance)!;
 
             getResourceFromURL.Should().NotBeNull();
             HttpContext httpContext = _context.State.HttpContext;
             httpContext.Request.Method = "DELETE";
 
-            string result = (string)getResourceFromURL.Invoke(null, new object[] { _context });
+            string? result = (string?)getResourceFromURL.Invoke(null, new object[] { _context });
 
             result.Should().Be("delete");
         }
 
         [TestMethod]
-        public async Task AuthenticateMiddleware_ConvertHttpMethodToRbacAction_Should_Throw_Exception_When_No_Method_Is_Provided()
+        public void AuthenticateMiddleware_ConvertHttpMethodToRbacAction_Should_Throw_Exception_When_No_Method_Is_Provided()
         {
 
-            MethodInfo getResourceFromURL = typeof(AuthorizationMiddleware).GetMethod("ConvertHttpMethodToRbacAction", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Instance);
+            MethodInfo getResourceFromURL = typeof(AuthorizationMiddleware).GetMethod("ConvertHttpMethodToRbacAction", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Instance)!;
 
             getResourceFromURL.Should().NotBeNull();
             HttpContext httpContext = _context.State.HttpContext;
-            httpContext.Request.Method = null;
+            httpContext.Request.Method = null!;
 
             var ex =  Assert.ThrowsException<TargetInvocationException>( () =>
             
-            (string)getResourceFromURL.Invoke(null, new object[] { _context }));
+            (string?)getResourceFromURL.Invoke(null, new object[] { _context }));
 
-            Assert.AreEqual("HttpMethod not found", ex.InnerException.Message);
+            Assert.AreEqual("HttpMethod not found", ex.InnerException!.Message);
         }
 
 

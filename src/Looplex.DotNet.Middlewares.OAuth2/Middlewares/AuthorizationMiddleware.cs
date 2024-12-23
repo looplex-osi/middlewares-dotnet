@@ -107,7 +107,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.Middlewares
             }
             var jwtService = context.Services.GetService<IJwtService>();
 
-            string userId = jwtService!.GetUserIdFromToken(accesToken);
+            string? userId = jwtService!.GetUserIdFromToken(accesToken);
 
             return userId;
         }
