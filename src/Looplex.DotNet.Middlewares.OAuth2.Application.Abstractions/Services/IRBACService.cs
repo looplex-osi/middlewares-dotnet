@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.Services
 {
-    public interface IRBACService
+    public interface IRbacService
     {
-        Task<bool> CheckPermission(string userId, string domain, string resource, string action);
+        Task<bool> CheckPermissionAsync(string userId, string domain, string resource, string action);
     }
 }
