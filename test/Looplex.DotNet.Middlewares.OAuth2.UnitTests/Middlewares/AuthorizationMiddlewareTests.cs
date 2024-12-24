@@ -95,13 +95,11 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Middlewares
         public void AuthenticateMiddleware_GetResourceFromURL_LastPathAsResource()
         {
 
-            MethodInfo getResourceFromURL = typeof(AuthorizationMiddleware).GetMethod("GetResourceFromURL", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Instance)!;
-
-            getResourceFromURL.Should().NotBeNull();
+            var getResourceFromURL = GetPrivateMethod("GetResourceFromURL");
             HttpContext httpContext = _context.State.HttpContext;
             httpContext.Request.Path = "/cases/24/andamentos";
 
-            string? result = (string?)getResourceFromURL.Invoke(null, new object[] { _context });
+            string result = InvokeMethodWithContext(getResourceFromURL);
 
             result.Should().Be("andamentos");
         }
@@ -124,7 +122,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Middlewares
         }
 
         [TestMethod]
-        public Task AuthenticateMiddleware_GetResourceFromURL_DoubleElementPath()
+        public void AuthenticateMiddleware_GetResourceFromURL_DoubleElementPath()
         {
 
             MethodInfo? getResourceFromURL = typeof(AuthorizationMiddleware).GetMethod("GetResourceFromURL", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.Instance);
@@ -136,7 +134,6 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Middlewares
             string result = (string)getResourceFromURL!.Invoke(null, new object[] { _context })!;
 
             result.Should().Be("cases/2");
-            return Task.CompletedTask;
         }
 
 

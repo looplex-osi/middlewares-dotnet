@@ -31,16 +31,25 @@ namespace Looplex.DotNet.Middlewares.OAuth2.Middlewares
             string? domain = ((IScimV2Context)context).GetDomain();
             bool authorized = false;
 
-            if (!string.IsNullOrEmpty(domain) && !string.IsNullOrEmpty(userId))
+            if (string.IsNullOrEmpty(domain))
             {
-                //Get resource 
-                string resource = GetResourceFromURL(context);
-                //Get action
-                string action;
-                action = ConvertHttpMethodToRbacAction(context);
-                var rbacService = context.Services.GetRequiredService<IRbacService>();
-                authorized = await rbacService.CheckPermissionAsync(userId, domain, resource, action);
+                throw new HttpRequestException("Domain is required for authorization", null, HttpStatusCode.Unauthorized);
             }
+
+            if (string.IsNullOrEmpty(userId))
+            {
+                throw new HttpRequestException("User ID is required for authorization", null, HttpStatusCode.Unauthorized);
+            }
+
+            // Extract resource from URL path
+            string resource = GetResourceFromURL(context);
+
+            // Convert HTTP method to RBAC action
+            string action = ConvertHttpMethodToRbacAction(context);
+
+            var rbacService = context.Services.GetRequiredService<IRbacService>();
+            authorized = await rbacService.CheckPermissionAsync(userId, domain, resource, action);
+
 
             if (!authorized)
             {
