@@ -22,6 +22,7 @@ using Looplex.DotNet.Middlewares.OAuth2.Application.Services;
 using Microsoft.AspNetCore.Http;
 using Casbin;
 using System.IO;
+using Looplex.OpenForExtension.Abstractions.Contexts;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.ExtensionMethods;
 
@@ -53,6 +54,8 @@ public class RoutesExtensionMethodsTests
         //_enforcer.Enforce<string,string,string,string>(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>()).Returns(true);
         _rbacService.CheckPermissionAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>()).Returns(Task.FromResult(true));
         _configurationMock = Substitute.For<IConfiguration>();
+        _configurationMock["Audience"].Returns("testAudience");
+        _configurationMock["Issuer"].Returns("testIssuer");
         _crudServiceMock = Substitute.For<ICrudService>();
         _apiKeyServiceMock = Substitute.For<IApiKeyService>();
         _contextFactoryMock = Substitute.For<IContextFactory>();
@@ -138,7 +141,8 @@ public class RoutesExtensionMethodsTests
         request.Content = content;
         request.Headers.Add("Header-1", "11");
         request.Headers.Add("Header-2", "22");
-        
+        request.Headers.Add("Authorization", "Bearer token");
+
         // Act
         var response = await _client.SendAsync(request);
 
@@ -166,7 +170,8 @@ public class RoutesExtensionMethodsTests
         using var request = new HttpRequestMessage(HttpMethod.Get, url);
         request.Headers.Add("Header-1", "11");
         request.Headers.Add("Header-2", "22");
-        
+        request.Headers.Add("Authorization", "Bearer token");
+
         // Act
         var response = await _client.SendAsync(request);
 
@@ -194,6 +199,7 @@ public class RoutesExtensionMethodsTests
         request.Content = content;
         request.Headers.Add("Header-1", "11");
         request.Headers.Add("Header-2", "22");
+        request.Headers.Add("Authorization", "Bearer token");
 
         // Act
         var response = await _client.SendAsync(request);
@@ -223,7 +229,8 @@ public class RoutesExtensionMethodsTests
         request.Content = content;
         request.Headers.Add("Header-1", "11");
         request.Headers.Add("Header-2", "22");
-        
+        request.Headers.Add("Authorization", "Bearer token");
+
         // Act
         var response = await _client.SendAsync(request);
         
@@ -251,7 +258,8 @@ public class RoutesExtensionMethodsTests
         request.Content = content;
         request.Headers.Add("Header-1", "11");
         request.Headers.Add("Header-2", "22");
-        
+        request.Headers.Add("Authorization", "Bearer token");
+
         // Act
         var response = await _client.SendAsync(request);
         
@@ -278,7 +286,8 @@ public class RoutesExtensionMethodsTests
         using var request = new HttpRequestMessage(HttpMethod.Delete, url);
         request.Headers.Add("Header-1", "11");
         request.Headers.Add("Header-2", "22");
-        
+        request.Headers.Add("Authorization", "Bearer token");
+
         // Act
         var response = await _client.SendAsync(request);
         
