@@ -39,8 +39,16 @@ namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Middlewares
             _configuration = Substitute.For<IConfiguration>();
             _jwtService = new JwtService();
 
-            string directory = Directory.GetCurrentDirectory();
-            var enforcer = new Enforcer(directory  + "/model.conf", directory + "/policy.csv");
+            var testDirectory = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)
+                  ?? throw new InvalidOperationException("Could not determine test directory");
+            var modelPath = Path.Combine(testDirectory, "model.conf");
+            var policyPath = Path.Combine(testDirectory, "policy.csv");
+
+            if (!File.Exists(modelPath) || !File.Exists(policyPath))
+            {
+                throw new FileNotFoundException("Required Casbin configuration files are missing");
+            }
+            var enforcer = new Enforcer(modelPath, policyPath);
             _logger = Substitute.For<ILogger<CasbinRbacService>>();
             _rbacService = new CasbinRbacService(enforcer, _logger);
             _httpContext = new DefaultHttpContext();
