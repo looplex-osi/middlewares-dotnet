@@ -60,9 +60,19 @@ public sealed class JwtService : IJwtService
         string audience,
         string token)
     {
-        using var publicKeyRsa = RSA.Create();
-        publicKeyRsa.ImportFromPem(publicKey);
+        if (string.IsNullOrEmpty(token))
+                        return false;
         
+         using var publicKeyRsa = RSA.Create();
+        try
+        {
+            publicKeyRsa.ImportFromPem(publicKey);
+        }
+        catch (Exception)
+        {
+            return false;
+        }
+
         var tokenHandler = new JwtSecurityTokenHandler();
         var validationParameters = new TokenValidationParameters
         {
@@ -74,7 +84,9 @@ public sealed class JwtService : IJwtService
             ValidateIssuer = true,
             ValidIssuer = issuer,
             ValidateAudience = true,
-            ValidAudience = audience,                
+            ValidAudience = audience,
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero
         };
 
         try
