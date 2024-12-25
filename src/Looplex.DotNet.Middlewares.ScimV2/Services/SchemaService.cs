@@ -2,6 +2,7 @@ using Looplex.DotNet.Core.Application.ExtensionMethods;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Providers;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Services;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Messages;
+using Looplex.DotNet.Middlewares.ScimV2.Domain.ExtensionMethods;
 using Looplex.OpenForExtension.Abstractions.Commands;
 using Looplex.OpenForExtension.Abstractions.Contexts;
 using Looplex.OpenForExtension.Abstractions.ExtensionMethods;
@@ -23,7 +24,7 @@ public class SchemaService(IJsonSchemaProvider jsonSchemaProvider): ISchemaServi
 
         var startIndex = context.GetRequiredValue<int>("Pagination.StartIndex");
         var itemsPerPage = context.GetRequiredValue<int>("Pagination.ItemsPerPage");
-        var lang = context.GetValue<string?>("Lang");
+        var lang = context.GetHeader("Lang");
         await context.Plugins.ExecuteAsync<IHandleInput>(context, cancellationToken);
 
         await context.Plugins.ExecuteAsync<IValidateInput>(context, cancellationToken);
@@ -71,8 +72,9 @@ public class SchemaService(IJsonSchemaProvider jsonSchemaProvider): ISchemaServi
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var schemaId = context.GetRequiredValue<string>("Id");
-        var lang = context.GetValue<string?>("Lang");
+        var schemaId = context.GetRequiredRouteValue<string>("SchemaId");
+        var lang = context.GetHeader("Lang");
+        
         await context.Plugins.ExecuteAsync<IHandleInput>(context, cancellationToken);
 
         if (!SchemaIds.Contains(schemaId))
@@ -110,7 +112,7 @@ public class SchemaService(IJsonSchemaProvider jsonSchemaProvider): ISchemaServi
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var schemaId = context.GetRequiredValue<string>("Id");
+        var schemaId = context.GetRequiredRouteValue<string>("SchemaId");
         context.Plugins.Execute<IHandleInput>(context, cancellationToken);
 
         context.Plugins.Execute<IValidateInput>(context, cancellationToken);

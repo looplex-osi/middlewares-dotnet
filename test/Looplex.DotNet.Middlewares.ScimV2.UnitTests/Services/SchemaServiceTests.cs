@@ -45,11 +45,13 @@ public class SchemaServiceTests
         _context.State.Pagination = new ExpandoObject();
         _context.State.Pagination.StartIndex = 1;
         _context.State.Pagination.ItemsPerPage = 10;
-        _context.State.Lang = "en";
         _context.Headers = new Dictionary<string, string>
         {
             {
                 "Ocp-Apim-Subscription-Key", "key"
+            },
+            {
+                "Lang", "en"
             }
         };
         _jsonSchemaProvider.ResolveJsonSchemasAsync(Arg.Any<IScimV2Context>(), Arg.Any<List<string>>(), Arg.Any<string>())
@@ -71,7 +73,10 @@ public class SchemaServiceTests
         // Arrange
         var cancellationToken = CancellationToken.None;
 
-        _context.State.Id = "newSchema";
+        _context.RouteValues = new Dictionary<string, object?>()
+        {
+            { "SchemaId", "newSchema" }
+        };
         
         // Act
         await _schemaService.CreateAsync(_context, cancellationToken);
@@ -87,8 +92,10 @@ public class SchemaServiceTests
         var cancellationToken = CancellationToken.None;
         SchemaService.SchemaIds = new List<string> { "schema1" };
 
-        _context.State.Id = "invalidSchema";
-        _context.State.Lang = "en";
+        _context.RouteValues = new Dictionary<string, object?>()
+        {
+            { "SchemaId", "invalidSchema" }
+        };
         _context.Headers = new Dictionary<string, string>
         {
             {

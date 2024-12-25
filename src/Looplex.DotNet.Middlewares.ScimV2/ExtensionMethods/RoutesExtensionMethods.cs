@@ -12,6 +12,7 @@ using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Services;
 using Looplex.DotNet.Middlewares.ScimV2.Domain;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Configurations;
+using Looplex.DotNet.Middlewares.ScimV2.Domain.ExtensionMethods;
 using Looplex.DotNet.Middlewares.ScimV2.Middlewares;
 using Looplex.OpenForExtension.Abstractions.Contexts;
 
@@ -203,14 +204,14 @@ public static class RoutesExtensionMethods
             });
     }
 
-    private static void MapRequestParamsToContext(IContext context, HttpContext httpContext)
+    public static void MapRequestParamsToContext(IContext context, HttpContext httpContext)
     {
-        ((IScimV2Context)context).RouteValues = httpContext.Request.RouteValues
+        context.AsScimV2Context().RouteValues = httpContext.Request.RouteValues
             .Select(rv => new KeyValuePair<string, object?>(rv.Key, rv.Value))
             .ToDictionary();
-        ((IScimV2Context)context).Query = httpContext.Request.Query
+        context.AsScimV2Context().Query = httpContext.Request.Query
             .Select(q => new KeyValuePair<string, string>(q.Key, q.Value.ToString())).ToDictionary();
-        ((IScimV2Context)context).Headers = httpContext.Request.Headers
+        context.AsScimV2Context().Headers = httpContext.Request.Headers
             .Select(q => new KeyValuePair<string, string>(q.Key, q.Value.ToString())).ToDictionary();
     }
     

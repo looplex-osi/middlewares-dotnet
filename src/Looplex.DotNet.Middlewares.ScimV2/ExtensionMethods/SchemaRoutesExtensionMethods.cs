@@ -20,6 +20,8 @@ public static class SchemaRoutesExtensionMethods
         HttpContext httpContext = context.State.HttpContext;
         var service = httpContext.RequestServices.GetRequiredService<ISchemaService>();
 
+        RoutesExtensionMethods.MapRequestParamsToContext(context, httpContext);
+
         await service.GetAllAsync(context, cancellationToken);
 
         await httpContext.Response.WriteAsJsonAsync((string)context.Result!, HttpStatusCode.OK);
@@ -31,8 +33,7 @@ public static class SchemaRoutesExtensionMethods
         HttpContext httpContext = context.State.HttpContext;
         var service = httpContext.RequestServices.GetRequiredService<ISchemaService>();
 
-        var id = (string)httpContext.Request.RouteValues["id"]!;
-        context.State.Id = id;
+        RoutesExtensionMethods.MapRequestParamsToContext(context, httpContext);
 
         await service.GetByIdAsync(context, cancellationToken);
 
