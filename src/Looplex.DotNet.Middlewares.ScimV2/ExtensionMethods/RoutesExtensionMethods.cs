@@ -125,7 +125,7 @@ public static class RoutesExtensionMethods
         var serviceProviderConfiguration = app.ServiceProvider.GetRequiredService<ServiceProviderConfiguration>();
 
         var context = contextFactory.Create([]);
-        context.State.Id = jsonSchemaId;
+        context.AsScimV2Context().RouteValues.Add("jsonSchemaId", jsonSchemaId);
         await schemaService.CreateAsync(context, cancellationToken);
         var resourceTypeId = nameof(T);
         context.State.ResourceType = new ResourceType

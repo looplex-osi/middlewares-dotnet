@@ -59,7 +59,9 @@ public class RoutesExtensionMethodsTests
         var state = new ExpandoObject();
         _context.State.Returns(state);
         _context.Result.Returns("mock_result");
-        _context.Services.Returns(_serviceProviderMock); 
+        _context.Services.Returns(_serviceProviderMock);
+        var routeValues = new Dictionary<string, object?>();
+        _context.RouteValues.Returns(routeValues);
         _contextFactoryMock.Create(Arg.Any<IEnumerable<string>>()).Returns(_context);
         _serviceProviderConfigurationMock = Substitute.For<ServiceProviderConfiguration>();
         _host = Host.CreateDefaultBuilder()
