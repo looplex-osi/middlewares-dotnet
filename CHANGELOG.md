@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="2.1.8"></a>
+## 2.1.8 (2024-12-25)
+
+### Bug Fixes
+
+* **routesextensionmethods:** fix missing route value
+
 <a name="2.1.7"></a>
 ## 2.1.7 (2024-12-25)
 
