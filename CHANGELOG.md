@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="2.1.11"></a>
+## 2.1.11 (2024-12-25)
+
+### Bug Fixes
+
+* **schemaservice:** throw error when jsonschemaid is empty
+
 <a name="2.1.10"></a>
 ## 2.1.10 (2024-12-25)
 
