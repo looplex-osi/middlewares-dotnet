@@ -127,17 +127,17 @@ public static class RoutesExtensionMethods
         var context = contextFactory.Create([]);
         context.AsScimV2Context().RouteValues.Add("schemaId", jsonSchemaId);
         await schemaService.CreateAsync(context, cancellationToken);
-        var resourceTypeId = nameof(T);
+        var resourceTypeId = typeof(T).Name;
         context.State.ResourceType = new ResourceType
         {
             Id = resourceTypeId,
-            Name = options.ResourceTypeName ?? nameof(T),
+            Name = options.ResourceTypeName ?? typeof(T).Name,
             Description = options.ResourceTypeDescription,
             Endpoint = route,
             Meta = new()
             {
                 Location = new Uri($"/ResourceType/{resourceTypeId}"),
-                ResourceType = nameof(T),
+                ResourceType = typeof(T).Name,
             },
             Schema = jsonSchemaId,
             Schemas = [],
