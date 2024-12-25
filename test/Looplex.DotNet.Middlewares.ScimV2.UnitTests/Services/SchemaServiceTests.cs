@@ -84,6 +84,23 @@ public class SchemaServiceTests
         // Assert
         Assert.IsTrue(SchemaService.SchemaIds.Contains("newSchema"));
     }
+
+    [TestMethod]
+    [ExpectedException(typeof(Error))]
+
+    public async Task CreateAsync_Should_ThrowError()
+    {
+        // Arrange
+        var cancellationToken = CancellationToken.None;
+
+        _context.RouteValues = new Dictionary<string, object?>()
+        {
+            { "schemaId", "" }
+        };
+        
+        // Act & Assert
+        await _schemaService.CreateAsync(_context, cancellationToken);
+    }
     
     [TestMethod]
     public async Task GetByIdAsync_Should_Throw_Exception_When_SchemaId_Not_Found()

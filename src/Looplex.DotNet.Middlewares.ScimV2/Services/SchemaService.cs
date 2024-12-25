@@ -1,3 +1,4 @@
+using System.Net;
 using Looplex.DotNet.Core.Application.ExtensionMethods;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Providers;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Services;
@@ -114,6 +115,8 @@ public class SchemaService(IJsonSchemaProvider jsonSchemaProvider): ISchemaServi
         var schemaId = context.GetRequiredRouteValue<string>("schemaId");
         context.Plugins.Execute<IHandleInput>(context, cancellationToken);
 
+        if (string.IsNullOrWhiteSpace(schemaId))
+            throw new Error($"SchemaId cannot be empty", (int)HttpStatusCode.BadRequest);
         context.Plugins.Execute<IValidateInput>(context, cancellationToken);
 
         context.Roles.Add("SchemaId", schemaId);
