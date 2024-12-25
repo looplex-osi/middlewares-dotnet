@@ -1,3 +1,4 @@
+using System.Net;
 using FluentAssertions;
 using Looplex.DotNet.Core.Application.Abstractions.Services;
 using Looplex.DotNet.Middlewares.ScimV2.Domain;
@@ -5,6 +6,7 @@ using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Messages;
 using Looplex.DotNet.Middlewares.ScimV2.Providers;
 using Looplex.OpenForExtension.Abstractions.Contexts;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using RestSharp;
 
@@ -18,6 +20,7 @@ public class JsonSchemaProviderTests
     private IRedisService _redisService = null!;
     private IRestClient _restClient = null!;
     private IScimV2Context _context = null!;
+    private ILogger<JsonSchemaProvider> _logger = null!;
 
     [TestInitialize]
     public void Setup()
@@ -26,11 +29,12 @@ public class JsonSchemaProviderTests
         _configuration = Substitute.For<IConfiguration>();
         _redisService = Substitute.For<IRedisService>();
         _restClient = Substitute.For<IRestClient>(); 
+        _logger = Substitute.For<ILogger<JsonSchemaProvider>>(); 
         _context = Substitute.For<IScimV2Context>();
         _context.Headers = [];
         
         // Instantiate JsonSchemaProvider with mocks
-        _jsonSchemaProvider = new JsonSchemaProvider(_configuration, _redisService, _restClient);
+        _jsonSchemaProvider = new JsonSchemaProvider(_configuration, _redisService, _restClient, _logger);
     }
 
     [TestMethod]
@@ -40,7 +44,7 @@ public class JsonSchemaProviderTests
         var section = Substitute.For<IConfigurationSection>();
         section.Value = "false";
         _configuration.GetSection("JsonSchemaIgnoreWhenNotFound").Returns(section);
-        var mockResponse = new RestResponse { Content = "mockContent" };
+        var mockResponse = new RestResponse { Content = "mockContent", StatusCode = HttpStatusCode.OK, IsSuccessStatusCode = true };
         _restClient.ExecuteAsync(Arg.Any<RestRequest>()).Returns(Task.FromResult(mockResponse));
         var schemaIds = new List<string>
         {

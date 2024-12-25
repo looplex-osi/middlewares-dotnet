@@ -5,6 +5,7 @@ using Looplex.DotNet.Middlewares.ScimV2.Domain;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Messages;
 using Looplex.OpenForExtension.Abstractions.Contexts;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using RestSharp;
 using Method = RestSharp.Method;
 
@@ -13,7 +14,8 @@ namespace Looplex.DotNet.Middlewares.ScimV2.Providers;
 public class JsonSchemaProvider(
     IConfiguration configuration,
     IRedisService redisService,
-    IRestClient restClient) : IJsonSchemaProvider
+    IRestClient restClient,
+    ILogger<JsonSchemaProvider> logger) : IJsonSchemaProvider
 {
     private const string JsonSchemaIgnoreWhenNotFoundKey = "JsonSchemaIgnoreWhenNotFound";
     private const string JsonSchemaCodeUrlKey = "JsonSchemaCodeUrl";
@@ -76,8 +78,20 @@ public class JsonSchemaProvider(
             var request = new RestRequest($"{jsonSchemaCodeUrl}", Method.Get);
             request.AddQueryParameter("id", schemaId);
             request.AddHeader(OcpApimSubscriptionKeyHeader, ocpApimSubscriptionKey);
-            var response = await restClient.ExecuteAsync(request);
-            jsonSchema = response.Content;
+
+            try
+            {
+                var response = await restClient.ExecuteAsync(request);
+
+                if (response.IsSuccessStatusCode)
+                    jsonSchema = response.Content;
+                else
+                    throw response.ErrorException!;
+            }
+            catch (Exception e)
+            {
+                logger.LogError(e, "RestClient error when trying to get json schema.");
+            }
         }
 
         return jsonSchema;
