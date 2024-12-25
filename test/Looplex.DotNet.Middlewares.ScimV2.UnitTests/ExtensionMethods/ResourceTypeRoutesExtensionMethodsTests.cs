@@ -1,5 +1,6 @@
 using System.Dynamic;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Services;
+using Looplex.DotNet.Middlewares.ScimV2.Domain;
 using Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods;
 using Looplex.OpenForExtension.Abstractions.Contexts;
 using Microsoft.AspNetCore.Http;
@@ -15,7 +16,7 @@ public class ResourceTypeRoutesExtensionMethodsTests
     {
         // Arrange
         var schemaService = Substitute.For<IResourceTypeService>();
-        var context = Substitute.For<IContext>();
+        var context = Substitute.For<IScimV2Context>();
         dynamic state = new ExpandoObject();
         context.State.Returns(state);
         var services = Substitute.For<IServiceProvider>();
@@ -39,12 +40,12 @@ public class ResourceTypeRoutesExtensionMethodsTests
     {
         // Arrange
         var schemaService = Substitute.For<IResourceTypeService>();
-        var context = Substitute.For<IContext>();
+        var context = Substitute.For<IScimV2Context>();
         dynamic state = new ExpandoObject();
         context.State.Returns(state);
         var services = Substitute.For<IServiceProvider>();
         var httpContext = new DefaultHttpContext();
-        httpContext.Request.RouteValues["id"] = "mockId"; // Mock RouteValues
+        httpContext.Request.RouteValues["resourceTypeId"] = "mockId"; // Mock RouteValues
         httpContext.RequestServices = services;
         context.State.HttpContext = httpContext;
         services.GetService(typeof(IResourceTypeService)).Returns(schemaService);
@@ -57,7 +58,6 @@ public class ResourceTypeRoutesExtensionMethodsTests
         await middleware(context, CancellationToken.None, () => Task.CompletedTask);
 
         // Assert
-        Assert.AreEqual("mockId", context.State.Id);
         await schemaService.Received(1).GetByIdAsync(context, CancellationToken.None);
     }
 }

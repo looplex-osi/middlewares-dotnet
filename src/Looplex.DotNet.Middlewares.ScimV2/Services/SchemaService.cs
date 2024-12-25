@@ -72,9 +72,8 @@ public class SchemaService(IJsonSchemaProvider jsonSchemaProvider): ISchemaServi
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var schemaId = context.GetRequiredRouteValue<string>("SchemaId");
+        var schemaId = context.GetRequiredRouteValue<string>("schemaId");
         var lang = context.GetHeader("Lang");
-        
         await context.Plugins.ExecuteAsync<IHandleInput>(context, cancellationToken);
 
         if (!SchemaIds.Contains(schemaId))
@@ -112,7 +111,7 @@ public class SchemaService(IJsonSchemaProvider jsonSchemaProvider): ISchemaServi
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var schemaId = context.GetRequiredRouteValue<string>("SchemaId");
+        var schemaId = context.GetRequiredRouteValue<string>("schemaId");
         context.Plugins.Execute<IHandleInput>(context, cancellationToken);
 
         context.Plugins.Execute<IValidateInput>(context, cancellationToken);

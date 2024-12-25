@@ -4,6 +4,8 @@ namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods;
 
 public class ScimV2RouteOptions
 {
+    public string? ResourceTypeName { get; init; }
+    public string? ResourceTypeDescription { get; init; }
     public RouteBuilderOptions? OptionsForGet { get; init; }
     public RouteBuilderOptions? OptionsForGetById { get; init; }
     public RouteBuilderOptions? OptionsForPost { get; init; }

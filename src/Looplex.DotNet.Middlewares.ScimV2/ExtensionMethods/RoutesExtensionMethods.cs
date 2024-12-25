@@ -9,7 +9,6 @@ using Looplex.DotNet.Core.WebAPI.Routes;
 using Looplex.DotNet.Core.Common.Utils;
 using Looplex.DotNet.Middlewares.OAuth2.Middlewares;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Services;
-using Looplex.DotNet.Middlewares.ScimV2.Domain;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Configurations;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.ExtensionMethods;
@@ -121,12 +120,29 @@ public static class RoutesExtensionMethods
         where TService : ICrudService
     {
         var schemaService = app.ServiceProvider.GetRequiredService<ISchemaService>();
+        var resourceTypeService = app.ServiceProvider.GetRequiredService<IResourceTypeService>();
         var contextFactory = app.ServiceProvider.GetRequiredService<IContextFactory>();
         var serviceProviderConfiguration = app.ServiceProvider.GetRequiredService<ServiceProviderConfiguration>();
 
         var context = contextFactory.Create([]);
         context.State.Id = jsonSchemaId;
         await schemaService.CreateAsync(context, cancellationToken);
+        var resourceTypeId = nameof(T);
+        context.State.ResourceType = new ResourceType
+        {
+            Id = resourceTypeId,
+            Name = options.ResourceTypeName ?? nameof(T),
+            Description = options.ResourceTypeDescription,
+            Endpoint = route,
+            Meta = new()
+            {
+                Location = new Uri($"/ResourceType/{resourceTypeId}"),
+                ResourceType = nameof(T),
+            },
+            Schema = jsonSchemaId,
+            Schemas = [],
+        };
+        await resourceTypeService.CreateAsync(context, cancellationToken);
         serviceProviderConfiguration.Map.Add(new()
         {
             Type = typeof(T),

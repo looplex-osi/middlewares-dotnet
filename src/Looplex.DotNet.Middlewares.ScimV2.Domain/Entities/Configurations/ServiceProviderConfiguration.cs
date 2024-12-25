@@ -13,6 +13,7 @@ namespace Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Configurations;
 /// </summary>
 public partial class ServiceProviderConfiguration
 {
+    [JsonIgnore]
     public virtual IList<ResourceMap> Map { get; private set; } = new List<ResourceMap>();
     
     public static class Converter

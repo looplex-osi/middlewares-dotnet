@@ -32,6 +32,7 @@ public class RoutesExtensionMethodsTests
     private IJwtService _jwtServiceMock = null!;
     private IHttpClientFactory _httpClientFactoryMock = null!;
     private ISchemaService _schemaServiceMock = null!;
+    private IResourceTypeService _resourceTypeServiceMock = null!;
     private ServiceProviderConfiguration _serviceProviderConfigurationMock = null!;
     private IScimV2Context _context = null!;
     private HttpClient _client = null!;
@@ -53,6 +54,7 @@ public class RoutesExtensionMethodsTests
         _serviceProviderMock.GetService(typeof(IConfiguration)).Returns(_configurationMock);
         _serviceProviderMock.GetService(typeof(IJwtService)).Returns(_jwtServiceMock);  
         _schemaServiceMock = Substitute.For<ISchemaService>();
+        _resourceTypeServiceMock = Substitute.For<IResourceTypeService>();
         _context = Substitute.For<IScimV2Context>();
         var state = new ExpandoObject();
         _context.State.Returns(state);
@@ -73,6 +75,7 @@ public class RoutesExtensionMethodsTests
                         services.AddSingleton(_httpClientFactoryMock);
                         services.AddSingleton(_configurationMock);
                         services.AddSingleton(_schemaServiceMock);
+                        services.AddSingleton(_resourceTypeServiceMock);
                         services.AddSingleton(_serviceProviderConfigurationMock);
 
                         services.AddOAuth2Services();

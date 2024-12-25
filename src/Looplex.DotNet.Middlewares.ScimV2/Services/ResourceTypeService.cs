@@ -2,6 +2,7 @@ using Looplex.DotNet.Core.Application.ExtensionMethods;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Services;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Configurations;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Messages;
+using Looplex.DotNet.Middlewares.ScimV2.Domain.ExtensionMethods;
 using Looplex.OpenForExtension.Abstractions.Commands;
 using Looplex.OpenForExtension.Abstractions.Contexts;
 using Looplex.OpenForExtension.Abstractions.ExtensionMethods;
@@ -57,7 +58,7 @@ public class ResourceTypeService() : IResourceTypeService
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var id = context.GetRequiredValue<string>("Id");
+        var id = context.GetRequiredRouteValue<string>("resourceTypeId");
         await context.Plugins.ExecuteAsync<IHandleInput>(context, cancellationToken);
 
         var resourceType = ResourceTypes.FirstOrDefault(rt => rt.Id == id);

@@ -60,7 +60,7 @@ public static class SchemaRoutesExtensionMethods
             GetByIdMiddleware()
         ];
         app.MapGet(
-            $"{Resource}/{{id}}",
+            $"{Resource}/{{schemaId}}",
             new RouteBuilderOptions
             {
                 Services = services,

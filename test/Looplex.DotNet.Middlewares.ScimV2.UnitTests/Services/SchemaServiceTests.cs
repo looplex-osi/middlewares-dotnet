@@ -75,7 +75,7 @@ public class SchemaServiceTests
 
         _context.RouteValues = new Dictionary<string, object?>()
         {
-            { "SchemaId", "newSchema" }
+            { "schemaId", "newSchema" }
         };
         
         // Act
@@ -94,7 +94,7 @@ public class SchemaServiceTests
 
         _context.RouteValues = new Dictionary<string, object?>()
         {
-            { "SchemaId", "invalidSchema" }
+            { "schemaId", "invalidSchema" }
         };
         _context.Headers = new Dictionary<string, string>
         {

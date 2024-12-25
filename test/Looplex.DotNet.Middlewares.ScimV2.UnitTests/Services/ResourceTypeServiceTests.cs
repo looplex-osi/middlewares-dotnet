@@ -1,4 +1,5 @@
 using System.Dynamic;
+using Looplex.DotNet.Middlewares.ScimV2.Domain;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Configurations;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Messages;
 using Looplex.DotNet.Middlewares.ScimV2.Services;
@@ -11,14 +12,14 @@ namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.Services;
 [TestClass]
 public class ResourceTypeServiceTests
 {
-    private IContext _context = null!;
+    private IScimV2Context _context = null!;
     private ResourceTypeService _resourceTypeService = null!;
     private CancellationToken _cancellationToken;
 
     [TestInitialize]
     public void Setup()
     {
-        _context = Substitute.For<IContext>();
+        _context = Substitute.For<IScimV2Context>();
         _resourceTypeService = new ResourceTypeService();
         _cancellationToken = CancellationToken.None;
 
@@ -59,7 +60,11 @@ public class ResourceTypeServiceTests
         {
             new ResourceType { Id = "resource1", Name = "User", Schemas = new[] { "schema1" }, Endpoint = "Users", Schema = "urn:ietf:params:scim:schemas:core:2.0:User" }
         };
-        _context.State.Id = "resource1";
+        
+        _context.RouteValues = new Dictionary<string, object?>()
+        {
+            { "resourceTypeId", "resource1" }
+        };
 
         // Act
         await _resourceTypeService.GetByIdAsync(_context, _cancellationToken);
@@ -80,8 +85,12 @@ public class ResourceTypeServiceTests
     {
         // Arrange
         ResourceTypeService.ResourceTypes = new List<ResourceType>();
-        _context.State.Id = "invalidId";
-
+        
+        _context.RouteValues = new Dictionary<string, object?>()
+        {
+            { "resourceTypeId", "invalidId" }
+        };
+        
         // Act
         await _resourceTypeService.GetByIdAsync(_context, _cancellationToken);
     }

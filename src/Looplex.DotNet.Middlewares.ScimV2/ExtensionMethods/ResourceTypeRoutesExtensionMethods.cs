@@ -20,6 +20,8 @@ public static class ResourceTypeRoutesExtensionMethods
         HttpContext httpContext = context.State.HttpContext;
         var service = httpContext.RequestServices.GetRequiredService<IResourceTypeService>();
 
+        RoutesExtensionMethods.MapRequestParamsToContext(context, httpContext);
+
         await service.GetAllAsync(context, cancellationToken);
 
         await httpContext.Response.WriteAsJsonAsync((string)context.Result!, HttpStatusCode.OK);
@@ -31,8 +33,7 @@ public static class ResourceTypeRoutesExtensionMethods
         HttpContext httpContext = context.State.HttpContext;
         var service = httpContext.RequestServices.GetRequiredService<IResourceTypeService>();
 
-        var id = (string)httpContext.Request.RouteValues["id"]!;
-        context.State.Id = id;
+        RoutesExtensionMethods.MapRequestParamsToContext(context, httpContext);
 
         await service.GetByIdAsync(context, cancellationToken);
 
@@ -59,7 +60,7 @@ public static class ResourceTypeRoutesExtensionMethods
             GetByIdMiddleware()
         ];
         app.MapGet(
-            $"{Resource}/{{id}}",
+            $"{Resource}/{{resourceTypeId}}",
             new RouteBuilderOptions
             {
                 Services = services,
