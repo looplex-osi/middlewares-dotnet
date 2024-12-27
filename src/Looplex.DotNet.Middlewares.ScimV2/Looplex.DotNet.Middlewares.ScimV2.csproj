@@ -12,7 +12,6 @@
     <Description>
       Defines SCIM v2 apis for the User and Groups resource types.
     </Description>
-	  <PackageOutputPath>C:\Users\RafaeldosSantosImaka\NewGitProjects\middlewares-dotnet\deployLocal</PackageOutputPath>
   </PropertyGroup>
 
   <ItemGroup>

@@ -26,10 +26,4 @@
     <ProjectReference Include="..\Looplex.DotNet.Middlewares.ScimV2.Domain\Looplex.DotNet.Middlewares.ScimV2.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="model.conf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>
