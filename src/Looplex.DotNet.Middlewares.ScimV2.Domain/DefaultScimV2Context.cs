@@ -33,19 +33,26 @@ public class DefaultScimV2Context(
 
     private ISqlDatabaseService? _sqlDatabaseService;
 
+
+    public string GetDomain()
+    {
+        if (!Headers.TryGetValue(LooplexTenantKeyHeader, out var domain))
+            throw new Error(
+                $"{LooplexTenantKeyHeader} not found in context header.",
+                (int)HttpStatusCode.BadRequest);
+        if (string.IsNullOrWhiteSpace(domain))
+            throw new Error(
+                $"Domain should not be null or empty.",
+                (int)HttpStatusCode.BadRequest);
+
+        return domain;
+    }
+
     public async Task<ISqlDatabaseService> GetSqlDatabaseService()
     {
         if (_sqlDatabaseService == null)
         {
-            if (!Headers.TryGetValue(LooplexTenantKeyHeader, out var domain))
-                throw new Error(
-                    $"{LooplexTenantKeyHeader} not found in context header.",
-                    (int)HttpStatusCode.BadRequest);
-            if (string.IsNullOrWhiteSpace(domain))
-                throw new Error(
-                    $"Domain should not be null or empty.",
-                    (int)HttpStatusCode.BadRequest);
-
+            var domain = GetDomain();
             _sqlDatabaseService = await sqlDatabaseProvider.GetDatabaseAsync(domain);
         }
 

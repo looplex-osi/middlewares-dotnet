@@ -23,6 +23,32 @@ public class DefaultScimV2ContextTests
     }
 
     [TestMethod]
+    public void GetDomain_ShouldThrowError_WhenHeaderDoesNotContainTenantKey()
+    {
+        // Act
+        Func<string> act = () => { return _scimContext.GetDomain(); };
+
+        // Assert
+        act.Should().Throw<Error>()
+           .WithMessage($"X-looplex-tenant not found in context header.")
+           .Where(e => e.Status == (int)HttpStatusCode.BadRequest);
+    }
+
+    [TestMethod]
+    public void GetDomain_ShouldThrowError_WhenDomainIsNullOrWhitespace()
+    {
+        // Arrange
+        _scimContext.Headers["X-looplex-tenant"] = " ";
+
+        // Act
+        Func<string> act = () => _scimContext.GetDomain();
+
+        // Assert
+        act.Should().Throw<Error>()
+           .WithMessage("Domain should not be null or empty.")
+           .Where(e => e.Status == (int)HttpStatusCode.BadRequest);
+    }
+    [TestMethod]
     public async Task GetSqlDatabaseService_ShouldReturnDatabaseService_WhenHeaderContainsValidTenantKey()
     {
         // Arrange
@@ -38,33 +64,6 @@ public class DefaultScimV2ContextTests
         // Assert
         result.Should().Be(mockDatabaseService);
         await _sqlDatabaseProvider.Received(1).GetDatabaseAsync(domain);
-    }
-
-    [TestMethod]
-    public async Task GetSqlDatabaseService_ShouldThrowError_WhenHeaderDoesNotContainTenantKey()
-    {
-        // Act
-        Func<Task> act = async () => await _scimContext.GetSqlDatabaseService();
-
-        // Assert
-        await act.Should().ThrowAsync<Error>()
-            .WithMessage($"X-looplex-tenant not found in context header.")
-            .Where(e => e.Status == (int)HttpStatusCode.BadRequest);
-    }
-
-    [TestMethod]
-    public async Task GetSqlDatabaseService_ShouldThrowError_WhenDomainIsNullOrWhitespace()
-    {
-        // Arrange
-        _scimContext.Headers["X-looplex-tenant"] = " ";
-
-        // Act
-        Func<Task> act = async () => await _scimContext.GetSqlDatabaseService();
-
-        // Assert
-        await act.Should().ThrowAsync<Error>()
-            .WithMessage("Domain should not be null or empty.")
-            .Where(e => e.Status == (int)HttpStatusCode.BadRequest);
     }
 
     [TestMethod]
