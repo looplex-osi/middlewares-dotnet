@@ -51,7 +51,6 @@ public class RoutesExtensionMethodsTests
         _rbacService = Substitute.For<IRbacService>();
         string directory = Directory.GetCurrentDirectory();
         _enforcer = Substitute.For<IEnforcer>();
-        //_enforcer.Enforce<string,string,string,string>(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>()).Returns(true);
         _rbacService.CheckPermissionAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>()).Returns(Task.FromResult(true));
         _configurationMock = Substitute.For<IConfiguration>();
         _configurationMock["Audience"].Returns("testAudience");
