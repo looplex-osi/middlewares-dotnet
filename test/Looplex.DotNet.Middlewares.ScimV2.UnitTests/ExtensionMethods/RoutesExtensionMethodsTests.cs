@@ -58,7 +58,7 @@ public class RoutesExtensionMethodsTests
         _context = Substitute.For<IScimV2Context>();
         var state = new ExpandoObject();
         _context.State.Returns(state);
-        _context.Result.Returns("mock_result");
+        _context.Result.Returns("{ \"x\": \"mock_result\" }");
         _context.Services.Returns(_serviceProviderMock);
         var routeValues = new Dictionary<string, object?>();
         _context.RouteValues.Returns(routeValues);
@@ -178,6 +178,7 @@ public class RoutesExtensionMethodsTests
         request.Content = content;
         request.Headers.Add("Header-1", "11");
         request.Headers.Add("Header-2", "22");
+        _context.Result.Returns("mock_result");
 
         // Act
         var response = await _client.SendAsync(request);
