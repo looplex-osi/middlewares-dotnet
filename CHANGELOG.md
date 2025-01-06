@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="2.2.0"></a>
+## 2.2.0 (2025-01-06)
+
+### Features
+
+* **scimv2middlewares:** added attributes middleware that supports results with json attrs filtering
+
 <a name="2.1.11"></a>
 ## 2.1.11 (2024-12-25)
 
