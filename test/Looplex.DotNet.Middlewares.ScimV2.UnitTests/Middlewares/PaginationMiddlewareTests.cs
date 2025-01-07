@@ -1,23 +1,9 @@
 ﻿using FluentAssertions;
-using Looplex.DotNet.Core.Application.Abstractions.Services;
 using Looplex.DotNet.Middlewares.ScimV2.Domain;
 using Looplex.DotNet.Middlewares.ScimV2.Middlewares;
-using Looplex.DotNet.Middlewares.ScimV2.Providers;
-using Looplex.OpenForExtension.Abstractions.Contexts;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Configuration;
 using NSubstitute;
-using NSubstitute.ExceptionExtensions;
-using RestSharp;
-using System;
-using System.Collections.Generic;
 using System.Dynamic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.Middlewares
 {
@@ -38,39 +24,35 @@ namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.Middlewares
 
             // Set up the next middleware delegate
             _next = Substitute.For<Func<Task>>();
-
         }
 
+        [TestMethod]
+        public async Task PaginationMiddleware_Should_Throw_Exception_When_Count_Is_Zero()
+        {
+            // Arrange
+            _context.State.HttpContext.Request.QueryString =
+                new QueryString("?startIndex=10&count=0");
 
+            // Act & Assert
+            var act = () => ScimV2Middlewares.PaginationMiddleware(_context, CancellationToken.None, _next);
+
+            await act.Should().ThrowAsync<ArgumentException>()
+                .WithMessage("Param count is not valid");
+        }
 
         [TestMethod]
-    public async Task PaginationMiddleware_Should_Throw_Exception_When_Count_Is_Zero()
-    {
-        // Arrange
-        _context.State.HttpContext.Request.QueryString = 
-            new QueryString("?startIndex=10&count=0");
+        public async Task PaginationMiddleware_Should_Throw_Exception_When_StartIndex_Is_Zero()
+        {
+            // Arrange
+            _context.State.HttpContext.Request.QueryString =
+                new QueryString("?startIndex=0&count=10");
 
-        // Act & Assert
-        var act = () => ScimV2Middlewares.PaginationMiddleware(_context, CancellationToken.None, _next);
-        
-        await act.Should().ThrowAsync<ArgumentException>()
-            .WithMessage("Param count is not valid");
-    }
+            // Act & Assert
+            var act = () => ScimV2Middlewares.PaginationMiddleware(_context, CancellationToken.None, _next);
 
-    [TestMethod]
-    public async Task PaginationMiddleware_Should_Throw_Exception_When_StartIndex_Is_Zero()
-    {
-        // Arrange
-        _context.State.HttpContext.Request.QueryString = 
-            new QueryString("?startIndex=0&count=10");
-
-        // Act & Assert
-        var act = () => ScimV2Middlewares.PaginationMiddleware(_context, CancellationToken.None, _next);
-        
-        await act.Should().ThrowAsync<ArgumentException>()
-            .WithMessage("Param startIndex is not valid");
-    }
-
+            await act.Should().ThrowAsync<ArgumentException>()
+                .WithMessage("Param startIndex is not valid");
+        }
 
         [TestMethod]
         public async Task PaginationMiddleware_Should_Throw_Exception_When_Count_Is_Negative_Value()
