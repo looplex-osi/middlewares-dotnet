@@ -18,6 +18,11 @@ using Looplex.DotNet.Middlewares.ScimV2.Domain;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Configurations;
 using Microsoft.Extensions.Configuration;
+using Looplex.DotNet.Middlewares.OAuth2.Application.Services;
+using Microsoft.AspNetCore.Http;
+using Casbin;
+using System.IO;
+using Looplex.OpenForExtension.Abstractions.Contexts;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.ExtensionMethods;
 
@@ -37,11 +42,19 @@ public class RoutesExtensionMethodsTests
     private IScimV2Context _context = null!;
     private HttpClient _client = null!;
     private IHost _host = null!;
-
+    private IRbacService _rbacService = null!;
+    private IEnforcer _enforcer = null!;
+  
     [TestInitialize]
     public void Initialize()
     {
+        _rbacService = Substitute.For<IRbacService>();
+        string directory = Directory.GetCurrentDirectory();
+        _enforcer = Substitute.For<IEnforcer>();
+        _rbacService.CheckPermissionAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>()).Returns(Task.FromResult(true));
         _configurationMock = Substitute.For<IConfiguration>();
+        _configurationMock["Audience"].Returns("testAudience");
+        _configurationMock["Issuer"].Returns("testIssuer");
         _crudServiceMock = Substitute.For<ICrudService>();
         _apiKeyServiceMock = Substitute.For<IApiKeyService>();
         _contextFactoryMock = Substitute.For<IContextFactory>();
@@ -50,7 +63,11 @@ public class RoutesExtensionMethodsTests
         _jwtServiceMock
             .ValidateToken(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(true);
+        _jwtServiceMock
+            .GetUserIdFromToken(Arg.Any<string>())
+            .Returns("testUserId");
         _httpClientFactoryMock = Substitute.For<IHttpClientFactory>();
+        _serviceProviderMock.GetService(typeof(IRbacService)).Returns(_rbacService);
         _serviceProviderMock.GetService(typeof(IConfiguration)).Returns(_configurationMock);
         _serviceProviderMock.GetService(typeof(IJwtService)).Returns(_jwtServiceMock);  
         _schemaServiceMock = Substitute.For<ISchemaService>();
@@ -60,6 +77,7 @@ public class RoutesExtensionMethodsTests
         _context.State.Returns(state);
         _context.Result.Returns("{ \"x\": \"mock_result\" }");
         _context.Services.Returns(_serviceProviderMock);
+        _context.GetDomain().Returns("testDomain");
         var routeValues = new Dictionary<string, object?>();
         _context.RouteValues.Returns(routeValues);
         _contextFactoryMock.Create(Arg.Any<IEnumerable<string>>()).Returns(_context);
@@ -79,7 +97,8 @@ public class RoutesExtensionMethodsTests
                         services.AddSingleton(_schemaServiceMock);
                         services.AddSingleton(_resourceTypeServiceMock);
                         services.AddSingleton(_serviceProviderConfigurationMock);
-
+                        services.AddOAuth2Services(_enforcer);
+                      
                         services.AddOAuth2Services();
                     })
                     .Configure(app =>
@@ -122,6 +141,7 @@ public class RoutesExtensionMethodsTests
         request.Content = content;
         request.Headers.Add("Header-1", "11");
         request.Headers.Add("Header-2", "22");
+        request.Headers.Add("Authorization", "Bearer token");
         
         // Act
         var response = await _client.SendAsync(request);
@@ -150,6 +170,7 @@ public class RoutesExtensionMethodsTests
         using var request = new HttpRequestMessage(HttpMethod.Get, url);
         request.Headers.Add("Header-1", "11");
         request.Headers.Add("Header-2", "22");
+        request.Headers.Add("Authorization", "Bearer token");
         
         // Act
         var response = await _client.SendAsync(request);
@@ -178,6 +199,7 @@ public class RoutesExtensionMethodsTests
         request.Content = content;
         request.Headers.Add("Header-1", "11");
         request.Headers.Add("Header-2", "22");
+        request.Headers.Add("Authorization", "Bearer token");
         _context.Result.Returns("mock_result");
 
         // Act
@@ -208,6 +230,7 @@ public class RoutesExtensionMethodsTests
         request.Content = content;
         request.Headers.Add("Header-1", "11");
         request.Headers.Add("Header-2", "22");
+        request.Headers.Add("Authorization", "Bearer token");
         
         // Act
         var response = await _client.SendAsync(request);
@@ -236,6 +259,7 @@ public class RoutesExtensionMethodsTests
         request.Content = content;
         request.Headers.Add("Header-1", "11");
         request.Headers.Add("Header-2", "22");
+        request.Headers.Add("Authorization", "Bearer token");
         
         // Act
         var response = await _client.SendAsync(request);
@@ -263,6 +287,7 @@ public class RoutesExtensionMethodsTests
         using var request = new HttpRequestMessage(HttpMethod.Delete, url);
         request.Headers.Add("Header-1", "11");
         request.Headers.Add("Header-2", "22");
+        request.Headers.Add("Authorization", "Bearer token");
         
         // Act
         var response = await _client.SendAsync(request);

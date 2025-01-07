@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using Looplex.DotNet.Core.Middlewares;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Messages;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.ExtensionMethods;
