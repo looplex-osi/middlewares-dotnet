@@ -10,7 +10,7 @@ using NSubstitute;
 namespace Looplex.DotNet.Middlewares.OAuth2.UnitTests.Middlewares;
 
 [TestClass]
-public class AuthenticationMiddlewareTests
+public class AuthenticateMiddlewareTests
 {
     private IConfiguration _configuration = null!;
     private IJwtService _jwtService = null!;
@@ -53,7 +53,7 @@ public class AuthenticationMiddlewareTests
             .Returns(true);
 
         // Act
-        await AuthenticationMiddleware.AuthenticateMiddleware(_context, CancellationToken.None, _next);
+        await OAuth2Middlewares.AuthenticateMiddleware(_context, CancellationToken.None, _next);
 
         // Assert
         await _next.Received(1).Invoke();
@@ -70,7 +70,7 @@ public class AuthenticationMiddlewareTests
 
         // Act & Assert
         var ex = await Assert.ThrowsExceptionAsync<HttpRequestException>(async () =>
-            await AuthenticationMiddleware.AuthenticateMiddleware(_context, CancellationToken.None, _next)
+            await OAuth2Middlewares.AuthenticateMiddleware(_context, CancellationToken.None, _next)
         );
 
         Assert.AreEqual(HttpStatusCode.Unauthorized, ex.StatusCode);

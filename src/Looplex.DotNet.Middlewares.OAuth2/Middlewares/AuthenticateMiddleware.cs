@@ -8,17 +8,17 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Looplex.DotNet.Middlewares.OAuth2.Middlewares;
 
-public static partial class AuthenticationMiddleware
+public static partial class OAuth2Middlewares
 {
-    public static readonly MiddlewareDelegate AuthenticateMiddleware = new(async (context, cancellationToken, next) =>
+    public static readonly MiddlewareDelegate AuthenticateMiddleware = async (context, cancellationToken, next) =>
     {
         cancellationToken.ThrowIfCancellationRequested();
 
         var configuration = context.Services.GetRequiredService<IConfiguration>();
         var audience = configuration["Audience"] ??
-            throw new InvalidOperationException("Audience configuration is missing");
+                       throw new InvalidOperationException("Audience configuration is missing");
         var issuer = configuration["Issuer"] ??
-            throw new InvalidOperationException("Issuer configuration is missing");
+                     throw new InvalidOperationException("Issuer configuration is missing");
 
         string accesToken = string.Empty;
 
@@ -32,7 +32,8 @@ public static partial class AuthenticationMiddleware
         }
 
         var publicKey = StringUtils.Base64Decode(configuration["PublicKey"] ??
-            throw new InvalidOperationException("PublicKey configuration is missing"));
+                                                 throw new InvalidOperationException(
+                                                     "PublicKey configuration is missing"));
         var jwtService = context.Services.GetRequiredService<IJwtService>();
         bool authenticated = jwtService.ValidateToken(publicKey, issuer, audience, accesToken);
 
@@ -42,5 +43,5 @@ public static partial class AuthenticationMiddleware
         }
 
         await next();
-    });
+    };
 }

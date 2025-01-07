@@ -31,18 +31,19 @@ public class ClientCredentialsAuthorizationService(
     public async Task CreateAccessToken(IContext context, CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        
+
         string authorization = context.GetRequiredValue<string>("Authorization");
         var json = context.GetRequiredValue<string>("Resource");
         var clientCredentialsDto = JsonConvert.DeserializeObject<ClientCredentialsDto>(json)!;
         await context.Plugins.ExecuteAsync<IHandleInput>(context, cancellationToken);
-        
+
         ArgumentNullException.ThrowIfNull(clientCredentialsDto, "body");
 
         ValidateAuthorizationHeader(authorization);
         ValidateGrantType(clientCredentialsDto.GrantType);
         var (clientId, clientSecret) = TryGetClientCredentials(authorization);
-        var apiKey = await GetApiKeyByIdAndSecretOrDefaultAsync(clientId.ToString(), clientSecret, context, cancellationToken);
+        var apiKey =
+            await GetApiKeyByIdAndSecretOrDefaultAsync(clientId.ToString(), clientSecret, context, cancellationToken);
         await context.Plugins.ExecuteAsync<IValidateInput>(context, cancellationToken);
 
         context.Roles["ApiKey"] = apiKey;
@@ -76,13 +77,13 @@ public class ClientCredentialsAuthorizationService(
 
     private static (Guid, string) TryGetClientCredentials(string? authorization)
     {
-        if (authorization != default 
+        if (authorization != default
             && authorization.IsBasicAuthentication(out var base64Credentials)
             && base64Credentials != default)
         {
             return DecodeCredentials(base64Credentials);
         }
-        
+
         throw new HttpRequestException("Invalid authorization.", null, HttpStatusCode.Unauthorized);
     }
 
@@ -107,19 +108,21 @@ public class ClientCredentialsAuthorizationService(
         }
     }
 
-    private Task<IApiKey> GetApiKeyByIdAndSecretOrDefaultAsync(string clientId, string clientSecret, IContext parentContext, CancellationToken cancellationToken)
+    private Task<IApiKey> GetApiKeyByIdAndSecretOrDefaultAsync(string clientId, string clientSecret,
+        IContext parentContext, CancellationToken cancellationToken)
     {
         var contextFactory = parentContext.Services.GetRequiredService<IContextFactory>();
         var context = contextFactory.Create(["AuthorizationService.ValidateClientCredentials"]);
-            
+
         context.State.ParentContext = parentContext;
         context.State.ClientId = clientId;
         context.State.ClientSecret = clientSecret;
-        
+
         return GetApiKeyByIdAndSecretOrDefaultAsync(context, cancellationToken);
     }
 
-    private async Task<IApiKey> GetApiKeyByIdAndSecretOrDefaultAsync(IContext context, CancellationToken cancellationToken)
+    private async Task<IApiKey> GetApiKeyByIdAndSecretOrDefaultAsync(IContext context,
+        CancellationToken cancellationToken)
     {
         await _apiKeyService.GetByIdAndSecretOrDefaultAsync(context, cancellationToken);
         IApiKey? apiKey = default;
@@ -127,14 +130,17 @@ public class ClientCredentialsAuthorizationService(
         {
             apiKey = (IApiKey)role;
         }
+
         if (apiKey == default)
         {
             throw new EntityInvalidException(["Invalid clientId or clientSecret."]);
         }
+
         if (apiKey.NotBefore > DateTimeOffset.UtcNow)
         {
             throw new EntityInvalidException(["Client access not allowed."]);
         }
+
         if (apiKey.ExpirationTime <= DateTimeOffset.UtcNow)
         {
             throw new EntityInvalidException(["Client access is expired."]);
@@ -154,8 +160,9 @@ public class ClientCredentialsAuthorizationService(
         var tokenExpirationTimeInMinutes = _configuration.GetValue<int>("TokenExpirationTimeInMinutes");
 
         var privateKey = StringUtils.Base64Decode(_configuration["PrivateKey"]!);
-        
-        var accessToken = _jwtService.GenerateToken(privateKey, issuer, audience, claims, TimeSpan.FromMinutes(tokenExpirationTimeInMinutes));
+
+        var accessToken = _jwtService.GenerateToken(privateKey, issuer, audience, claims,
+            TimeSpan.FromMinutes(tokenExpirationTimeInMinutes));
         return accessToken;
     }
 }

@@ -12,7 +12,7 @@ public class DefaultScimV2Context(
     ISqlDatabaseProvider sqlDatabaseProvider) : IScimV2Context
 {
     const string LooplexTenantKeyHeader = "X-looplex-tenant";
-    
+
     public bool SkipDefaultAction { get; set; } = false;
 
     public object State { get; } = new ExpandoObject();

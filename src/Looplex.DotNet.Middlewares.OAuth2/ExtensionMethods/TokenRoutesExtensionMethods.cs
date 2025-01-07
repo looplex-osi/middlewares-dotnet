@@ -16,7 +16,7 @@ public static class TokenRoutesExtensionMethods
     private const string Resource = "/token";
     private const string Tag = "Authentication";
 
-    internal static readonly MiddlewareDelegate TokenMiddleware = new(async (context, cancellationToken, _) =>
+    internal static readonly MiddlewareDelegate TokenMiddleware = async (context, cancellationToken, _) =>
     {
         IAuthorizationServiceFactory factory = context.Services.GetRequiredService<IAuthorizationServiceFactory>();
 
@@ -34,7 +34,7 @@ public static class TokenRoutesExtensionMethods
         await service.CreateAccessToken(context, cancellationToken);
 
         await httpContext.Response.WriteAsJsonAsync(context.Result, cancellationToken);
-    });
+    };
 
     public static void UseTokenRoute(this IEndpointRouteBuilder app, string[] services)
     {

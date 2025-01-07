@@ -17,7 +17,7 @@ public sealed class JwtService : IJwtService
     {
         using var privateKeyRsa = RSA.Create();
         privateKeyRsa.ImportFromPem(privateKey);
-        
+
         var tokenHandler = new JwtSecurityTokenHandler();
 
         var creds = new SigningCredentials(new RsaSecurityKey(privateKeyRsa), SecurityAlgorithms.RsaSha256)
@@ -61,9 +61,9 @@ public sealed class JwtService : IJwtService
         string token)
     {
         if (string.IsNullOrEmpty(token))
-                        return false;
-        
-         using var publicKeyRsa = RSA.Create();
+            return false;
+
+        using var publicKeyRsa = RSA.Create();
         try
         {
             publicKeyRsa.ImportFromPem(publicKey);
@@ -80,7 +80,7 @@ public sealed class JwtService : IJwtService
             IssuerSigningKey = new RsaSecurityKey(publicKeyRsa)
             {
                 CryptoProviderFactory = new CryptoProviderFactory { CacheSignatureProviders = false }
-            },            
+            },
             ValidateIssuer = true,
             ValidIssuer = issuer,
             ValidateAudience = true,

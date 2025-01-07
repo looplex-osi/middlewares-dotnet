@@ -30,8 +30,8 @@ public class DefaultScimV2ContextTests
 
         // Assert
         act.Should().Throw<Error>()
-           .WithMessage($"X-looplex-tenant not found in context header.")
-           .Where(e => e.Status == (int)HttpStatusCode.BadRequest);
+            .WithMessage($"X-looplex-tenant not found in context header.")
+            .Where(e => e.Status == (int)HttpStatusCode.BadRequest);
     }
 
     [TestMethod]
@@ -45,9 +45,10 @@ public class DefaultScimV2ContextTests
 
         // Assert
         act.Should().Throw<Error>()
-           .WithMessage("Domain should not be null or empty.")
-           .Where(e => e.Status == (int)HttpStatusCode.BadRequest);
+            .WithMessage("Domain should not be null or empty.")
+            .Where(e => e.Status == (int)HttpStatusCode.BadRequest);
     }
+
     [TestMethod]
     public async Task GetSqlDatabaseService_ShouldReturnDatabaseService_WhenHeaderContainsValidTenantKey()
     {
@@ -75,7 +76,8 @@ public class DefaultScimV2ContextTests
 
         // Set the private `_sqlDatabaseService` field
         typeof(DefaultScimV2Context)
-            .GetField("_sqlDatabaseService", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
+            .GetField("_sqlDatabaseService",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)
             ?.SetValue(_scimContext, mockDatabaseService);
 
         // Act

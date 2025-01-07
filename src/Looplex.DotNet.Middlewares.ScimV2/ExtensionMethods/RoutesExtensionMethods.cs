@@ -26,7 +26,7 @@ public static class RoutesExtensionMethods
         var service = httpContext.RequestServices.GetRequiredService<TService>();
 
         MapRequestParamsToContext(context, httpContext);
-        
+
         await service.GetAllAsync(context, cancellationToken);
 
         await httpContext.Response.WriteAsJsonAsync((string)context.Result!, HttpStatusCode.OK);
@@ -61,7 +61,7 @@ public static class RoutesExtensionMethods
         httpContext.Response.StatusCode = (int)HttpStatusCode.Created;
         httpContext.Response.Headers.Location = $"{httpContext.Request.Path.Value}/{id}";
     };
-    
+
     private static MiddlewareDelegate PutMiddleware<TService>()
         where TService : ICrudService => async (context, cancellationToken, _) =>
     {
@@ -85,7 +85,7 @@ public static class RoutesExtensionMethods
         var service = httpContext.RequestServices.GetRequiredService<TService>();
 
         MapRequestParamsToContext(context, httpContext);
-        
+
         using StreamReader reader = new(httpContext.Request.Body);
         context.State.Operations = await reader.ReadToEndAsync(cancellationToken);
 
@@ -104,7 +104,7 @@ public static class RoutesExtensionMethods
         var service = httpContext.RequestServices.GetRequiredService<TService>();
 
         MapRequestParamsToContext(context, httpContext);
-        
+
         await service.DeleteAsync(context, cancellationToken);
 
         httpContext.Response.StatusCode = (int)HttpStatusCode.NoContent;
@@ -151,9 +151,12 @@ public static class RoutesExtensionMethods
         });
 
         var id = $"{ToLowerFirstLetter(typeof(T).Name)}Id";
-        
-        List<MiddlewareDelegate> getMiddlewares = [
-            AuthenticationMiddleware.AuthenticateMiddleware, AuthorizationMiddleware.AuthorizeMiddleware, ScimV2Middlewares.PaginationMiddleware, ScimV2Middlewares.AttributesMiddleware];
+
+        List<MiddlewareDelegate> getMiddlewares =
+        [
+            OAuth2Middlewares.AuthenticateMiddleware, OAuth2Middlewares.AuthorizeMiddleware,
+            ScimV2Middlewares.PaginationMiddleware, ScimV2Middlewares.AttributesMiddleware
+        ];
         getMiddlewares.AddRange(options.OptionsForGet?.Middlewares ?? []);
         getMiddlewares.Add(GetMiddleware<TService>());
         app.MapGet(
@@ -164,7 +167,11 @@ public static class RoutesExtensionMethods
                 Middlewares = getMiddlewares.ToArray()
             });
 
-        List<MiddlewareDelegate> getByIdMiddlewares = [AuthenticationMiddleware.AuthenticateMiddleware, AuthorizationMiddleware.AuthorizeMiddleware, ScimV2Middlewares.AttributesMiddleware];
+        List<MiddlewareDelegate> getByIdMiddlewares =
+        [
+            OAuth2Middlewares.AuthenticateMiddleware, OAuth2Middlewares.AuthorizeMiddleware,
+            ScimV2Middlewares.AttributesMiddleware
+        ];
         getByIdMiddlewares.AddRange(options.OptionsForGetById?.Middlewares ?? []);
         getByIdMiddlewares.Add(GetByIdMiddleware<TService>());
         app.MapGet(
@@ -174,8 +181,9 @@ public static class RoutesExtensionMethods
                 Services = options.OptionsForGetById?.Services ?? [],
                 Middlewares = getByIdMiddlewares.ToArray()
             });
-        
-        List<MiddlewareDelegate> postMiddlewares = [AuthenticationMiddleware.AuthenticateMiddleware, AuthorizationMiddleware.AuthorizeMiddleware];
+
+        List<MiddlewareDelegate> postMiddlewares =
+            [OAuth2Middlewares.AuthenticateMiddleware, OAuth2Middlewares.AuthorizeMiddleware];
         postMiddlewares.AddRange(options.OptionsForPost?.Middlewares ?? []);
         postMiddlewares.Add(PostMiddleware<TService>());
         app.MapPost(
@@ -185,8 +193,9 @@ public static class RoutesExtensionMethods
                 Services = options.OptionsForPost?.Services ?? [],
                 Middlewares = postMiddlewares.ToArray()
             });
-        
-        List<MiddlewareDelegate> putMiddlewares = [AuthenticationMiddleware.AuthenticateMiddleware, AuthorizationMiddleware.AuthorizeMiddleware];
+
+        List<MiddlewareDelegate> putMiddlewares =
+            [OAuth2Middlewares.AuthenticateMiddleware, OAuth2Middlewares.AuthorizeMiddleware];
         putMiddlewares.AddRange(options.OptionsForPut?.Middlewares ?? []);
         putMiddlewares.Add(PutMiddleware<TService>());
         app.MapPut(
@@ -197,7 +206,11 @@ public static class RoutesExtensionMethods
                 Middlewares = putMiddlewares.ToArray()
             });
 
-        List<MiddlewareDelegate> patchMiddlewares = [AuthenticationMiddleware.AuthenticateMiddleware, AuthorizationMiddleware.AuthorizeMiddleware, ScimV2Middlewares.AttributesMiddleware];
+        List<MiddlewareDelegate> patchMiddlewares =
+        [
+            OAuth2Middlewares.AuthenticateMiddleware, OAuth2Middlewares.AuthorizeMiddleware,
+            ScimV2Middlewares.AttributesMiddleware
+        ];
         patchMiddlewares.AddRange(options.OptionsForPatch?.Middlewares ?? []);
         patchMiddlewares.Add(PatchMiddleware<TService>());
         app.MapPatch(
@@ -207,8 +220,9 @@ public static class RoutesExtensionMethods
                 Services = options.OptionsForPatch?.Services ?? [],
                 Middlewares = patchMiddlewares.ToArray()
             });
-        
-        List<MiddlewareDelegate> deleteMiddlewares = [AuthenticationMiddleware.AuthenticateMiddleware, AuthorizationMiddleware.AuthorizeMiddleware];
+
+        List<MiddlewareDelegate> deleteMiddlewares =
+            [OAuth2Middlewares.AuthenticateMiddleware, OAuth2Middlewares.AuthorizeMiddleware];
         deleteMiddlewares.AddRange(options.OptionsForDelete?.Middlewares ?? []);
         deleteMiddlewares.Add(DeleteMiddleware<TService>());
         app.MapDelete(
@@ -230,7 +244,7 @@ public static class RoutesExtensionMethods
         context.AsScimV2Context().Headers = httpContext.Request.Headers
             .Select(q => new KeyValuePair<string, string>(q.Key, q.Value.ToString())).ToDictionary();
     }
-    
+
     private static string ToLowerFirstLetter(string input)
     {
         if (string.IsNullOrEmpty(input) || char.IsLower(input[0]))
