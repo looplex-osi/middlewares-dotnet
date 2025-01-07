@@ -5,6 +5,7 @@ using Looplex.OpenForExtension.Abstractions.Contexts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net;
+using Looplex.DotNet.Middlewares.ScimV2.Domain.ExtensionMethods;
 
 namespace Looplex.DotNet.Middlewares.OAuth2.Middlewares;
 
@@ -16,7 +17,7 @@ public static partial class OAuth2Middlewares
 
         var userId = GetUserIdFromToken(context);
 
-        var domain = ((IScimV2Context)context).GetDomain();
+        var domain = context.AsScimV2Context().GetDomain();
 
         if (string.IsNullOrEmpty(domain))
         {
