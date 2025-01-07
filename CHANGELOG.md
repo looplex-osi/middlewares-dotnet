@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="2.3.0"></a>
+## 2.3.0 (2025-01-07)
+
+### Features
+
+* WIP AB#28655 Authorization middleware
+
 <a name="2.2.0"></a>
 ## 2.2.0 (2025-01-06)
 
