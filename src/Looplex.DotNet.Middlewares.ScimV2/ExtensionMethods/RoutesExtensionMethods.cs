@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net;
@@ -153,7 +153,7 @@ public static class RoutesExtensionMethods
         var id = $"{ToLowerFirstLetter(typeof(T).Name)}Id";
         
         List<MiddlewareDelegate> getMiddlewares = [
-            AuthenticationMiddleware.AuthenticateMiddleware, AuthorizationMiddleware.AuthorizeMiddleware, ScimV2Middlewares.PaginationMiddleware];
+            AuthenticationMiddleware.AuthenticateMiddleware, AuthorizationMiddleware.AuthorizeMiddleware, ScimV2Middlewares.PaginationMiddleware, ScimV2Middlewares.AttributesMiddleware];
         getMiddlewares.AddRange(options.OptionsForGet?.Middlewares ?? []);
         getMiddlewares.Add(GetMiddleware<TService>());
         app.MapGet(
@@ -164,7 +164,7 @@ public static class RoutesExtensionMethods
                 Middlewares = getMiddlewares.ToArray()
             });
 
-        List<MiddlewareDelegate> getByIdMiddlewares = [AuthenticationMiddleware.AuthenticateMiddleware, AuthorizationMiddleware.AuthorizeMiddleware];
+        List<MiddlewareDelegate> getByIdMiddlewares = [AuthenticationMiddleware.AuthenticateMiddleware, AuthorizationMiddleware.AuthorizeMiddleware, ScimV2Middlewares.AttributesMiddleware];
         getByIdMiddlewares.AddRange(options.OptionsForGetById?.Middlewares ?? []);
         getByIdMiddlewares.Add(GetByIdMiddleware<TService>());
         app.MapGet(
@@ -197,7 +197,7 @@ public static class RoutesExtensionMethods
                 Middlewares = putMiddlewares.ToArray()
             });
 
-        List<MiddlewareDelegate> patchMiddlewares = [AuthenticationMiddleware.AuthenticateMiddleware, AuthorizationMiddleware.AuthorizeMiddleware];
+        List<MiddlewareDelegate> patchMiddlewares = [AuthenticationMiddleware.AuthenticateMiddleware, AuthorizationMiddleware.AuthorizeMiddleware, ScimV2Middlewares.AttributesMiddleware];
         patchMiddlewares.AddRange(options.OptionsForPatch?.Middlewares ?? []);
         patchMiddlewares.Add(PatchMiddleware<TService>());
         app.MapPatch(

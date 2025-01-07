@@ -44,7 +44,7 @@ public class RoutesExtensionMethodsTests
     private IHost _host = null!;
     private IRbacService _rbacService = null!;
     private IEnforcer _enforcer = null!;
-
+  
     [TestInitialize]
     public void Initialize()
     {
@@ -75,7 +75,7 @@ public class RoutesExtensionMethodsTests
         _context = Substitute.For<IScimV2Context>();
         var state = new ExpandoObject();
         _context.State.Returns(state);
-        _context.Result.Returns("mock_result");
+        _context.Result.Returns("{ \"x\": \"mock_result\" }");
         _context.Services.Returns(_serviceProviderMock);
         _context.GetDomain().Returns("testDomain");
         var routeValues = new Dictionary<string, object?>();
@@ -97,8 +97,9 @@ public class RoutesExtensionMethodsTests
                         services.AddSingleton(_schemaServiceMock);
                         services.AddSingleton(_resourceTypeServiceMock);
                         services.AddSingleton(_serviceProviderConfigurationMock);
-
                         services.AddOAuth2Services(_enforcer);
+                      
+                        services.AddOAuth2Services();
                     })
                     .Configure(app =>
                     {
@@ -141,7 +142,7 @@ public class RoutesExtensionMethodsTests
         request.Headers.Add("Header-1", "11");
         request.Headers.Add("Header-2", "22");
         request.Headers.Add("Authorization", "Bearer token");
-
+        
         // Act
         var response = await _client.SendAsync(request);
 
@@ -170,7 +171,7 @@ public class RoutesExtensionMethodsTests
         request.Headers.Add("Header-1", "11");
         request.Headers.Add("Header-2", "22");
         request.Headers.Add("Authorization", "Bearer token");
-
+        
         // Act
         var response = await _client.SendAsync(request);
 
@@ -199,6 +200,7 @@ public class RoutesExtensionMethodsTests
         request.Headers.Add("Header-1", "11");
         request.Headers.Add("Header-2", "22");
         request.Headers.Add("Authorization", "Bearer token");
+        _context.Result.Returns("mock_result");
 
         // Act
         var response = await _client.SendAsync(request);
@@ -229,7 +231,7 @@ public class RoutesExtensionMethodsTests
         request.Headers.Add("Header-1", "11");
         request.Headers.Add("Header-2", "22");
         request.Headers.Add("Authorization", "Bearer token");
-
+        
         // Act
         var response = await _client.SendAsync(request);
         
@@ -258,7 +260,7 @@ public class RoutesExtensionMethodsTests
         request.Headers.Add("Header-1", "11");
         request.Headers.Add("Header-2", "22");
         request.Headers.Add("Authorization", "Bearer token");
-
+        
         // Act
         var response = await _client.SendAsync(request);
         
@@ -286,7 +288,7 @@ public class RoutesExtensionMethodsTests
         request.Headers.Add("Header-1", "11");
         request.Headers.Add("Header-2", "22");
         request.Headers.Add("Authorization", "Bearer token");
-
+        
         // Act
         var response = await _client.SendAsync(request);
         
