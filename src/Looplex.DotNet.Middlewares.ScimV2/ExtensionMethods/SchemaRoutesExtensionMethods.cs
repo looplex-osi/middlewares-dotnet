@@ -16,35 +16,31 @@ public static class SchemaRoutesExtensionMethods
 
     internal static MiddlewareDelegate GetMiddleware()
         => async (context, cancellationToken, _) =>
-    {
-        HttpContext httpContext = context.State.HttpContext;
-        var service = httpContext.RequestServices.GetRequiredService<ISchemaService>();
+        {
+            HttpContext httpContext = context.State.HttpContext;
+            var service = httpContext.RequestServices.GetRequiredService<ISchemaService>();
 
-        RoutesExtensionMethods.MapRequestParamsToContext(context, httpContext);
+            await service.GetAllAsync(context, cancellationToken);
 
-        await service.GetAllAsync(context, cancellationToken);
-
-        await httpContext.Response.WriteAsJsonAsync((string)context.Result!, HttpStatusCode.OK);
-    };
+            await httpContext.Response.WriteAsJsonAsync((string)context.Result!, HttpStatusCode.OK);
+        };
 
     internal static MiddlewareDelegate GetByIdMiddleware()
         => async (context, cancellationToken, _) =>
-    {
-        HttpContext httpContext = context.State.HttpContext;
-        var service = httpContext.RequestServices.GetRequiredService<ISchemaService>();
+        {
+            HttpContext httpContext = context.State.HttpContext;
+            var service = httpContext.RequestServices.GetRequiredService<ISchemaService>();
 
-        RoutesExtensionMethods.MapRequestParamsToContext(context, httpContext);
+            await service.GetByIdAsync(context, cancellationToken);
 
-        await service.GetByIdAsync(context, cancellationToken);
-
-        await httpContext.Response.WriteAsJsonAsync((string)context.Result!, HttpStatusCode.OK);
-    };
+            await httpContext.Response.WriteAsJsonAsync((string)context.Result!, HttpStatusCode.OK);
+        };
 
     public static void UseSchemaRoute(this IEndpointRouteBuilder app, string[] services)
     {
         List<MiddlewareDelegate> getMiddlewares =
         [
-            ScimV2Middlewares.PaginationMiddleware,
+            ScimV2Middlewares.ScimV2ContextMiddleware, ScimV2Middlewares.PaginationMiddleware,
             GetMiddleware()
         ];
         app.MapGet(
@@ -57,7 +53,7 @@ public static class SchemaRoutesExtensionMethods
 
         List<MiddlewareDelegate> getByIdMiddlewares =
         [
-            GetByIdMiddleware()
+            ScimV2Middlewares.ScimV2ContextMiddleware, GetByIdMiddleware()
         ];
         app.MapGet(
             $"{Resource}/{{schemaId}}",

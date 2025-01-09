@@ -1,6 +1,5 @@
 ﻿using Looplex.DotNet.Core.Middlewares;
 using Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.Services;
-using Looplex.DotNet.Middlewares.ScimV2.Domain;
 using Looplex.OpenForExtension.Abstractions.Contexts;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;

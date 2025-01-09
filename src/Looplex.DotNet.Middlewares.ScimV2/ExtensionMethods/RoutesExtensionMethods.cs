@@ -13,7 +13,6 @@ using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Configurations;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.ExtensionMethods;
 using Looplex.DotNet.Middlewares.ScimV2.Middlewares;
-using Looplex.OpenForExtension.Abstractions.Contexts;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods;
 
@@ -24,8 +23,6 @@ public static class RoutesExtensionMethods
     {
         HttpContext httpContext = context.State.HttpContext;
         var service = httpContext.RequestServices.GetRequiredService<TService>();
-
-        MapRequestParamsToContext(context, httpContext);
 
         await service.GetAllAsync(context, cancellationToken);
 
@@ -38,8 +35,6 @@ public static class RoutesExtensionMethods
         HttpContext httpContext = context.State.HttpContext;
         var service = httpContext.RequestServices.GetRequiredService<TService>();
 
-        MapRequestParamsToContext(context, httpContext);
-
         await service.GetByIdAsync(context, cancellationToken);
 
         await httpContext.Response.WriteAsJsonAsync((string)context.Result!, HttpStatusCode.OK);
@@ -50,8 +45,6 @@ public static class RoutesExtensionMethods
     {
         HttpContext httpContext = context.State.HttpContext;
         var service = httpContext.RequestServices.GetRequiredService<TService>();
-
-        MapRequestParamsToContext(context, httpContext);
 
         using StreamReader reader = new(httpContext.Request.Body);
         context.State.Resource = await reader.ReadToEndAsync(cancellationToken);
@@ -68,8 +61,6 @@ public static class RoutesExtensionMethods
         HttpContext httpContext = context.State.HttpContext;
         var service = httpContext.RequestServices.GetRequiredService<TService>();
 
-        MapRequestParamsToContext(context, httpContext);
-
         using StreamReader reader = new(httpContext.Request.Body);
         context.State.Resource = await reader.ReadToEndAsync(cancellationToken);
 
@@ -83,8 +74,6 @@ public static class RoutesExtensionMethods
     {
         HttpContext httpContext = context.State.HttpContext;
         var service = httpContext.RequestServices.GetRequiredService<TService>();
-
-        MapRequestParamsToContext(context, httpContext);
 
         using StreamReader reader = new(httpContext.Request.Body);
         context.State.Operations = await reader.ReadToEndAsync(cancellationToken);
@@ -102,8 +91,6 @@ public static class RoutesExtensionMethods
     {
         HttpContext httpContext = context.State.HttpContext;
         var service = httpContext.RequestServices.GetRequiredService<TService>();
-
-        MapRequestParamsToContext(context, httpContext);
 
         await service.DeleteAsync(context, cancellationToken);
 
@@ -154,7 +141,8 @@ public static class RoutesExtensionMethods
 
         List<MiddlewareDelegate> getMiddlewares =
         [
-            OAuth2Middlewares.AuthenticateMiddleware, OAuth2Middlewares.AuthorizeMiddleware,
+            ScimV2Middlewares.ScimV2ContextMiddleware, OAuth2Middlewares.AuthenticateMiddleware,
+            OAuth2Middlewares.AuthorizeMiddleware,
             ScimV2Middlewares.PaginationMiddleware, ScimV2Middlewares.AttributesMiddleware
         ];
         getMiddlewares.AddRange(options.OptionsForGet?.Middlewares ?? []);
@@ -169,7 +157,8 @@ public static class RoutesExtensionMethods
 
         List<MiddlewareDelegate> getByIdMiddlewares =
         [
-            OAuth2Middlewares.AuthenticateMiddleware, OAuth2Middlewares.AuthorizeMiddleware,
+            ScimV2Middlewares.ScimV2ContextMiddleware, OAuth2Middlewares.AuthenticateMiddleware,
+            OAuth2Middlewares.AuthorizeMiddleware,
             ScimV2Middlewares.AttributesMiddleware
         ];
         getByIdMiddlewares.AddRange(options.OptionsForGetById?.Middlewares ?? []);
@@ -183,7 +172,10 @@ public static class RoutesExtensionMethods
             });
 
         List<MiddlewareDelegate> postMiddlewares =
-            [OAuth2Middlewares.AuthenticateMiddleware, OAuth2Middlewares.AuthorizeMiddleware];
+        [
+            ScimV2Middlewares.ScimV2ContextMiddleware, OAuth2Middlewares.AuthenticateMiddleware,
+            OAuth2Middlewares.AuthorizeMiddleware
+        ];
         postMiddlewares.AddRange(options.OptionsForPost?.Middlewares ?? []);
         postMiddlewares.Add(PostMiddleware<TService>());
         app.MapPost(
@@ -195,7 +187,10 @@ public static class RoutesExtensionMethods
             });
 
         List<MiddlewareDelegate> putMiddlewares =
-            [OAuth2Middlewares.AuthenticateMiddleware, OAuth2Middlewares.AuthorizeMiddleware];
+        [
+            ScimV2Middlewares.ScimV2ContextMiddleware, OAuth2Middlewares.AuthenticateMiddleware,
+            OAuth2Middlewares.AuthorizeMiddleware
+        ];
         putMiddlewares.AddRange(options.OptionsForPut?.Middlewares ?? []);
         putMiddlewares.Add(PutMiddleware<TService>());
         app.MapPut(
@@ -208,7 +203,8 @@ public static class RoutesExtensionMethods
 
         List<MiddlewareDelegate> patchMiddlewares =
         [
-            OAuth2Middlewares.AuthenticateMiddleware, OAuth2Middlewares.AuthorizeMiddleware,
+            ScimV2Middlewares.ScimV2ContextMiddleware, OAuth2Middlewares.AuthenticateMiddleware,
+            OAuth2Middlewares.AuthorizeMiddleware,
             ScimV2Middlewares.AttributesMiddleware
         ];
         patchMiddlewares.AddRange(options.OptionsForPatch?.Middlewares ?? []);
@@ -222,7 +218,10 @@ public static class RoutesExtensionMethods
             });
 
         List<MiddlewareDelegate> deleteMiddlewares =
-            [OAuth2Middlewares.AuthenticateMiddleware, OAuth2Middlewares.AuthorizeMiddleware];
+        [
+            ScimV2Middlewares.ScimV2ContextMiddleware, OAuth2Middlewares.AuthenticateMiddleware,
+            OAuth2Middlewares.AuthorizeMiddleware
+        ];
         deleteMiddlewares.AddRange(options.OptionsForDelete?.Middlewares ?? []);
         deleteMiddlewares.Add(DeleteMiddleware<TService>());
         app.MapDelete(
@@ -232,17 +231,6 @@ public static class RoutesExtensionMethods
                 Services = options.OptionsForDelete?.Services ?? [],
                 Middlewares = deleteMiddlewares.ToArray()
             });
-    }
-
-    public static void MapRequestParamsToContext(IContext context, HttpContext httpContext)
-    {
-        context.AsScimV2Context().RouteValues = httpContext.Request.RouteValues
-            .Select(rv => new KeyValuePair<string, object?>(rv.Key, rv.Value))
-            .ToDictionary();
-        context.AsScimV2Context().Query = httpContext.Request.Query
-            .Select(q => new KeyValuePair<string, string>(q.Key, q.Value.ToString())).ToDictionary();
-        context.AsScimV2Context().Headers = httpContext.Request.Headers
-            .Select(q => new KeyValuePair<string, string>(q.Key, q.Value.ToString())).ToDictionary();
     }
 
     private static string ToLowerFirstLetter(string input)

@@ -9,7 +9,7 @@ using NSubstitute;
 namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.Middlewares;
 
 [TestClass]
-public class QueryEndpointsMiddlewareTests
+public class AttributesMiddlewareTests
 {
     private IScimV2Context _context = null!;
 
