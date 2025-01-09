@@ -50,6 +50,19 @@ public class DefaultScimV2ContextTests
     }
 
     [TestMethod]
+    public void GetDomain_ShouldReturnValue_WhenDomainHasValue()
+    {
+        // Arrange
+        _scimContext.Headers["X-looplex-tenant"] = "domain";
+
+        // Act
+        var domain = _scimContext.GetDomain();
+
+        // Assert
+        domain.Should().Be("domain");
+    }
+
+    [TestMethod]
     public async Task GetSqlDatabaseService_ShouldReturnDatabaseService_WhenHeaderContainsValidTenantKey()
     {
         // Arrange
