@@ -31,13 +31,13 @@ public class ResourceTypeService(
             cancellationToken);
     }
 
-    private readonly ExtensionPointAsyncDelegate _getAllHandleInputAsync = _ => Task.CompletedTask;
-    private readonly ExtensionPointAsyncDelegate _getAllValidateInputAsync = _ => Task.CompletedTask;
-    private readonly ExtensionPointAsyncDelegate _getAllDefineRolesAsync = _ => Task.CompletedTask;
-    private readonly ExtensionPointAsyncDelegate _getAllBindAsync = _ => Task.CompletedTask;
-    private readonly ExtensionPointAsyncDelegate _getAllBeforeActionAsync = _ => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _getAllHandleInputAsync = (_, _) => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _getAllValidateInputAsync = (_, _) => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _getAllDefineRolesAsync = (_, _) => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _getAllBindAsync = (_, _) => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _getAllBeforeActionAsync = (_, _) => Task.CompletedTask;
 
-    private readonly ExtensionPointAsyncDelegate _getAllDefaultActionAsync = context =>
+    private readonly ExtensionPointAsyncDelegate _getAllDefaultActionAsync = (context, _) =>
     {
         var startIndex = context.GetRequiredValue<int>("Pagination.StartIndex");
         var itemsPerPage = context.GetRequiredValue<int>("Pagination.ItemsPerPage");
@@ -61,8 +61,8 @@ public class ResourceTypeService(
         return Task.CompletedTask;
     };
     
-    private readonly ExtensionPointAsyncDelegate _getAllAfterActionAsync = _ => Task.CompletedTask;
-    private readonly ExtensionPointAsyncDelegate _getAllReleaseUnmanagedResourcesAsync = _ => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _getAllAfterActionAsync = (_, _) => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _getAllReleaseUnmanagedResourcesAsync = (_, _) => Task.CompletedTask;
     
     #endregion
     
@@ -83,14 +83,14 @@ public class ResourceTypeService(
             cancellationToken);
     }
 
-    private readonly ExtensionPointAsyncDelegate _getByIdHandleInputAsync = context =>
+    private readonly ExtensionPointAsyncDelegate _getByIdHandleInputAsync = (context, _) =>
     {
         var id = context.GetRequiredRouteValue<string>("resourceTypeId");
         context.State.ResourceTypeId = id;
         return Task.CompletedTask;
     };
     
-    private readonly ExtensionPointAsyncDelegate _getByIdValidateInputAsync = context =>
+    private readonly ExtensionPointAsyncDelegate _getByIdValidateInputAsync = (context, _) =>
     {
         var id = context.GetRequiredValue<string>("ResourceTypeId");
         var resourceType = ResourceTypes.FirstOrDefault(rt => rt.Id == id);
@@ -100,24 +100,24 @@ public class ResourceTypeService(
         return Task.CompletedTask;
     };
     
-    private readonly ExtensionPointAsyncDelegate _getByIdDefineRolesAsync = context =>
+    private readonly ExtensionPointAsyncDelegate _getByIdDefineRolesAsync = (context, _) =>
     {
         var resourceType = context.GetRequiredValue<ResourceType>("ResourceType");
         context.Roles.Add("ResourceType", resourceType);
         return Task.CompletedTask;
     };
     
-    private readonly ExtensionPointAsyncDelegate _getByIdBindAsync = _ => Task.CompletedTask;
-    private readonly ExtensionPointAsyncDelegate _getByIdBeforeActionAsync = _ => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _getByIdBindAsync = (_, _) => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _getByIdBeforeActionAsync = (_, _) => Task.CompletedTask;
 
-    private readonly ExtensionPointAsyncDelegate _getByIdDefaultActionAsync = context =>
+    private readonly ExtensionPointAsyncDelegate _getByIdDefaultActionAsync = (context, _) =>
     {
         context.Result = ((ResourceType)context.Roles["ResourceType"]).ToJson();
         return Task.CompletedTask;
     };
     
-    private readonly ExtensionPointAsyncDelegate _getByIdAfterActionAsync = _ => Task.CompletedTask;
-    private readonly ExtensionPointAsyncDelegate _getByIdReleaseUnmanagedResourcesAsync = _ => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _getByIdAfterActionAsync = (_, _) => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _getByIdReleaseUnmanagedResourcesAsync = (_, _) => Task.CompletedTask;
     
     #endregion
 
@@ -138,26 +138,26 @@ public class ResourceTypeService(
             cancellationToken);
     }
 
-    private readonly ExtensionPointAsyncDelegate _createHandleInputAsync = _ => Task.CompletedTask;
-    private readonly ExtensionPointAsyncDelegate _createValidateInputAsync = _ => Task.CompletedTask;
-    private readonly ExtensionPointAsyncDelegate _createDefineRolesAsync = context =>
+    private readonly ExtensionPointAsyncDelegate _createHandleInputAsync = (_, _) => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _createValidateInputAsync = (_, _) => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _createDefineRolesAsync = (context, _) =>
     {
         var resourceType = context.GetRequiredValue<ResourceType>("ResourceType");
         context.Roles.Add("ResourceType", resourceType);
         return Task.CompletedTask;
     };
     
-    private readonly ExtensionPointAsyncDelegate _createBindAsync = _ => Task.CompletedTask;
-    private readonly ExtensionPointAsyncDelegate _createBeforeActionAsync = _ => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _createBindAsync = (_, _) => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _createBeforeActionAsync = (_, _) => Task.CompletedTask;
 
-    private readonly ExtensionPointAsyncDelegate _createDefaultActionAsync = context =>
+    private readonly ExtensionPointAsyncDelegate _createDefaultActionAsync = (context, _) =>
     {
         ResourceTypes.Add(context.Roles["ResourceType"]);
         return Task.CompletedTask;
     };
     
-    private readonly ExtensionPointAsyncDelegate _createAfterActionAsync = _ => Task.CompletedTask;
-    private readonly ExtensionPointAsyncDelegate _createReleaseUnmanagedResourcesAsync = _ => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _createAfterActionAsync = (_, _) => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _createReleaseUnmanagedResourcesAsync = (_, _) => Task.CompletedTask;
     
     #endregion
 }

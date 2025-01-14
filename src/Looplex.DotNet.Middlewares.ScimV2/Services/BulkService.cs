@@ -31,8 +31,6 @@ public class BulkService(
     
     public Task ExecuteBulkOperationsAsync(IContext context, CancellationToken cancellationToken)
     {
-        context.State.CancellationToken = cancellationToken;
-        
         return extensionPointOrchestrator.OrchestrateAsync(
             context,
             _getAllHandleInputAsync,
@@ -46,7 +44,7 @@ public class BulkService(
             cancellationToken);
     }
 
-    private readonly ExtensionPointAsyncDelegate _getAllHandleInputAsync = async context =>
+    private readonly ExtensionPointAsyncDelegate _getAllHandleInputAsync = async (context, _) =>
     {
         var schemaId = configuration["JsonSchemaIdForBulkOperation"]!;
         var jsonSchema = await jsonSchemaProvider.ResolveJsonSchemaAsync(context, schemaId);
@@ -57,7 +55,7 @@ public class BulkService(
         context.State.BulkRequest = bulkRequest;
     };
     
-    private readonly ExtensionPointAsyncDelegate _getAllValidateInputAsync = context =>
+    private readonly ExtensionPointAsyncDelegate _getAllValidateInputAsync = (context, _) =>
     {
         var messages = context.GetRequiredValue<IList<string>>("Messages");
         var bulkRequest = context.GetRequiredValue<BulkRequest>("BulkRequest");
@@ -67,7 +65,7 @@ public class BulkService(
         ValidateBulkIdsUniqueness(bulkRequest);
         return Task.CompletedTask;
     };
-    private readonly ExtensionPointAsyncDelegate _getAllDefineRolesAsync = context =>
+    private readonly ExtensionPointAsyncDelegate _getAllDefineRolesAsync = (context, _) =>
     {
         var bulkRequest = context.GetRequiredValue<BulkRequest>("BulkRequest");
         var bulkResponse = new BulkResponse();
@@ -75,13 +73,12 @@ public class BulkService(
         context.Roles["BulkResponse"] = bulkResponse;
         return Task.CompletedTask;
     };
-    private readonly ExtensionPointAsyncDelegate _getAllBindAsync = _ => Task.CompletedTask;
-    private readonly ExtensionPointAsyncDelegate _getAllBeforeActionAsync = _ => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _getAllBindAsync = (_, _) => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _getAllBeforeActionAsync = (_, _) => Task.CompletedTask;
 
-    private readonly ExtensionPointAsyncDelegate _getAllDefaultActionAsync = async context =>
+    private readonly ExtensionPointAsyncDelegate _getAllDefaultActionAsync = async (context, cancellationToken) =>
     {
         var serviceProviderConfiguration = serviceProvider.GetRequiredService<ServiceProviderConfiguration>();
-        var cancellationToken = context.GetRequiredValue<CancellationToken>("CancellationToken");
         var bulkRequest = (BulkRequest)context.Roles["BulkRequest"];
         var bulkResponse = (BulkResponse)context.Roles["BulkResponse"];
         
@@ -173,8 +170,8 @@ public class BulkService(
             context.Result = bulkResponse.ToJson();
     };
     
-    private readonly ExtensionPointAsyncDelegate _getAllAfterActionAsync = _ => Task.CompletedTask;
-    private readonly ExtensionPointAsyncDelegate _getAllReleaseUnmanagedResourcesAsync = _ => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _getAllAfterActionAsync = (_, _) => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _getAllReleaseUnmanagedResourcesAsync = (_, _) => Task.CompletedTask;
     
     #endregion
 

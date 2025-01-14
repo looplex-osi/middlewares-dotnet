@@ -37,7 +37,7 @@ public class SchemaService(
             cancellationToken);
     }
 
-    private readonly ExtensionPointAsyncDelegate _getAllHandleInputAsync = context =>
+    private readonly ExtensionPointAsyncDelegate _getAllHandleInputAsync = (context, _) =>
     {
         var lang = context.GetHeader("Lang");
         if (!string.IsNullOrWhiteSpace(lang))
@@ -45,12 +45,12 @@ public class SchemaService(
         return Task.CompletedTask;
     };
 
-    private readonly ExtensionPointAsyncDelegate _getAllValidateInputAsync = _ => Task.CompletedTask;
-    private readonly ExtensionPointAsyncDelegate _getAllDefineRolesAsync = _ => Task.CompletedTask;
-    private readonly ExtensionPointAsyncDelegate _getAllBindAsync = _ => Task.CompletedTask;
-    private readonly ExtensionPointAsyncDelegate _getAllBeforeActionAsync = _ => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _getAllValidateInputAsync = (_, _) => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _getAllDefineRolesAsync = (_, _) => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _getAllBindAsync = (_, _) => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _getAllBeforeActionAsync = (_, _) => Task.CompletedTask;
 
-    private readonly ExtensionPointAsyncDelegate _getAllDefaultActionAsync = async context =>
+    private readonly ExtensionPointAsyncDelegate _getAllDefaultActionAsync = async (context, _) =>
     {
         var startIndex = context.GetRequiredValue<int>("Pagination.StartIndex");
         var itemsPerPage = context.GetRequiredValue<int>("Pagination.ItemsPerPage");
@@ -75,8 +75,8 @@ public class SchemaService(
         context.Result = JsonConvert.SerializeObject(result);
     };
     
-    private readonly ExtensionPointAsyncDelegate _getAllAfterActionAsync = _ => Task.CompletedTask;
-    private readonly ExtensionPointAsyncDelegate _getAllReleaseUnmanagedResourcesAsync = _ => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _getAllAfterActionAsync = (_, _) => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _getAllReleaseUnmanagedResourcesAsync = (_, _) => Task.CompletedTask;
     
     #endregion
     
@@ -103,7 +103,7 @@ public class SchemaService(
             cancellationToken);
     }
 
-    private readonly ExtensionPointAsyncDelegate _getByIdHandleInputAsync = context =>
+    private readonly ExtensionPointAsyncDelegate _getByIdHandleInputAsync = (context, _) =>
     {
         var lang = context.GetHeader("Lang");
         if (!string.IsNullOrWhiteSpace(lang))
@@ -111,7 +111,7 @@ public class SchemaService(
         return Task.CompletedTask;
     };
 
-    private readonly ExtensionPointAsyncDelegate _getByIdValidateInputAsync = async context =>
+    private readonly ExtensionPointAsyncDelegate _getByIdValidateInputAsync = async (context, _) =>
     {
         var schemaId = context.GetRequiredRouteValue<string>("schemaId");
         var lang = context.GetValue<string>("Lang");
@@ -126,24 +126,24 @@ public class SchemaService(
         context.State.JsonSchema = jsonSchema;
     };
 
-    private readonly ExtensionPointAsyncDelegate _getByIdDefineRolesAsync = context =>
+    private readonly ExtensionPointAsyncDelegate _getByIdDefineRolesAsync = (context, _) =>
     {
         var jsonSchema = context.GetRequiredValue<string>("JsonSchema");
         context.Roles.Add("JsonSchema", jsonSchema);
         return Task.CompletedTask;
     };
         
-    private readonly ExtensionPointAsyncDelegate _getByIdBindAsync = _ => Task.CompletedTask;
-    private readonly ExtensionPointAsyncDelegate _getByIdBeforeActionAsync = _ => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _getByIdBindAsync = (_, _) => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _getByIdBeforeActionAsync = (_, _) => Task.CompletedTask;
 
-    private readonly ExtensionPointAsyncDelegate _getByIdDefaultActionAsync = context =>
+    private readonly ExtensionPointAsyncDelegate _getByIdDefaultActionAsync = (context, _) =>
     {
         context.Result = (string)context.Roles["JsonSchema"];
         return Task.CompletedTask;
     };
     
-    private readonly ExtensionPointAsyncDelegate _getByIdAfterActionAsync = _ => Task.CompletedTask;
-    private readonly ExtensionPointAsyncDelegate _getByIdReleaseUnmanagedResourcesAsync = _ => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _getByIdAfterActionAsync = (_, _) => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _getByIdReleaseUnmanagedResourcesAsync = (_, _) => Task.CompletedTask;
     
     #endregion
     
@@ -170,9 +170,9 @@ public class SchemaService(
             cancellationToken);
     }
 
-    private readonly ExtensionPointAsyncDelegate _createHandleInputAsync = _ => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _createHandleInputAsync = (_, _) => Task.CompletedTask;
 
-    private readonly ExtensionPointAsyncDelegate _createValidateInputAsync = context =>
+    private readonly ExtensionPointAsyncDelegate _createValidateInputAsync = (context, _) =>
     {
         var schemaId = context.GetRequiredRouteValue<string>("schemaId");
 
@@ -184,24 +184,24 @@ public class SchemaService(
         return Task.CompletedTask;
     };
 
-    private readonly ExtensionPointAsyncDelegate _createDefineRolesAsync = context =>
+    private readonly ExtensionPointAsyncDelegate _createDefineRolesAsync = (context, _) =>
     {
         var jsonSchema = context.GetRequiredValue<string>("SchemaId");
         context.Roles.Add("SchemaId", jsonSchema);
         return Task.CompletedTask;
     };
         
-    private readonly ExtensionPointAsyncDelegate _createBindAsync = _ => Task.CompletedTask;
-    private readonly ExtensionPointAsyncDelegate _createBeforeActionAsync = _ => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _createBindAsync = (_, _) => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _createBeforeActionAsync = (_, _) => Task.CompletedTask;
 
-    private readonly ExtensionPointAsyncDelegate _createDefaultActionAsync = context =>
+    private readonly ExtensionPointAsyncDelegate _createDefaultActionAsync = (context, _) =>
     {
         SchemaIds.Add(context.Roles["SchemaId"]);
         return Task.CompletedTask;
     };
     
-    private readonly ExtensionPointAsyncDelegate _createAfterActionAsync = _ => Task.CompletedTask;
-    private readonly ExtensionPointAsyncDelegate _createReleaseUnmanagedResourcesAsync = _ => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _createAfterActionAsync = (_, _) => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _createReleaseUnmanagedResourcesAsync = (_, _) => Task.CompletedTask;
     
     #endregion
 }
