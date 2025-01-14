@@ -37,7 +37,7 @@ public class ResourceTypeService(
     private readonly ExtensionPointAsyncDelegate _getAllBindAsync = _ => Task.CompletedTask;
     private readonly ExtensionPointAsyncDelegate _getAllBeforeActionAsync = _ => Task.CompletedTask;
 
-    private readonly ExtensionPointAsyncDelegate _getAllDefaultActionAsync = async context =>
+    private readonly ExtensionPointAsyncDelegate _getAllDefaultActionAsync = context =>
     {
         var startIndex = context.GetRequiredValue<int>("Pagination.StartIndex");
         var itemsPerPage = context.GetRequiredValue<int>("Pagination.ItemsPerPage");
@@ -57,6 +57,8 @@ public class ResourceTypeService(
         context.State.Pagination.TotalCount = ResourceTypes.Count;
             
         context.Result = JsonConvert.SerializeObject(result);
+
+        return Task.CompletedTask;
     };
     
     private readonly ExtensionPointAsyncDelegate _getAllAfterActionAsync = _ => Task.CompletedTask;

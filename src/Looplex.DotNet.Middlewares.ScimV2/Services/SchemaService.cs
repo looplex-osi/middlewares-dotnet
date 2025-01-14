@@ -172,7 +172,7 @@ public class SchemaService(
 
     private readonly ExtensionPointAsyncDelegate _createHandleInputAsync = _ => Task.CompletedTask;
 
-    private readonly ExtensionPointAsyncDelegate _createValidateInputAsync = async context =>
+    private readonly ExtensionPointAsyncDelegate _createValidateInputAsync = context =>
     {
         var schemaId = context.GetRequiredRouteValue<string>("schemaId");
 
@@ -180,6 +180,8 @@ public class SchemaService(
             throw new Error($"SchemaId cannot be empty", (int)HttpStatusCode.BadRequest);
 
         context.State.SchemaId = schemaId;
+
+        return Task.CompletedTask;
     };
 
     private readonly ExtensionPointAsyncDelegate _createDefineRolesAsync = context =>

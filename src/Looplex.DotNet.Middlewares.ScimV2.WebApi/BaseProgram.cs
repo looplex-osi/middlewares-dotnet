@@ -27,9 +27,11 @@ namespace Looplex.DotNet.Middlewares.ScimV2.WebApi;
 
 public abstract class BaseProgram
 {
+    protected IConfiguration Configuration { get; private set; } = null!;
+    
     public virtual void Run(string[] args)
     {
-        var configuration = new ConfigurationBuilder()
+        Configuration = new ConfigurationBuilder()
             .SetBasePath(AppContext.BaseDirectory)
             .AddEnvironmentVariables()
             .Build();
@@ -45,7 +47,7 @@ public abstract class BaseProgram
         builder.Services.AddSqlDatabaseHealthChecks();
         builder.Services.AddMemoryCache();
 
-        RegisterServices(builder.Services, configuration);
+        RegisterServices(builder.Services);
 
         //ConfigureLogging(builder, configuration);
         ConfigureResponseCache(builder);
@@ -81,9 +83,9 @@ public abstract class BaseProgram
             }
         });
 
-        var schemaIdApiKey = configuration["JsonSchemaIdForClientCredential"]!;
-        var schemaIdUser = configuration["JsonSchemaIdForUser"]!;
-        var schemaIdGroup = configuration["JsonSchemaIdForGroup"]!;
+        var schemaIdApiKey = Configuration["JsonSchemaIdForClientCredential"]!;
+        var schemaIdUser = Configuration["JsonSchemaIdForUser"]!;
+        var schemaIdGroup = Configuration["JsonSchemaIdForGroup"]!;
 
         app.UseTokenRoute(["AuthorizationService.CreateAccessToken"]);
         app.UseSchemaRoute([]);
@@ -107,7 +109,7 @@ public abstract class BaseProgram
     /// </summary>
     protected abstract void UseRoutes(IEndpointRouteBuilder app);
 
-    private void RegisterServices(IServiceCollection services, IConfiguration configuration)
+    private void RegisterServices(IServiceCollection services)
     {
         services.AddTransient<IRestClient>(_ =>
         {
@@ -126,7 +128,7 @@ public abstract class BaseProgram
             });
         });
             
-        var redisConnectionString = configuration["RedisConnectionString"]!;
+        var redisConnectionString = Configuration["RedisConnectionString"]!;
         AddSecretsService(services);
         AddServices(services);
         AddFactories(services);
