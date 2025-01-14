@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="2.4.4"></a>
+## 2.4.4 (2025-01-14)
+
+### Bug Fixes
+
+* upgrade packages
+
 <a name="2.4.3"></a>
 ## 2.4.3 (2025-01-14)
 
