@@ -10,6 +10,7 @@ using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -93,7 +94,7 @@ public abstract class BaseProgram
         app.UseUserRoutesAsync(schemaIdUser).GetAwaiter().GetResult();
         app.UseGroupRoutesAsync(schemaIdGroup).GetAwaiter().GetResult();
 
-        UseRoutes();
+        UseRoutes(app);
             
         app.UseHttpsRedirection();
 
@@ -104,7 +105,7 @@ public abstract class BaseProgram
     /// Should register routes for the api
     /// <example>app.UseStudentRoutesAsync(schemaIdStudent, CancellationToken.None).GetAwaiter().GetResult();</example>
     /// </summary>
-    protected abstract void UseRoutes();
+    protected abstract void UseRoutes(IEndpointRouteBuilder app);
 
     private void RegisterServices(IServiceCollection services, IConfiguration configuration)
     {
@@ -126,9 +127,9 @@ public abstract class BaseProgram
         });
             
         var redisConnectionString = configuration["RedisConnectionString"]!;
-        AddSecretsService();
-        AddServices();
-        AddFactories();
+        AddSecretsService(services);
+        AddServices(services);
+        AddFactories(services);
             
         services.AddRedisServices(redisConnectionString);
         services.AddSqlDatabaseServices();
@@ -144,20 +145,20 @@ public abstract class BaseProgram
     /// Should register a implementation for ISecretService in the dependency container
     /// <example>services.AddSingleton<ISecretsService, InMemorySecretsService>();</example>
     /// </summary>
-    protected abstract void AddSecretsService();
+    protected abstract void AddSecretsService(IServiceCollection services);
 
     /// <summary>
     /// Should register required services for the application such as
     /// ICrudService implementations and MediatR registrations 
     /// <example>services.AddAcademicServices();</example>
     /// </summary>
-    protected abstract void AddServices();
+    protected abstract void AddServices(IServiceCollection services);
         
     /// <summary>
     /// Should register implementations for required factories such as IContextFactory
     /// <example>services.AddTransient<IContextFactory, ContextFactory>();</example>
     /// </summary>
-    protected abstract void AddFactories();
+    protected abstract void AddFactories(IServiceCollection services);
         
     private static void ConfigureResponseCache(WebApplicationBuilder builder)
     {
