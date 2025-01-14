@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="2.4.2"></a>
+## 2.4.2 (2025-01-14)
+
+### Bug Fixes
+
+* **baseprogram:** added a property to the configuration of the program
+
 <a name="2.4.1"></a>
 ## 2.4.1 (2025-01-14)
 
