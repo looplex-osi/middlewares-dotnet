@@ -4,14 +4,13 @@ using Looplex.DotNet.Core.Application.Abstractions.Services;
 using Looplex.DotNet.Core.Application.ExtensionMethods;
 using Looplex.DotNet.Core.Common.Exceptions;
 using Looplex.DotNet.Core.Common.Utils;
+using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.OpenForExtensions;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Providers;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Services;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Configurations;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Messages;
-using Looplex.OpenForExtension.Abstractions.Commands;
 using Looplex.OpenForExtension.Abstractions.Contexts;
-using Looplex.OpenForExtension.Abstractions.ExtensionMethods;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -20,6 +19,7 @@ using Newtonsoft.Json.Linq;
 namespace Looplex.DotNet.Middlewares.ScimV2.Services;
 
 public class BulkService(
+    IExtensionPointOrchestrator extensionPointOrchestrator,
     IServiceProvider serviceProvider,
     IContextFactory contextFactory,
     IConfiguration configuration,
@@ -27,36 +27,65 @@ public class BulkService(
 {
     const string BulkIdValuePrefix = "bulkId:";
     
-    public async Task ExecuteBulkOperationsAsync(IContext context, CancellationToken cancellationToken)
+    #region ExecuteBulkOperations
+    
+    public Task ExecuteBulkOperationsAsync(IContext context, CancellationToken cancellationToken)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        var serviceProviderConfiguration = serviceProvider.GetRequiredService<ServiceProviderConfiguration>();
+        context.State.CancellationToken = cancellationToken;
         
+        return extensionPointOrchestrator.OrchestrateAsync(
+            context,
+            _getAllHandleInputAsync,
+            _getAllValidateInputAsync,
+            _getAllDefineRolesAsync,
+            _getAllBindAsync,
+            _getAllBeforeActionAsync,
+            _getAllDefaultActionAsync,
+            _getAllAfterActionAsync,
+            _getAllReleaseUnmanagedResourcesAsync,
+            cancellationToken);
+    }
+
+    private readonly ExtensionPointAsyncDelegate _getAllHandleInputAsync = async context =>
+    {
         var schemaId = configuration["JsonSchemaIdForBulkOperation"]!;
         var jsonSchema = await jsonSchemaProvider.ResolveJsonSchemaAsync(context, schemaId);
         
         var json = context.GetRequiredValue<string>("Request");
         var bulkRequest = Resource.FromJson<BulkRequest>(json, jsonSchema, out var messages);
-        var bulkResponse = new BulkResponse();
-        await context.Plugins.ExecuteAsync<IHandleInput>(context, cancellationToken);
-
+        context.State.Messages = messages;
+        context.State.BulkRequest = bulkRequest;
+    };
+    
+    private readonly ExtensionPointAsyncDelegate _getAllValidateInputAsync = context =>
+    {
+        var messages = context.GetRequiredValue<IList<string>>("Messages");
+        var bulkRequest = context.GetRequiredValue<BulkRequest>("BulkRequest");
         if (messages.Count > 0)
             throw new EntityInvalidException(messages.ToList());
 
         ValidateBulkIdsUniqueness(bulkRequest);
-        await context.Plugins.ExecuteAsync<IValidateInput>(context, cancellationToken);
-
+        return Task.CompletedTask;
+    };
+    private readonly ExtensionPointAsyncDelegate _getAllDefineRolesAsync = context =>
+    {
+        var bulkRequest = context.GetRequiredValue<BulkRequest>("BulkRequest");
+        var bulkResponse = new BulkResponse();
         context.Roles["BulkRequest"] = bulkRequest;
         context.Roles["BulkResponse"] = bulkResponse;
-        await context.Plugins.ExecuteAsync<IDefineRoles>(context, cancellationToken);
+        return Task.CompletedTask;
+    };
+    private readonly ExtensionPointAsyncDelegate _getAllBindAsync = _ => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _getAllBeforeActionAsync = _ => Task.CompletedTask;
 
-        await context.Plugins.ExecuteAsync<IBind>(context, cancellationToken);
-
-        await context.Plugins.ExecuteAsync<IBeforeAction>(context, cancellationToken);
-
-        if (!context.SkipDefaultAction)
-        {
-            var errorCount = 0;
+    private readonly ExtensionPointAsyncDelegate _getAllDefaultActionAsync = async context =>
+    {
+        var serviceProviderConfiguration = serviceProvider.GetRequiredService<ServiceProviderConfiguration>();
+        var cancellationToken = context.GetRequiredValue<CancellationToken>("CancellationToken");
+        var bulkRequest = (BulkRequest)context.Roles["BulkRequest"];
+        var bulkResponse = (BulkResponse)context.Roles["BulkResponse"];
+        
+        var errorCount = 0;
             Dictionary<string, string> bulkIdCrossReference = [];
             
             foreach (var operation in bulkRequest.Operations)
@@ -142,12 +171,12 @@ public class BulkService(
             }
             
             context.Result = bulkResponse.ToJson();
-        }
-
-        await context.Plugins.ExecuteAsync<IAfterAction>(context, cancellationToken);
-
-        await context.Plugins.ExecuteAsync<IReleaseUnmanagedResources>(context, cancellationToken);
-    }
+    };
+    
+    private readonly ExtensionPointAsyncDelegate _getAllAfterActionAsync = _ => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _getAllReleaseUnmanagedResourcesAsync = _ => Task.CompletedTask;
+    
+    #endregion
 
     internal static Action<JToken> BulkIdVisitor(Dictionary<string, string> bulkIdCrossReference)
     {

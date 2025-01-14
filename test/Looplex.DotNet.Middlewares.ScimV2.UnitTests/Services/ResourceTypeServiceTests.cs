@@ -19,7 +19,7 @@ public class ResourceTypeServiceTests
     public void Setup()
     {
         _context = Substitute.For<IScimV2Context>();
-        _resourceTypeService = new ResourceTypeService();
+        _resourceTypeService = new ResourceTypeService(new DefaultExtensionPointOrchestrator());
         _cancellationToken = CancellationToken.None;
 
         // Set up dynamic state in context

@@ -37,6 +37,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Looplex.DotNet.Middlewares.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Looplex.DotNet.Middlewares.OAuth2.UnitTests", "test\Looplex.DotNet.Middlewares.OAuth2.UnitTests\Looplex.DotNet.Middlewares.OAuth2.UnitTests.csproj", "{1430238B-99D1-4275-9A7C-368CAA04FC86}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Looplex.DotNet.Middlewares.ScimV2.WebApi", "src\Looplex.DotNet.Middlewares.ScimV2.WebApi\Looplex.DotNet.Middlewares.ScimV2.WebApi.csproj", "{0D6EEDEE-5820-4E30-BEBA-218B4EA3169A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -103,6 +105,10 @@ Global
 		{1430238B-99D1-4275-9A7C-368CAA04FC86}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1430238B-99D1-4275-9A7C-368CAA04FC86}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1430238B-99D1-4275-9A7C-368CAA04FC86}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0D6EEDEE-5820-4E30-BEBA-218B4EA3169A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0D6EEDEE-5820-4E30-BEBA-218B4EA3169A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0D6EEDEE-5820-4E30-BEBA-218B4EA3169A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0D6EEDEE-5820-4E30-BEBA-218B4EA3169A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -123,6 +129,7 @@ Global
 		{8C07F296-D37C-4497-85C4-5ADC416E3A65} = {4610E867-1D15-49E3-B24E-22DB4B747B03}
 		{13781573-BB8C-4254-B581-6B109B9AA025} = {FD844EE8-C48B-4FFD-BC9E-4408AAC41332}
 		{1430238B-99D1-4275-9A7C-368CAA04FC86} = {FD844EE8-C48B-4FFD-BC9E-4408AAC41332}
+		{0D6EEDEE-5820-4E30-BEBA-218B4EA3169A} = {4610E867-1D15-49E3-B24E-22DB4B747B03}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {6DFDACD8-69B4-4E60-9A29-C0394A838A4F}

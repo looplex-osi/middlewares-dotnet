@@ -3,6 +3,7 @@ using System.Net;
 using FluentAssertions;
 using Looplex.DotNet.Core.Application.Abstractions.Factories;
 using Looplex.DotNet.Core.Application.Abstractions.Services;
+using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.OpenForExtensions;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Providers;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.Services;
 using Looplex.DotNet.Middlewares.ScimV2.Domain;
@@ -33,6 +34,7 @@ public class BulkServiceTests
     private IContextFactory _contextFactory = null!;
     private IConfiguration _configuration = null!;
     private IJsonSchemaProvider _jsonSchemaProvider = null!;
+    private IExtensionPointOrchestrator _extensionPointOrchestrator = new DefaultExtensionPointOrchestrator();
     
     [TestInitialize]
     public void Setup()
@@ -659,7 +661,7 @@ public class BulkServiceTests
             });
 
         // Act
-        var executeTask = new BulkService(_serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
+        var executeTask = new BulkService(_extensionPointOrchestrator, _serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
             .ExecuteBulkOperationsAsync(_context, CancellationToken.None);
         await executeTask;
 
@@ -694,7 +696,7 @@ public class BulkServiceTests
         _context.Headers.Add("Ocp-Apim-Subscription-Key", "ocpApimSubscriptionKey");
 
         // Act
-        await new BulkService(_serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
+        await new BulkService(_extensionPointOrchestrator, _serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
             .ExecuteBulkOperationsAsync(_context, CancellationToken.None);
 
         // Assert
@@ -735,7 +737,7 @@ public class BulkServiceTests
         _context.Headers.Add("Ocp-Apim-Subscription-Key", "ocpApimSubscriptionKey");
 
         // Act
-        await new BulkService(_serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
+        await new BulkService(_extensionPointOrchestrator, _serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
             .ExecuteBulkOperationsAsync(_context, CancellationToken.None);
         
         // Assert
@@ -769,7 +771,7 @@ public class BulkServiceTests
         _context.Headers.Add("Ocp-Apim-Subscription-Key", "ocpApimSubscriptionKey");
 
         // Act
-        await new BulkService(_serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
+        await new BulkService(_extensionPointOrchestrator, _serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
             .ExecuteBulkOperationsAsync(_context, CancellationToken.None);
 
         // Assert
@@ -806,7 +808,7 @@ public class BulkServiceTests
         _context.State.Request = bulkRequest.ToJson();
         _context.Headers.Add("Ocp-Apim-Subscription-Key", "ocpApimSubscriptionKey");
         // Act
-        await new BulkService(_serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
+        await new BulkService(_extensionPointOrchestrator, _serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
             .ExecuteBulkOperationsAsync(_context, CancellationToken.None);
 
         // Assert
@@ -857,7 +859,7 @@ public class BulkServiceTests
             });
 
         // Act
-        await new BulkService(_serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
+        await new BulkService(_extensionPointOrchestrator, _serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
             .ExecuteBulkOperationsAsync(_context, CancellationToken.None);
 
         // Assert
@@ -919,7 +921,7 @@ public class BulkServiceTests
         _context.Headers.Add("Ocp-Apim-Subscription-Key", "ocpApimSubscriptionKey");
 
         // Act & Assert
-        await new BulkService(_serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
+        await new BulkService(_extensionPointOrchestrator, _serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
                 .ExecuteBulkOperationsAsync(_context, CancellationToken.None);
 
         var bulkResponse = JsonConvert.DeserializeObject<BulkResponse>((string)_context.Result!)!;

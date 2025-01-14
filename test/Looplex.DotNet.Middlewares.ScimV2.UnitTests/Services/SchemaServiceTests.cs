@@ -23,7 +23,7 @@ public class SchemaServiceTests
         _jsonSchemaProvider = Substitute.For<IJsonSchemaProvider>();
 
         // Instantiate SchemaService with mocks
-        _schemaService = new(_jsonSchemaProvider);
+        _schemaService = new(new DefaultExtensionPointOrchestrator(), _jsonSchemaProvider);
         
         _context = Substitute.For<IScimV2Context>();
         var state = new ExpandoObject();
