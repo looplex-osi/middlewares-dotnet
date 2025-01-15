@@ -1,6 +1,5 @@
-using System.Runtime.CompilerServices;
 using Looplex.DotNet.Core.Application.Abstractions.Services;
-using Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.Services;
+using Looplex.DotNet.Core.Common.Utils;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.OpenForExtensions;
 using Looplex.OpenForExtension.Abstractions.Contexts;
 
@@ -14,12 +13,9 @@ public abstract class BaseCrudService(
     
     public virtual Task GetAllAsync(IContext context, CancellationToken cancellationToken)
     {
-        /*var method = this.GetCallerName();
-        var service = GetType().Name;
-        var resource = $"{service}.{method}";
-        
+        var resource = $"{GetType().Name}.{this.GetCallerName()}";
         rbacService.ThrowIfUnauthorized(context, resource, "read", cancellationToken);
-        */
+        
         return extensionPointOrchestrator.OrchestrateAsync(
             context,
             GetAllHandleInputAsync,
@@ -48,6 +44,9 @@ public abstract class BaseCrudService(
     
     public virtual Task GetByIdAsync(IContext context, CancellationToken cancellationToken)
     {
+        var resource = $"{GetType().Name}.{this.GetCallerName()}";
+        rbacService.ThrowIfUnauthorized(context, resource, "read", cancellationToken);
+        
         return extensionPointOrchestrator.OrchestrateAsync(
             context,
             GetByIdHandleInputAsync,
@@ -76,6 +75,9 @@ public abstract class BaseCrudService(
     
     public virtual Task CreateAsync(IContext context, CancellationToken cancellationToken)
     {
+        var resource = $"{GetType().Name}.{this.GetCallerName()}";
+        rbacService.ThrowIfUnauthorized(context, resource, "write", cancellationToken);
+        
         return extensionPointOrchestrator.OrchestrateAsync(
             context,
             CreateHandleInputAsync,
@@ -104,6 +106,9 @@ public abstract class BaseCrudService(
     
     public virtual Task UpdateAsync(IContext context, CancellationToken cancellationToken)
     {
+        var resource = $"{GetType().Name}.{this.GetCallerName()}";
+        rbacService.ThrowIfUnauthorized(context, resource, "write", cancellationToken);
+        
         return extensionPointOrchestrator.OrchestrateAsync(
             context,
             UpdateHandleInputAsync,
@@ -132,6 +137,9 @@ public abstract class BaseCrudService(
     
     public virtual Task PatchAsync(IContext context, CancellationToken cancellationToken)
     {
+        var resource = $"{GetType().Name}.{this.GetCallerName()}";
+        rbacService.ThrowIfUnauthorized(context, resource, "write", cancellationToken);
+        
         return extensionPointOrchestrator.OrchestrateAsync(
             context,
             PatchHandleInputAsync,
@@ -160,6 +168,9 @@ public abstract class BaseCrudService(
     
     public virtual Task DeleteAsync(IContext context, CancellationToken cancellationToken)
     {
+        var resource = $"{GetType().Name}.{this.GetCallerName()}";
+        rbacService.ThrowIfUnauthorized(context, resource, "delete", cancellationToken);
+        
         return extensionPointOrchestrator.OrchestrateAsync(
             context,
             DeleteHandleInputAsync,
