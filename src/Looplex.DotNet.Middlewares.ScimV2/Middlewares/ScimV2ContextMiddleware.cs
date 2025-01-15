@@ -6,6 +6,8 @@ namespace Looplex.DotNet.Middlewares.ScimV2.Middlewares;
 
 public static partial class ScimV2Middlewares
 {
+    const string LooplexTenantKeyHeader = "X-looplex-tenant";
+    
     public static readonly MiddlewareDelegate ScimV2ContextMiddleware = async (context, cancellationToken, next) =>
     {
         cancellationToken.ThrowIfCancellationRequested();
@@ -18,6 +20,11 @@ public static partial class ScimV2Middlewares
             .Select(q => new KeyValuePair<string, string>(q.Key, q.Value.ToString())).ToDictionary();
         context.AsScimV2Context().Headers = httpContext.Request.Headers
             .Select(q => new KeyValuePair<string, string>(q.Key, q.Value.ToString())).ToDictionary();
+
+        if (context.AsScimV2Context().Headers.TryGetValue(LooplexTenantKeyHeader, out var tenant))
+        {
+            context.State.Tenant = tenant;
+        }
         
         await next();
     };

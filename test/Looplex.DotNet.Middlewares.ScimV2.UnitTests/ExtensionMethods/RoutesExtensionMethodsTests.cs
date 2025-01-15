@@ -72,7 +72,7 @@ public class RoutesExtensionMethodsTests
         _context.State.Returns(state);
         _context.Result.Returns("{ \"x\": \"mock_result\" }");
         _context.Services.Returns(_serviceProviderMock);
-        _context.GetDomain().Returns("testDomain");
+        _context.State.Tenant = "testDomain";
         var routeValues = new Dictionary<string, object?>();
         _context.RouteValues.Returns(routeValues);
         _contextFactoryMock.Create(Arg.Any<IEnumerable<string>>()).Returns(_context);
