@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="2.5.3"></a>
+## 2.5.3 (2025-01-15)
+
+### Bug Fixes
+
+* **scimv2:** removed attributes middleware and put logic in new geresult method in context
+
 <a name="2.5.2"></a>
 ## 2.5.2 (2025-01-15)
 
