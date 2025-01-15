@@ -102,9 +102,9 @@ public class TokenExchangeAuthorizationService(
     private string CreateAccessToken(UserInfo userInfo)
     {
         var claims = new ClaimsIdentity([
-            new Claim(ClaimTypes.Name, $"{userInfo.GivenName} {userInfo.GivenName}"),
-            new Claim(ClaimTypes.Email, userInfo.Email),
-            new Claim(Constants.Photo, userInfo.Picture),
+            new Claim("name", $"{userInfo.GivenName} {userInfo.FamilyName}"),
+            new Claim("email", userInfo.Email),
+            new Claim("photo", userInfo.Picture),
             // TODO add preferredLanguage
         ]);
         

@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using System.Dynamic;
+using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using Looplex.DotNet.Core.Common.Utils;
 using Looplex.DotNet.Core.Middlewares;
 using Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.Services;
@@ -20,7 +22,7 @@ public static partial class OAuth2Middlewares
         var issuer = configuration["Issuer"] ??
                      throw new InvalidOperationException("Issuer configuration is missing");
 
-        string accesToken = string.Empty;
+        string accessToken = string.Empty;
 
         HttpContext httpContext = context.State.HttpContext;
 
@@ -28,20 +30,37 @@ public static partial class OAuth2Middlewares
 
         if (!string.IsNullOrEmpty(authorization) && authorization.StartsWith("Bearer ", StringComparison.Ordinal))
         {
-            accesToken = authorization["Bearer ".Length..].Trim();
+            accessToken = authorization["Bearer ".Length..].Trim();
         }
 
         var publicKey = StringUtils.Base64Decode(configuration["PublicKey"] ??
                                                  throw new InvalidOperationException(
                                                      "PublicKey configuration is missing"));
         var jwtService = context.Services.GetRequiredService<IJwtService>();
-        bool authenticated = jwtService.ValidateToken(publicKey, issuer, audience, accesToken);
+        bool authenticated = jwtService.ValidateToken(publicKey, issuer, audience, accessToken);
 
         if (!authenticated)
         {
             throw new HttpRequestException("AccessToken is invalid.", null, HttpStatusCode.Unauthorized);
         }
+        
+        var handler = new JwtSecurityTokenHandler();
+        var token = handler.ReadJwtToken(accessToken);
+        
+        var claims = token.Claims.ToList();
 
+        if (claims.Any(c => c.Type is "name" or "email"))
+        {
+            var name = claims.FirstOrDefault(c => c.Type == "name")?.Value;
+            var email = claims.FirstOrDefault(c => c.Type == "email")?.Value;
+
+            context.State.User = new ExpandoObject();
+#pragma warning disable CS8601 // Possible null reference assignment.
+            context.State.User.Name = name;
+            context.State.User.Email = email;
+#pragma warning restore CS8601 // Possible null reference assignment.
+        }
+        
         await next();
     };
 }

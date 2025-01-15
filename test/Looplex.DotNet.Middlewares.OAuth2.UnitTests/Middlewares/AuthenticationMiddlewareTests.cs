@@ -1,5 +1,7 @@
 using System.Dynamic;
 using System.Net;
+using FluentAssertions;
+using Looplex.DotNet.Core.Application.ExtensionMethods;
 using Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.Services;
 using Looplex.DotNet.Middlewares.OAuth2.Middlewares;
 using Looplex.OpenForExtension.Abstractions.Contexts;
@@ -18,6 +20,9 @@ public class AuthenticationMiddlewareTests
     private IContext _context = null!;
     private Func<Task> _next = null!;
 
+    private string mockToken =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiZW1haWwiOiJqb2huLmRvZUBlbWFpbC5jb20iLCJpYXQiOjE1MTYyMzkwMjJ9.mock";
+    
     [TestInitialize]
     public void SetUp()
     {
@@ -47,8 +52,7 @@ public class AuthenticationMiddlewareTests
     public async Task AuthenticateMiddleware_ValidToken_CallsNextMiddleware()
     {
         // Arrange
-        string validToken = "validAccessToken";
-        _httpContext.Request.Headers.Authorization = $"Bearer {validToken}";
+        _httpContext.Request.Headers.Authorization = $"Bearer {mockToken}";
         _jwtService.ValidateToken(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
             .Returns(true);
 
@@ -75,5 +79,21 @@ public class AuthenticationMiddlewareTests
 
         Assert.AreEqual(HttpStatusCode.Unauthorized, ex.StatusCode);
         await _next.DidNotReceive().Invoke();
+    }
+
+    [TestMethod]
+    public async Task AuthenticateMiddleware_ValidToken_ContextHasUserInfo()
+    {
+        // Arrange
+        _httpContext.Request.Headers.Authorization = $"Bearer {mockToken}";
+        _jwtService.ValidateToken(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .Returns(true);
+
+        // Act
+        await OAuth2Middlewares.AuthenticationMiddleware(_context, CancellationToken.None, _next);
+
+        // Assert
+        _context.GetRequiredValue<string>("User.Name").Should().Be("John Doe");
+        _context.GetRequiredValue<string>("User.Email").Should().Be("john.doe@email.com");
     }
 }
