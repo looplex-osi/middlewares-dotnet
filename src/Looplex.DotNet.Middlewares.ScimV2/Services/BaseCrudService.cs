@@ -13,8 +13,7 @@ public abstract class BaseCrudService(
     
     public virtual Task GetAllAsync(IContext context, CancellationToken cancellationToken)
     {
-        var resource = $"{GetType().Name}.{this.GetCallerName()}";
-        rbacService.ThrowIfUnauthorized(context, resource, "read", cancellationToken);
+        rbacService.ThrowIfUnauthorized(context, GetType().Name, this.GetCallerName(), cancellationToken);
         
         return extensionPointOrchestrator.OrchestrateAsync(
             context,
@@ -44,8 +43,7 @@ public abstract class BaseCrudService(
     
     public virtual Task GetByIdAsync(IContext context, CancellationToken cancellationToken)
     {
-        var resource = $"{GetType().Name}.{this.GetCallerName()}";
-        rbacService.ThrowIfUnauthorized(context, resource, "read", cancellationToken);
+        rbacService.ThrowIfUnauthorized(context, GetType().Name, this.GetCallerName(), cancellationToken);
         
         return extensionPointOrchestrator.OrchestrateAsync(
             context,
@@ -75,8 +73,7 @@ public abstract class BaseCrudService(
     
     public virtual Task CreateAsync(IContext context, CancellationToken cancellationToken)
     {
-        var resource = $"{GetType().Name}.{this.GetCallerName()}";
-        rbacService.ThrowIfUnauthorized(context, resource, "write", cancellationToken);
+        rbacService.ThrowIfUnauthorized(context, GetType().Name, this.GetCallerName(), cancellationToken);
         
         return extensionPointOrchestrator.OrchestrateAsync(
             context,
@@ -106,8 +103,7 @@ public abstract class BaseCrudService(
     
     public virtual Task UpdateAsync(IContext context, CancellationToken cancellationToken)
     {
-        var resource = $"{GetType().Name}.{this.GetCallerName()}";
-        rbacService.ThrowIfUnauthorized(context, resource, "write", cancellationToken);
+        rbacService.ThrowIfUnauthorized(context, GetType().Name, this.GetCallerName(), cancellationToken);
         
         return extensionPointOrchestrator.OrchestrateAsync(
             context,
@@ -137,8 +133,7 @@ public abstract class BaseCrudService(
     
     public virtual Task PatchAsync(IContext context, CancellationToken cancellationToken)
     {
-        var resource = $"{GetType().Name}.{this.GetCallerName()}";
-        rbacService.ThrowIfUnauthorized(context, resource, "write", cancellationToken);
+        rbacService.ThrowIfUnauthorized(context, GetType().Name, this.GetCallerName(), cancellationToken);
         
         return extensionPointOrchestrator.OrchestrateAsync(
             context,
@@ -168,8 +163,7 @@ public abstract class BaseCrudService(
     
     public virtual Task DeleteAsync(IContext context, CancellationToken cancellationToken)
     {
-        var resource = $"{GetType().Name}.{this.GetCallerName()}";
-        rbacService.ThrowIfUnauthorized(context, resource, "delete", cancellationToken);
+        rbacService.ThrowIfUnauthorized(context, GetType().Name, this.GetCallerName(), cancellationToken);
         
         return extensionPointOrchestrator.OrchestrateAsync(
             context,
