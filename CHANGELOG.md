@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="2.5.2"></a>
+## 2.5.2 (2025-01-15)
+
+### Bug Fixes
+
+* **context:** added tenant to context.state
+
 <a name="2.5.1"></a>
 ## 2.5.1 (2025-01-15)
 
