@@ -10,7 +10,7 @@ namespace Looplex.DotNet.Middlewares.OAuth2.Middlewares;
 
 public static partial class OAuth2Middlewares
 {
-    public static readonly MiddlewareDelegate AuthenticateMiddleware = async (context, cancellationToken, next) =>
+    public static readonly MiddlewareDelegate AuthenticationMiddleware = async (context, cancellationToken, next) =>
     {
         cancellationToken.ThrowIfCancellationRequested();
 
