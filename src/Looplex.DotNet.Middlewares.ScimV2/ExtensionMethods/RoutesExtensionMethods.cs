@@ -142,7 +142,6 @@ public static class RoutesExtensionMethods
         List<MiddlewareDelegate> getMiddlewares =
         [
             ScimV2Middlewares.ScimV2ContextMiddleware, OAuth2Middlewares.AuthenticateMiddleware,
-            OAuth2Middlewares.AuthorizeMiddleware,
             ScimV2Middlewares.PaginationMiddleware, ScimV2Middlewares.AttributesMiddleware
         ];
         getMiddlewares.AddRange(options.OptionsForGet?.Middlewares ?? []);
@@ -158,7 +157,6 @@ public static class RoutesExtensionMethods
         List<MiddlewareDelegate> getByIdMiddlewares =
         [
             ScimV2Middlewares.ScimV2ContextMiddleware, OAuth2Middlewares.AuthenticateMiddleware,
-            OAuth2Middlewares.AuthorizeMiddleware,
             ScimV2Middlewares.AttributesMiddleware
         ];
         getByIdMiddlewares.AddRange(options.OptionsForGetById?.Middlewares ?? []);
@@ -173,8 +171,7 @@ public static class RoutesExtensionMethods
 
         List<MiddlewareDelegate> postMiddlewares =
         [
-            ScimV2Middlewares.ScimV2ContextMiddleware, OAuth2Middlewares.AuthenticateMiddleware,
-            OAuth2Middlewares.AuthorizeMiddleware
+            ScimV2Middlewares.ScimV2ContextMiddleware, OAuth2Middlewares.AuthenticateMiddleware
         ];
         postMiddlewares.AddRange(options.OptionsForPost?.Middlewares ?? []);
         postMiddlewares.Add(PostMiddleware<TService>());
@@ -188,8 +185,7 @@ public static class RoutesExtensionMethods
 
         List<MiddlewareDelegate> putMiddlewares =
         [
-            ScimV2Middlewares.ScimV2ContextMiddleware, OAuth2Middlewares.AuthenticateMiddleware,
-            OAuth2Middlewares.AuthorizeMiddleware
+            ScimV2Middlewares.ScimV2ContextMiddleware, OAuth2Middlewares.AuthenticateMiddleware
         ];
         putMiddlewares.AddRange(options.OptionsForPut?.Middlewares ?? []);
         putMiddlewares.Add(PutMiddleware<TService>());
@@ -204,7 +200,6 @@ public static class RoutesExtensionMethods
         List<MiddlewareDelegate> patchMiddlewares =
         [
             ScimV2Middlewares.ScimV2ContextMiddleware, OAuth2Middlewares.AuthenticateMiddleware,
-            OAuth2Middlewares.AuthorizeMiddleware,
             ScimV2Middlewares.AttributesMiddleware
         ];
         patchMiddlewares.AddRange(options.OptionsForPatch?.Middlewares ?? []);
@@ -219,8 +214,7 @@ public static class RoutesExtensionMethods
 
         List<MiddlewareDelegate> deleteMiddlewares =
         [
-            ScimV2Middlewares.ScimV2ContextMiddleware, OAuth2Middlewares.AuthenticateMiddleware,
-            OAuth2Middlewares.AuthorizeMiddleware
+            ScimV2Middlewares.ScimV2ContextMiddleware, OAuth2Middlewares.AuthenticateMiddleware
         ];
         deleteMiddlewares.AddRange(options.OptionsForDelete?.Middlewares ?? []);
         deleteMiddlewares.Add(DeleteMiddleware<TService>());

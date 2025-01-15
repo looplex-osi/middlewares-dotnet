@@ -1,16 +1,25 @@
+using System.Runtime.CompilerServices;
 using Looplex.DotNet.Core.Application.Abstractions.Services;
+using Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.Services;
 using Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.OpenForExtensions;
 using Looplex.OpenForExtension.Abstractions.Contexts;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.Services;
 
 public abstract class BaseCrudService(
+    IRbacService rbacService,
     IExtensionPointOrchestrator extensionPointOrchestrator) : ICrudService
 {
     #region GetAll
     
     public virtual Task GetAllAsync(IContext context, CancellationToken cancellationToken)
     {
+        /*var method = this.GetCallerName();
+        var service = GetType().Name;
+        var resource = $"{service}.{method}";
+        
+        rbacService.ThrowIfUnauthorized(context, resource, "read", cancellationToken);
+        */
         return extensionPointOrchestrator.OrchestrateAsync(
             context,
             GetAllHandleInputAsync,

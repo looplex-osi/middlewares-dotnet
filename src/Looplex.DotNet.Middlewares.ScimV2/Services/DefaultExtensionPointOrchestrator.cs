@@ -21,6 +21,8 @@ public class DefaultExtensionPointOrchestrator : IExtensionPointOrchestrator
     {
         cancellationToken.ThrowIfCancellationRequested();
         
+        // enforce RBAC
+        
         await handleInputFunc(context, cancellationToken);
         await context.Plugins.ExecuteAsync<IHandleInput>(context, cancellationToken);
 

@@ -18,7 +18,6 @@ using Looplex.DotNet.Middlewares.ScimV2.Domain;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Configurations;
 using Microsoft.Extensions.Configuration;
-using Casbin;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.ExtensionMethods;
 
@@ -39,16 +38,12 @@ public class RoutesExtensionMethodsTests
     private HttpClient _client = null!;
     private IHost _host = null!;
     private IRbacService _rbacService = null!;
-    private IEnforcer _enforcer = null!;
 
     [TestInitialize]
     public void Initialize()
     {
         _rbacService = Substitute.For<IRbacService>();
         string directory = Directory.GetCurrentDirectory();
-        _enforcer = Substitute.For<IEnforcer>();
-        _rbacService.CheckPermissionAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
-            .Returns(Task.FromResult(true));
         _configurationMock = Substitute.For<IConfiguration>();
         _configurationMock["Audience"].Returns("testAudience");
         _configurationMock["Issuer"].Returns("testIssuer");
@@ -95,7 +90,7 @@ public class RoutesExtensionMethodsTests
                         services.AddSingleton(_resourceTypeServiceMock);
                         services.AddSingleton(_serviceProviderConfigurationMock);
                         
-                        services.AddOAuth2Services(_enforcer);
+                        services.AddOAuth2Services();
                     })
                     .Configure(app =>
                     {

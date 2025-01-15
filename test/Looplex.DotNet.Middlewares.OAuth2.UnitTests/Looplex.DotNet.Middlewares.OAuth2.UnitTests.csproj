@@ -34,13 +34,4 @@
     <ProjectReference Include="..\..\src\Looplex.DotNet.Middlewares.ApiKeys\Looplex.DotNet.Middlewares.ApiKeys.csproj"/>
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="model.conf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="policy.csv">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>
