@@ -32,26 +32,19 @@ public static partial class ScimV2Middlewares
         var excludedAttributes = (context.GetQuery("excludedAttributes") ?? "")
             .Split(",", StringSplitOptions.RemoveEmptyEntries);
         
-        try
+        foreach (var attribute in excludedAttributes)
         {
-            foreach (var attribute in excludedAttributes)
+            var tokens = json.SelectTokens(attribute);
+            foreach (var token in tokens)
             {
-                var tokens = json.SelectTokens(attribute);
-                foreach (var token in tokens)
-                {
-                    if (token is JValue)
-                        token.Parent?.Remove();    
-                    else 
-                        token.Remove();
-                }
+                if (token is JValue)
+                    token.Parent?.Remove();    
+                else 
+                    token.Remove();
             }
-            
-            if (context.Result is string)
-                context.Result = JsonConvert.SerializeObject(json);
         }
-        catch (Exception)
-        {
-            // ignored
-        }
+        
+        if (context.Result is string)
+            context.Result = JsonConvert.SerializeObject(json);
     };
 }
