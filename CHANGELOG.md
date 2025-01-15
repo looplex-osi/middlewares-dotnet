@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="2.5.1"></a>
+## 2.5.1 (2025-01-15)
+
+### Bug Fixes
+
+* **bulk:** added permission to run bulk operations
+* **core:** upgrade packages
+* **middlewares:** added user information on context
+* **rbac:** resource is now the servicename and action is the method name
+* **scimv2:** removed exception filter in attributes middleware
+
 <a name="2.5.0"></a>
 ## 2.5.0 (2025-01-15)
 
