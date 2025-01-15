@@ -26,7 +26,7 @@ public static class RoutesExtensionMethods
 
         await service.GetAllAsync(context, cancellationToken);
 
-        await httpContext.Response.WriteAsJsonAsync((string)context.Result!, HttpStatusCode.OK);
+        await httpContext.Response.WriteAsJsonAsync((string)context.GetResult()!, HttpStatusCode.OK);
     };
 
     private static MiddlewareDelegate GetByIdMiddleware<TService>()
@@ -37,7 +37,7 @@ public static class RoutesExtensionMethods
 
         await service.GetByIdAsync(context, cancellationToken);
 
-        await httpContext.Response.WriteAsJsonAsync((string)context.Result!, HttpStatusCode.OK);
+        await httpContext.Response.WriteAsJsonAsync((string)context.GetResult()!, HttpStatusCode.OK);
     };
 
     private static MiddlewareDelegate PostMiddleware<TService>()
@@ -79,11 +79,15 @@ public static class RoutesExtensionMethods
         context.State.Operations = await reader.ReadToEndAsync(cancellationToken);
 
         await service.PatchAsync(context, cancellationToken);
-
-        // TODO: The server MUST return a 200 OK (and the model in the body)
+        
+        // The server MUST return a 200 OK (and the model in the body)
         // if the "attributes" parameter is specified in the request.
-
-        httpContext.Response.StatusCode = (int)HttpStatusCode.NoContent;
+        var result = context.GetResult();
+        if (!string.IsNullOrEmpty(context.GetQuery("excludedAttributes")) && result is not null)
+            await httpContext.Response
+                .WriteAsJsonAsync((string)result, HttpStatusCode.OK);
+        else 
+            httpContext.Response.StatusCode = (int)HttpStatusCode.NoContent;
     };
 
     private static MiddlewareDelegate DeleteMiddleware<TService>()
@@ -142,7 +146,7 @@ public static class RoutesExtensionMethods
         List<MiddlewareDelegate> getMiddlewares =
         [
             ScimV2Middlewares.ScimV2ContextMiddleware, OAuth2Middlewares.AuthenticationMiddleware,
-            ScimV2Middlewares.PaginationMiddleware, ScimV2Middlewares.AttributesMiddleware
+            ScimV2Middlewares.PaginationMiddleware
         ];
         getMiddlewares.AddRange(options.OptionsForGet?.Middlewares ?? []);
         getMiddlewares.Add(GetMiddleware<TService>());
@@ -156,8 +160,7 @@ public static class RoutesExtensionMethods
 
         List<MiddlewareDelegate> getByIdMiddlewares =
         [
-            ScimV2Middlewares.ScimV2ContextMiddleware, OAuth2Middlewares.AuthenticationMiddleware,
-            ScimV2Middlewares.AttributesMiddleware
+            ScimV2Middlewares.ScimV2ContextMiddleware, OAuth2Middlewares.AuthenticationMiddleware
         ];
         getByIdMiddlewares.AddRange(options.OptionsForGetById?.Middlewares ?? []);
         getByIdMiddlewares.Add(GetByIdMiddleware<TService>());
@@ -199,8 +202,7 @@ public static class RoutesExtensionMethods
 
         List<MiddlewareDelegate> patchMiddlewares =
         [
-            ScimV2Middlewares.ScimV2ContextMiddleware, OAuth2Middlewares.AuthenticationMiddleware,
-            ScimV2Middlewares.AttributesMiddleware
+            ScimV2Middlewares.ScimV2ContextMiddleware, OAuth2Middlewares.AuthenticationMiddleware
         ];
         patchMiddlewares.AddRange(options.OptionsForPatch?.Middlewares ?? []);
         patchMiddlewares.Add(PatchMiddleware<TService>());

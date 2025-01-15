@@ -1,4 +1,8 @@
+using System.Net;
+using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Messages;
 using Looplex.OpenForExtension.Abstractions.Contexts;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.Domain.ExtensionMethods;
 
@@ -54,5 +58,49 @@ public static class ContextExtensionMethods
         if (value == null)
             throw new ArgumentNullException($"Context route value for {key} is null");
         return value;
+    }
+
+    /// <summary>
+    /// Applies attribute mapping (excludeAttributes) to the result object if it is a JObject
+    /// or a string representation of a json object.
+    /// </summary>
+    /// <param name="context"></param>
+    /// <returns></returns>
+    /// <exception cref="Error">attributes parameter not supported in this version</exception>
+    public static dynamic? GetResult(this IContext context)
+    {
+        JObject? json = null;
+        if (context.Result != null)
+        {
+            if (context.Result is string str)
+                json = JObject.Parse(str);
+            else if (context.Result is JObject token)
+                json = token;
+        }
+
+        if (json != null)
+        {
+            if (context.AsScimV2Context().Query.ContainsKey("attributes"))
+                throw new Error("Attributes query parameter not supported", (int)HttpStatusCode.NotImplemented);
+            var excludedAttributes = (context.GetQuery("excludedAttributes") ?? "")
+                .Split(",", StringSplitOptions.RemoveEmptyEntries);
+            
+            foreach (var attribute in excludedAttributes)
+            {
+                var tokens = json.SelectTokens(attribute);
+                foreach (var token in tokens)
+                {
+                    if (token is JValue)
+                        token.Parent?.Remove();    
+                    else 
+                        token.Remove();
+                }
+            }
+            
+            if (context.Result is string)
+                context.Result = JsonConvert.SerializeObject(json);
+        }
+        
+        return context.Result;
     }
 }

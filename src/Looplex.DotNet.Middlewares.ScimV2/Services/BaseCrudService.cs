@@ -53,7 +53,11 @@ public abstract class BaseCrudService(
             GetByIdBindAsync,
             GetByIdBeforeActionAsync,
             GetByIdDefaultActionAsync,
-            GetByIdAfterActionAsync,
+            (_, _) =>
+            {
+                
+                return GetByIdAfterActionAsync(context, cancellationToken);
+            },
             GetByIdReleaseUnmanagedResourcesAsync,
             cancellationToken);
     }

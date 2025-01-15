@@ -12,7 +12,6 @@ public class DefaultScimV2Context(
     IServiceProvider services,
     ISqlDatabaseProvider sqlDatabaseProvider) : IScimV2Context
 {
-
     public bool SkipDefaultAction { get; set; } = false;
 
     public dynamic State { get; } = new ExpandoObject();
@@ -24,7 +23,7 @@ public class DefaultScimV2Context(
     public IServiceProvider Services { get; } = services;
 
     public object? Result { get; set; }
-
+    
     public Dictionary<string, object?> RouteValues { get; set; } = [];
 
     public Dictionary<string, string> Query { get; set; } = [];

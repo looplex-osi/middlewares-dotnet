@@ -251,6 +251,7 @@ public class RoutesExtensionMethodsTests
         request.Headers.Add("Header-1", "11");
         request.Headers.Add("Header-2", "22");
         request.Headers.Add("Authorization", $"Bearer {mockToken}");
+        _context.Result.Returns("{ \"a\": \"1\", \"b\": \"2\" }");
 
         // Act
         var response = await _client.SendAsync(request);
@@ -265,6 +266,38 @@ public class RoutesExtensionMethodsTests
         Assert.AreEqual("id_car", _context.RouteValues["carId"]);
         Assert.AreEqual("1", _context.Query["param1"]);
         Assert.AreEqual("2", _context.Query["param2"]);
+        Assert.AreEqual("11", _context.Headers["Header-1"]);
+        Assert.AreEqual("22", _context.Headers["Header-2"]);
+        await _crudServiceMock.Received(1).PatchAsync(_context, Arg.Any<CancellationToken>());
+    }
+
+    [TestMethod]
+    public async Task Patch_Endpoint_With_ExcludedAttributes_Query_Returns_Mock_Message()
+    {
+        // Arrange
+        var url = "domains/admin/brands/ferrari/cars/id_car?param1=1&param2=2&excludedAttributes=a";
+        HttpContent content = new StringContent("operationsContent", Encoding.UTF8, "application/text");
+        using var request = new HttpRequestMessage(HttpMethod.Patch, url);
+        request.Content = content;
+        request.Headers.Add("Header-1", "11");
+        request.Headers.Add("Header-2", "22");
+        request.Headers.Add("Authorization", $"Bearer {mockToken}");
+        _context.Result.Returns("{ \"a\": \"1\", \"b\": \"2\" }");
+
+        // Act
+        var response = await _client.SendAsync(request);
+
+        // Assert
+        Assert.AreEqual("operationsContent", _context.State.Operations);
+        Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
+        var responseString = await response.Content.ReadAsStringAsync();
+        Assert.AreEqual("{\"b\":\"2\"}", responseString);
+        Assert.AreEqual("admin", _context.RouteValues["domainId"]);
+        Assert.AreEqual("ferrari", _context.RouteValues["brandId"]);
+        Assert.AreEqual("id_car", _context.RouteValues["carId"]);
+        Assert.AreEqual("1", _context.Query["param1"]);
+        Assert.AreEqual("2", _context.Query["param2"]);
+        Assert.AreEqual("a", _context.Query["excludedAttributes"]);
         Assert.AreEqual("11", _context.Headers["Header-1"]);
         Assert.AreEqual("22", _context.Headers["Header-2"]);
         await _crudServiceMock.Received(1).PatchAsync(_context, Arg.Any<CancellationToken>());

@@ -1,5 +1,9 @@
+using Looplex.DotNet.Core.Application.Abstractions.Providers;
+using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Messages;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.ExtensionMethods;
 using Looplex.OpenForExtension.Abstractions.Contexts;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using NSubstitute;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.Domain.UnitTests.ExtensionMethods;
@@ -254,5 +258,66 @@ public class ContextExtensionMethodsTests
 
         // Act
         context.GetRequiredHeader("missingKey");
+    }
+    
+    [TestMethod]
+    public void AttributesMiddleware_ShouldExcludeAttributes()
+    {
+        // Arrange
+        var originalJson = new
+        {
+            name = "John",
+            age = 30,
+            email = "john@example.com",
+            addresses = new List<object>
+            {
+                new
+                {
+                    street = "street 1",
+                    number = "234"
+                },
+                new
+                {
+                    street = "street 1",
+                    number = "234"
+                }
+            }
+        };
+        var serviceProvider = Substitute.For<IServiceProvider>();
+        var sqlDatabaseProvider = Substitute.For<ISqlDatabaseProvider>();
+        IContext context = new DefaultScimV2Context(serviceProvider, sqlDatabaseProvider);
+        context.Result = JsonConvert.SerializeObject(originalJson);
+        context.AsScimV2Context().Query.Add("excludedAttributes", "age,addresses[*].street,addresses[0].number");
+
+        // Act
+        var result = context.GetResult();
+        
+        // Assert
+        var resultJson = JObject.Parse((string)result!);
+        Assert.IsNotNull(resultJson["name"]);
+        Assert.IsNotNull(resultJson["email"]);
+        Assert.IsNull(resultJson["age"]);
+        Assert.IsNotNull(resultJson["addresses"] != null);
+        Assert.IsNull(resultJson["addresses"]![0]!["number"]);
+        Assert.IsNotNull(resultJson["addresses"]![1]!["number"]);
+        Assert.IsNull(resultJson["addresses"]![0]!["street"]);
+        Assert.IsNull(resultJson["addresses"]![1]!["street"]);
+    }
+
+    [TestMethod]
+    [ExpectedException(typeof(Error))]
+    public void AttributesMiddleware_ShouldThrowException()
+    {
+        // Arrange
+        var cancellationToken = CancellationToken.None;
+
+        var serviceProvider = Substitute.For<IServiceProvider>();
+        var sqlDatabaseProvider = Substitute.For<ISqlDatabaseProvider>();
+        IContext context = new DefaultScimV2Context(serviceProvider, sqlDatabaseProvider);
+        context.Result = "{ \"name\": \"John\" }";
+        context.AsScimV2Context().Query.Add("attributes", "name,email"); 
+
+        // Act & Assert
+        context.GetResult();
     }
 }
