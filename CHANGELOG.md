@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="2.5.0"></a>
+## 2.5.0 (2025-01-15)
+
+### Features
+
+* **sdk:** upgrade to .net 9
+
+### Bug Fixes
+
+* **dependencies:** upgrade nuget packages
+* **rbac:** added policy enforce in basecrudservice
+* **rbac:** removed service from this repo
+
 <a name="2.4.4"></a>
 ## 2.4.4 (2025-01-14)
 
