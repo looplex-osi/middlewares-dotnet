@@ -35,6 +35,7 @@ public class BulkServiceTests
     private IConfiguration _configuration = null!;
     private IJsonSchemaProvider _jsonSchemaProvider = null!;
     private IExtensionPointOrchestrator _extensionPointOrchestrator = new DefaultExtensionPointOrchestrator();
+    private IRbacService _rbacService = null!;
     
     [TestInitialize]
     public void Setup()
@@ -71,6 +72,7 @@ public class BulkServiceTests
         _serviceProvider.GetService(typeof(ServiceProviderConfiguration)).Returns(_serviceProviderConfiguration);
         _serviceProvider.GetService(Arg.Is<Type>(t => typeof(ICrudService).IsAssignableFrom(t))).Returns(_service);
         _contextFactory.Create(Arg.Any<IEnumerable<string>>()).Returns(_operationContext);
+        _rbacService = Substitute.For<IRbacService>();
     }
 
     [TestMethod]
@@ -661,7 +663,7 @@ public class BulkServiceTests
             });
 
         // Act
-        var executeTask = new BulkService(_extensionPointOrchestrator, _serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
+        var executeTask = new BulkService(_rbacService, _extensionPointOrchestrator, _serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
             .ExecuteBulkOperationsAsync(_context, CancellationToken.None);
         await executeTask;
 
@@ -696,7 +698,7 @@ public class BulkServiceTests
         _context.Headers.Add("Ocp-Apim-Subscription-Key", "ocpApimSubscriptionKey");
 
         // Act
-        await new BulkService(_extensionPointOrchestrator, _serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
+        await new BulkService(_rbacService, _extensionPointOrchestrator, _serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
             .ExecuteBulkOperationsAsync(_context, CancellationToken.None);
 
         // Assert
@@ -737,7 +739,7 @@ public class BulkServiceTests
         _context.Headers.Add("Ocp-Apim-Subscription-Key", "ocpApimSubscriptionKey");
 
         // Act
-        await new BulkService(_extensionPointOrchestrator, _serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
+        await new BulkService(_rbacService, _extensionPointOrchestrator, _serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
             .ExecuteBulkOperationsAsync(_context, CancellationToken.None);
         
         // Assert
@@ -771,7 +773,7 @@ public class BulkServiceTests
         _context.Headers.Add("Ocp-Apim-Subscription-Key", "ocpApimSubscriptionKey");
 
         // Act
-        await new BulkService(_extensionPointOrchestrator, _serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
+        await new BulkService(_rbacService, _extensionPointOrchestrator, _serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
             .ExecuteBulkOperationsAsync(_context, CancellationToken.None);
 
         // Assert
@@ -808,7 +810,7 @@ public class BulkServiceTests
         _context.State.Request = bulkRequest.ToJson();
         _context.Headers.Add("Ocp-Apim-Subscription-Key", "ocpApimSubscriptionKey");
         // Act
-        await new BulkService(_extensionPointOrchestrator, _serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
+        await new BulkService(_rbacService, _extensionPointOrchestrator, _serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
             .ExecuteBulkOperationsAsync(_context, CancellationToken.None);
 
         // Assert
@@ -859,7 +861,7 @@ public class BulkServiceTests
             });
 
         // Act
-        await new BulkService(_extensionPointOrchestrator, _serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
+        await new BulkService(_rbacService, _extensionPointOrchestrator, _serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
             .ExecuteBulkOperationsAsync(_context, CancellationToken.None);
 
         // Assert
@@ -921,7 +923,7 @@ public class BulkServiceTests
         _context.Headers.Add("Ocp-Apim-Subscription-Key", "ocpApimSubscriptionKey");
 
         // Act & Assert
-        await new BulkService(_extensionPointOrchestrator, _serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
+        await new BulkService(_rbacService, _extensionPointOrchestrator, _serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
                 .ExecuteBulkOperationsAsync(_context, CancellationToken.None);
 
         var bulkResponse = JsonConvert.DeserializeObject<BulkResponse>((string)_context.Result!)!;

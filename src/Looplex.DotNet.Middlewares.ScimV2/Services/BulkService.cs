@@ -19,6 +19,7 @@ using Newtonsoft.Json.Linq;
 namespace Looplex.DotNet.Middlewares.ScimV2.Services;
 
 public class BulkService(
+    IRbacService rbacService,
     IExtensionPointOrchestrator extensionPointOrchestrator,
     IServiceProvider serviceProvider,
     IContextFactory contextFactory,
@@ -31,6 +32,8 @@ public class BulkService(
     
     public Task ExecuteBulkOperationsAsync(IContext context, CancellationToken cancellationToken)
     {
+        rbacService.ThrowIfUnauthorized(context, GetType().Name, this.GetCallerName(), cancellationToken);
+
         return extensionPointOrchestrator.OrchestrateAsync(
             context,
             _getAllHandleInputAsync,
