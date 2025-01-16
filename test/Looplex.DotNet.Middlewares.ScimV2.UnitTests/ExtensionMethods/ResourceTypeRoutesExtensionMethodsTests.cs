@@ -21,6 +21,7 @@ public class ResourceTypeRoutesExtensionMethodsTests
         var services = Substitute.For<IServiceProvider>();
         context.State.HttpContext = new DefaultHttpContext();
         context.State.HttpContext.RequestServices = services;
+        context.State.CancellationToken = CancellationToken.None;
         services.GetService(typeof(IResourceTypeService)).Returns(schemaService);
 
         // Mock response content
@@ -28,7 +29,7 @@ public class ResourceTypeRoutesExtensionMethodsTests
 
         // Act
         var middleware = ResourceTypeRoutesExtensionMethods.GetMiddleware();
-        await middleware(context, CancellationToken.None, () => Task.CompletedTask);
+        await middleware(context, () => Task.CompletedTask);
 
         // Assert
         await schemaService.Received(1).GetAllAsync(context, CancellationToken.None);
@@ -47,6 +48,7 @@ public class ResourceTypeRoutesExtensionMethodsTests
         httpContext.Request.RouteValues["resourceTypeId"] = "mockId"; // Mock RouteValues
         httpContext.RequestServices = services;
         context.State.HttpContext = httpContext;
+        context.State.CancellationToken = CancellationToken.None;
         services.GetService(typeof(IResourceTypeService)).Returns(schemaService);
 
         // Mock response content
@@ -54,7 +56,7 @@ public class ResourceTypeRoutesExtensionMethodsTests
 
         // Act
         var middleware = ResourceTypeRoutesExtensionMethods.GetByIdMiddleware();
-        await middleware(context, CancellationToken.None, () => Task.CompletedTask);
+        await middleware(context, () => Task.CompletedTask);
 
         // Assert
         await schemaService.Received(1).GetByIdAsync(context, CancellationToken.None);

@@ -32,6 +32,7 @@ public class BulkRoutesExtensionMethodsTests
             RequestServices = _serviceProvider
         };
         _context.State.HttpContext = httpContext;
+        _context.State.CancellationToken = _cancellationToken;
         _serviceProvider.GetService(typeof(IBulkService)).Returns(_bulkService);
     }
 
@@ -54,7 +55,7 @@ public class BulkRoutesExtensionMethodsTests
 
         // Act
         var middleware = BulkRoutesExtensionMethods.PostMiddleware();
-        await middleware(_context, _cancellationToken, () => Task.CompletedTask);
+        await middleware(_context, () => Task.CompletedTask);
 
         // Assert
         Assert.AreEqual(requestBody, _context.State.Request);

@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using Looplex.DotNet.Core.Application.ExtensionMethods;
 using Looplex.DotNet.Core.Common.Utils;
 using Looplex.DotNet.Core.Middlewares;
 using Looplex.DotNet.Core.WebAPI.Routes;
@@ -15,9 +16,10 @@ public static class SchemaRoutesExtensionMethods
     private const string Resource = "/Schemas";
 
     internal static MiddlewareDelegate GetMiddleware()
-        => async (context, cancellationToken, _) =>
+        => async (context, _) =>
         {
-            HttpContext httpContext = context.State.HttpContext;
+            var cancellationToken = context.GetRequiredValue<CancellationToken>("CancellationToken");
+            var httpContext = context.GetRequiredValue<HttpContext>("HttpContext");
             var service = httpContext.RequestServices.GetRequiredService<ISchemaService>();
 
             await service.GetAllAsync(context, cancellationToken);
@@ -26,9 +28,10 @@ public static class SchemaRoutesExtensionMethods
         };
 
     internal static MiddlewareDelegate GetByIdMiddleware()
-        => async (context, cancellationToken, _) =>
+        => async (context, _) =>
         {
-            HttpContext httpContext = context.State.HttpContext;
+            var cancellationToken = context.GetRequiredValue<CancellationToken>("CancellationToken");
+            var httpContext = context.GetRequiredValue<HttpContext>("HttpContext");
             var service = httpContext.RequestServices.GetRequiredService<ISchemaService>();
 
             await service.GetByIdAsync(context, cancellationToken);

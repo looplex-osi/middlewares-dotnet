@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using Looplex.DotNet.Core.Application.ExtensionMethods;
 using Looplex.DotNet.Core.Common.Utils;
 using Looplex.DotNet.Core.Middlewares;
 using Looplex.DotNet.Core.WebAPI.Routes;
@@ -14,9 +15,10 @@ public static class BulkRoutesExtensionMethods
     private const string Resource = "/Bulk";
 
     internal static MiddlewareDelegate PostMiddleware()
-        => async (context, cancellationToken, _) =>
+        => async (context, _) =>
     {
-        HttpContext httpContext = context.State.HttpContext;
+        var cancellationToken = context.GetRequiredValue<CancellationToken>("CancellationToken");
+        var httpContext = context.GetRequiredValue<HttpContext>("HttpContext");
         var service = httpContext.RequestServices.GetRequiredService<IBulkService>();
         
         using StreamReader reader = new(httpContext.Request.Body);

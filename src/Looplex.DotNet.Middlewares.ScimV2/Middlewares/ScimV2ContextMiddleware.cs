@@ -1,3 +1,4 @@
+using Looplex.DotNet.Core.Application.ExtensionMethods;
 using Looplex.DotNet.Core.Middlewares;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.ExtensionMethods;
 using Microsoft.AspNetCore.Http;
@@ -8,10 +9,10 @@ public static partial class ScimV2Middlewares
 {
     const string LooplexTenantKeyHeader = "X-looplex-tenant";
     
-    public static readonly MiddlewareDelegate ScimV2ContextMiddleware = async (context, cancellationToken, next) =>
+    public static readonly MiddlewareDelegate ScimV2ContextMiddleware = async (context, next) =>
     {
-        cancellationToken.ThrowIfCancellationRequested();
-        HttpContext httpContext = context.State.HttpContext;
+        var cancellationToken = context.GetRequiredValue<CancellationToken>("CancellationToken");
+        var httpContext = context.GetRequiredValue<HttpContext>("HttpContext");
         
         context.AsScimV2Context().RouteValues = httpContext.Request.RouteValues
             .Select(rv => new KeyValuePair<string, object?>(rv.Key, rv.Value))

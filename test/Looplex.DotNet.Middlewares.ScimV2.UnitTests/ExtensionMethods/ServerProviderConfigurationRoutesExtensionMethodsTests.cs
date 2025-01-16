@@ -30,10 +30,11 @@ public class ServerProviderConfigurationRoutesExtensionMethodsTests
         var services = Substitute.For<IServiceProvider>();
         context.State.HttpContext = new DefaultHttpContext();
         context.State.HttpContext.RequestServices = services;
+        context.State.CancellationToken = CancellationToken.None;
         services.GetService(typeof(ServiceProviderConfiguration)).Returns(serviceProviderConfiguration);
 
         // Act & Assert
         var middleware = ServerProviderConfigurationRoutesExtensionMethods.GetMiddleware();
-        await middleware(context, CancellationToken.None, () => Task.CompletedTask);
+        await middleware(context, () => Task.CompletedTask);
     }
 }

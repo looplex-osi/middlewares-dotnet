@@ -26,6 +26,7 @@ public class TokenRoutesExtensionMethodsTests
         context.Services.Returns(services);
         dynamic state = new ExpandoObject();
         context.State.Returns(state);
+        context.State.CancellationToken = CancellationToken.None;
         services.GetService(typeof(IAuthorizationService)).Returns(authorizationService);
         services.GetService(typeof(IAuthorizationServiceFactory)).Returns(authorizationServiceFactory);
 
@@ -40,7 +41,7 @@ public class TokenRoutesExtensionMethodsTests
         state.HttpContext = httpContext;
         
         // Act
-        await TokenRoutesExtensionMethods.TokenMiddleware(context, CancellationToken.None, () => Task.CompletedTask);
+        await TokenRoutesExtensionMethods.TokenMiddleware(context, () => Task.CompletedTask);
 
         // Assert
         var clientCredentialsDto = JsonConvert.DeserializeObject<ClientCredentialsDto>((string)context.State.Resource)!;
@@ -63,6 +64,7 @@ public class TokenRoutesExtensionMethodsTests
         context.Services.Returns(services);
         dynamic state = new ExpandoObject();
         context.State.Returns(state);
+        context.State.CancellationToken = CancellationToken.None;
         services.GetService(typeof(IAuthorizationService)).Returns(authorizationService);
 
         // Setup HttpContext with necessary headers and request
@@ -73,7 +75,7 @@ public class TokenRoutesExtensionMethodsTests
 
         // Act
         // The following call should throw InvalidOperationException
-        await TokenRoutesExtensionMethods.TokenMiddleware(context, CancellationToken.None, () => Task.CompletedTask);
+        await TokenRoutesExtensionMethods.TokenMiddleware(context, () => Task.CompletedTask);
 
         // Assert
         // The test expects an InvalidOperationException, so no assertions needed.

@@ -21,6 +21,7 @@ public class PaginationMiddlewareTests
         dynamic state = new ExpandoObject();
         state.HttpContext = new DefaultHttpContext();
         _context.State.Returns(state);
+        _context.State.CancellationToken = CancellationToken.None;
 
         // Set up the next middleware delegate
         _next = Substitute.For<Func<Task>>();
@@ -34,7 +35,7 @@ public class PaginationMiddlewareTests
             new QueryString("?startIndex=10&count=0");
 
         // Act & Assert
-        var act = () => ScimV2Middlewares.PaginationMiddleware(_context, CancellationToken.None, _next);
+        var act = () => ScimV2Middlewares.PaginationMiddleware(_context, _next);
 
         await act.Should().ThrowAsync<ArgumentException>()
             .WithMessage("Param count is not valid");
@@ -48,7 +49,7 @@ public class PaginationMiddlewareTests
             new QueryString("?startIndex=0&count=10");
 
         // Act & Assert
-        var act = () => ScimV2Middlewares.PaginationMiddleware(_context, CancellationToken.None, _next);
+        var act = () => ScimV2Middlewares.PaginationMiddleware(_context, _next);
 
         await act.Should().ThrowAsync<ArgumentException>()
             .WithMessage("Param startIndex is not valid");
@@ -62,7 +63,7 @@ public class PaginationMiddlewareTests
             new QueryString("?startIndex=10&count=-1");
 
         // Act & Assert
-        var act = () => ScimV2Middlewares.PaginationMiddleware(_context, CancellationToken.None, _next);
+        var act = () => ScimV2Middlewares.PaginationMiddleware(_context, _next);
 
         await act.Should().ThrowAsync<ArgumentException>()
             .WithMessage("Param count is not valid");
@@ -76,7 +77,7 @@ public class PaginationMiddlewareTests
             new QueryString("?startIndex=-5&count=10");
 
         // Act & Assert
-        var act = () => ScimV2Middlewares.PaginationMiddleware(_context, CancellationToken.None, _next);
+        var act = () => ScimV2Middlewares.PaginationMiddleware(_context, _next);
 
         await act.Should().ThrowAsync<ArgumentException>()
             .WithMessage("Param startIndex is not valid");
@@ -90,7 +91,7 @@ public class PaginationMiddlewareTests
             new QueryString("?startIndex=10&count=abc");
 
         // Act & Assert
-        var act = () => ScimV2Middlewares.PaginationMiddleware(_context, CancellationToken.None, _next);
+        var act = () => ScimV2Middlewares.PaginationMiddleware(_context, _next);
 
         await act.Should().ThrowAsync<ArgumentException>()
             .WithMessage("Param count is not valid");
@@ -104,7 +105,7 @@ public class PaginationMiddlewareTests
             new QueryString("?startIndex=-5&count=10.75");
 
         // Act & Assert
-        var act = () => ScimV2Middlewares.PaginationMiddleware(_context, CancellationToken.None, _next);
+        var act = () => ScimV2Middlewares.PaginationMiddleware(_context, _next);
 
         await act.Should().ThrowAsync<ArgumentException>()
             .WithMessage("Param startIndex is not valid");

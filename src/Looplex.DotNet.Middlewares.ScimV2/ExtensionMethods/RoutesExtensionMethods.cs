@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using Looplex.DotNet.Core.Application.Abstractions.Factories;
 using Looplex.DotNet.Core.Application.Abstractions.Services;
+using Looplex.DotNet.Core.Application.ExtensionMethods;
 using Looplex.DotNet.Core.Middlewares;
 using Looplex.DotNet.Core.WebAPI.Routes;
 using Looplex.DotNet.Core.Common.Utils;
@@ -19,9 +20,10 @@ namespace Looplex.DotNet.Middlewares.ScimV2.ExtensionMethods;
 public static class RoutesExtensionMethods
 {
     private static MiddlewareDelegate GetMiddleware<TService>()
-        where TService : ICrudService => async (context, cancellationToken, _) =>
+        where TService : ICrudService => async (context, _) =>
     {
-        HttpContext httpContext = context.State.HttpContext;
+        var cancellationToken = context.GetRequiredValue<CancellationToken>("CancellationToken");
+        var httpContext = context.GetRequiredValue<HttpContext>("HttpContext");
         var service = httpContext.RequestServices.GetRequiredService<TService>();
 
         await service.GetAllAsync(context, cancellationToken);
@@ -30,9 +32,10 @@ public static class RoutesExtensionMethods
     };
 
     private static MiddlewareDelegate GetByIdMiddleware<TService>()
-        where TService : ICrudService => async (context, cancellationToken, _) =>
+        where TService : ICrudService => async (context, _) =>
     {
-        HttpContext httpContext = context.State.HttpContext;
+        var cancellationToken = context.GetRequiredValue<CancellationToken>("CancellationToken");
+        var httpContext = context.GetRequiredValue<HttpContext>("HttpContext");
         var service = httpContext.RequestServices.GetRequiredService<TService>();
 
         await service.GetByIdAsync(context, cancellationToken);
@@ -41,9 +44,10 @@ public static class RoutesExtensionMethods
     };
 
     private static MiddlewareDelegate PostMiddleware<TService>()
-        where TService : ICrudService => async (context, cancellationToken, _) =>
+        where TService : ICrudService => async (context, _) =>
     {
-        HttpContext httpContext = context.State.HttpContext;
+        var cancellationToken = context.GetRequiredValue<CancellationToken>("CancellationToken");
+        var httpContext = context.GetRequiredValue<HttpContext>("HttpContext");
         var service = httpContext.RequestServices.GetRequiredService<TService>();
 
         using StreamReader reader = new(httpContext.Request.Body);
@@ -56,9 +60,10 @@ public static class RoutesExtensionMethods
     };
 
     private static MiddlewareDelegate PutMiddleware<TService>()
-        where TService : ICrudService => async (context, cancellationToken, _) =>
+        where TService : ICrudService => async (context, _) =>
     {
-        HttpContext httpContext = context.State.HttpContext;
+        var cancellationToken = context.GetRequiredValue<CancellationToken>("CancellationToken");
+        var httpContext = context.GetRequiredValue<HttpContext>("HttpContext");
         var service = httpContext.RequestServices.GetRequiredService<TService>();
 
         using StreamReader reader = new(httpContext.Request.Body);
@@ -70,9 +75,10 @@ public static class RoutesExtensionMethods
     };
 
     private static MiddlewareDelegate PatchMiddleware<TService>()
-        where TService : ICrudService => async (context, cancellationToken, _) =>
+        where TService : ICrudService => async (context, _) =>
     {
-        HttpContext httpContext = context.State.HttpContext;
+        var cancellationToken = context.GetRequiredValue<CancellationToken>("CancellationToken");
+        var httpContext = context.GetRequiredValue<HttpContext>("HttpContext");
         var service = httpContext.RequestServices.GetRequiredService<TService>();
 
         using StreamReader reader = new(httpContext.Request.Body);
@@ -91,9 +97,10 @@ public static class RoutesExtensionMethods
     };
 
     private static MiddlewareDelegate DeleteMiddleware<TService>()
-        where TService : ICrudService => async (context, cancellationToken, _) =>
+        where TService : ICrudService => async (context, _) =>
     {
-        HttpContext httpContext = context.State.HttpContext;
+        var cancellationToken = context.GetRequiredValue<CancellationToken>("CancellationToken");
+        var httpContext = context.GetRequiredValue<HttpContext>("HttpContext");
         var service = httpContext.RequestServices.GetRequiredService<TService>();
 
         await service.DeleteAsync(context, cancellationToken);

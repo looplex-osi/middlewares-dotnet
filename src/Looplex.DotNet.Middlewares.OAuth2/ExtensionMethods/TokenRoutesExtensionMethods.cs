@@ -1,4 +1,5 @@
-﻿using Looplex.DotNet.Core.Middlewares;
+﻿using Looplex.DotNet.Core.Application.ExtensionMethods;
+using Looplex.DotNet.Core.Middlewares;
 using Looplex.DotNet.Core.WebAPI.Middlewares;
 using Looplex.DotNet.Core.WebAPI.Routes;
 using Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.Factories;
@@ -14,13 +15,13 @@ namespace Looplex.DotNet.Middlewares.OAuth2.ExtensionMethods;
 public static class TokenRoutesExtensionMethods
 {
     private const string Resource = "/token";
-    private const string Tag = "Authentication";
 
-    internal static readonly MiddlewareDelegate TokenMiddleware = async (context, cancellationToken, _) =>
+    internal static readonly MiddlewareDelegate TokenMiddleware = async (context, _) =>
     {
         IAuthorizationServiceFactory factory = context.Services.GetRequiredService<IAuthorizationServiceFactory>();
 
-        HttpContext httpContext = context.State.HttpContext;
+        var cancellationToken = context.GetRequiredValue<CancellationToken>("CancellationToken");
+        var httpContext = context.GetRequiredValue<HttpContext>("HttpContext");
         context.State.Authorization = httpContext.Request.Headers.Authorization.ToString();
             
         var form = await httpContext.Request.ReadFormAsync();

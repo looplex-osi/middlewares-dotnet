@@ -21,6 +21,7 @@ public class SchemaRoutesExtensionMethodsTests
         var services = Substitute.For<IServiceProvider>();
         context.State.HttpContext = new DefaultHttpContext();
         context.State.HttpContext.RequestServices = services;
+        context.State.CancellationToken = CancellationToken.None;
         services.GetService(typeof(ISchemaService)).Returns(schemaService);
 
         // Mock response content
@@ -28,7 +29,7 @@ public class SchemaRoutesExtensionMethodsTests
 
         // Act
         var middleware = SchemaRoutesExtensionMethods.GetMiddleware();
-        await middleware(context, CancellationToken.None, () => Task.CompletedTask);
+        await middleware(context, () => Task.CompletedTask);
 
         // Assert
         await schemaService.Received(1).GetAllAsync(context, CancellationToken.None);
@@ -51,6 +52,7 @@ public class SchemaRoutesExtensionMethodsTests
         httpContext.Request.RouteValues["SchemaId"] = "mockId"; // Mock RouteValues
         httpContext.RequestServices = services;
         context.State.HttpContext = httpContext;
+        context.State.CancellationToken = CancellationToken.None;
         services.GetService(typeof(ISchemaService)).Returns(schemaService);
 
         // Mock response content
@@ -58,7 +60,7 @@ public class SchemaRoutesExtensionMethodsTests
 
         // Act
         var middleware = SchemaRoutesExtensionMethods.GetByIdMiddleware();
-        await middleware(context, CancellationToken.None, () => Task.CompletedTask);
+        await middleware(context, () => Task.CompletedTask);
 
         // Assert
         await schemaService.Received(1).GetByIdAsync(context, CancellationToken.None);

@@ -39,6 +39,7 @@ public class ScimV2ContextMiddlewareTests
         _sqlDatabaseProvider = Substitute.For<ISqlDatabaseProvider>();
         _context = new DefaultScimV2Context(_services, _sqlDatabaseProvider);
         _context.State.HttpContext = httpContext;
+        _context.State.CancellationToken = CancellationToken.None;
         
         // Set up the next middleware delegate
         _next = Substitute.For<Func<Task>>();
@@ -48,7 +49,7 @@ public class ScimV2ContextMiddlewareTests
     public async Task ScimV2ContextMiddleware_ShouldMapValuesToContext()
     {
         // Act
-        await ScimV2Middlewares.ScimV2ContextMiddleware(_context, CancellationToken.None, _next);
+        await ScimV2Middlewares.ScimV2ContextMiddleware(_context, _next);
         
         // Assert
         Assert.AreEqual(1, _context.RouteValues.Count);

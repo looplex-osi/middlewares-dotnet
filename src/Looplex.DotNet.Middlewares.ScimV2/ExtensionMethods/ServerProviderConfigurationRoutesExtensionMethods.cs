@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using Looplex.DotNet.Core.Application.ExtensionMethods;
 using Looplex.DotNet.Core.Common.Utils;
 using Looplex.DotNet.Core.Middlewares;
 using Looplex.DotNet.Core.WebAPI.Routes;
@@ -14,9 +15,9 @@ public static class ServerProviderConfigurationRoutesExtensionMethods
     private const string Resource = "/ServiceProviderConfig";
 
     internal static MiddlewareDelegate GetMiddleware()
-        => async (context, cancellationToken, _) =>
+        => async (context, _) =>
     {
-        HttpContext httpContext = context.State.HttpContext;
+        var httpContext = context.GetRequiredValue<HttpContext>("HttpContext");
         var config = httpContext.RequestServices.GetRequiredService<ServiceProviderConfiguration>();
         var result = config.ToJson();
         

@@ -1,6 +1,7 @@
 ﻿using System.Dynamic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net;
+using Looplex.DotNet.Core.Application.ExtensionMethods;
 using Looplex.DotNet.Core.Common.Utils;
 using Looplex.DotNet.Core.Middlewares;
 using Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.Services;
@@ -12,8 +13,9 @@ namespace Looplex.DotNet.Middlewares.OAuth2.Middlewares;
 
 public static partial class OAuth2Middlewares
 {
-    public static readonly MiddlewareDelegate AuthenticationMiddleware = async (context, cancellationToken, next) =>
+    public static readonly MiddlewareDelegate AuthenticationMiddleware = async (context, next) =>
     {
+        var cancellationToken = context.GetRequiredValue<CancellationToken>("CancellationToken");
         cancellationToken.ThrowIfCancellationRequested();
 
         var configuration = context.Services.GetRequiredService<IConfiguration>();
@@ -24,7 +26,7 @@ public static partial class OAuth2Middlewares
 
         string accessToken = string.Empty;
 
-        HttpContext httpContext = context.State.HttpContext;
+        var httpContext = context.GetRequiredValue<HttpContext>("HttpContext");
 
         string? authorization = httpContext.Request.Headers.Authorization;
 

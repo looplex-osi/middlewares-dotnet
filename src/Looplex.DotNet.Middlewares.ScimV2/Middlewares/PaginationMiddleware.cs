@@ -1,4 +1,5 @@
 ﻿using System.Dynamic;
+using Looplex.DotNet.Core.Application.ExtensionMethods;
 using Looplex.DotNet.Core.Middlewares;
 using Looplex.DotNet.Middlewares.ScimV2.Utils;
 using Microsoft.AspNetCore.Http;
@@ -24,10 +25,11 @@ public static partial class ScimV2Middlewares
     /// <seealso cref="https://datatracker.ietf.org/doc/html/rfc7644#ref-OpenSearch"/>
     /// </summary>
     /// <see cref="https://datatracker.ietf.org/doc/html/rfc7644#section-3.4.2.4"/>
-    public static readonly MiddlewareDelegate PaginationMiddleware = async (context, cancellationToken, next) =>
+    public static readonly MiddlewareDelegate PaginationMiddleware = async (context, next) =>
     {
+        var cancellationToken = context.GetRequiredValue<CancellationToken>("CancellationToken");
         cancellationToken.ThrowIfCancellationRequested();
-        HttpContext httpContext = context.State.HttpContext;
+        var httpContext = context.GetRequiredValue<HttpContext>("HttpContext");
 
         int startIndex = GetQueryParam(httpContext, "startIndex");
         int count = GetQueryParam(httpContext, "count");

@@ -42,6 +42,7 @@ public class AuthenticationMiddlewareTests
         _context.Services.GetService(typeof(IJwtService)).Returns(_jwtService);
         dynamic state = new ExpandoObject();
         state.HttpContext = _httpContext;
+        state.CancellationToken = CancellationToken.None;
         _context.State.Returns(state);
 
         // Set up the next middleware delegate
@@ -57,7 +58,7 @@ public class AuthenticationMiddlewareTests
             .Returns(true);
 
         // Act
-        await OAuth2Middlewares.AuthenticationMiddleware(_context, CancellationToken.None, _next);
+        await OAuth2Middlewares.AuthenticationMiddleware(_context, _next);
 
         // Assert
         await _next.Received(1).Invoke();
@@ -74,7 +75,7 @@ public class AuthenticationMiddlewareTests
 
         // Act & Assert
         var ex = await Assert.ThrowsExceptionAsync<HttpRequestException>(async () =>
-            await OAuth2Middlewares.AuthenticationMiddleware(_context, CancellationToken.None, _next)
+            await OAuth2Middlewares.AuthenticationMiddleware(_context, _next)
         );
 
         Assert.AreEqual(HttpStatusCode.Unauthorized, ex.StatusCode);
@@ -90,7 +91,7 @@ public class AuthenticationMiddlewareTests
             .Returns(true);
 
         // Act
-        await OAuth2Middlewares.AuthenticationMiddleware(_context, CancellationToken.None, _next);
+        await OAuth2Middlewares.AuthenticationMiddleware(_context, _next);
 
         // Assert
         _context.GetRequiredValue<string>("User.Name").Should().Be("John Doe");
