@@ -131,8 +131,7 @@ public class ClientCredentialsAuthorizationServiceTests
         apiKey.ExpirationTime.Returns(DateTimeOffset.UtcNow.AddMinutes(1));
 
         _mockApiKeyService.GetByIdAndSecretOrDefaultAsync(
-                Arg.Is<IContext>(c => AssertDefaultContextIsValid(c, clientId, clientSecret)),
-                CancellationToken.None)
+                Arg.Is<IContext>(c => AssertDefaultContextIsValid(c, clientId, clientSecret)))
             .Returns(call =>
             {
                 var context = call.Arg<IContext>();
@@ -198,9 +197,8 @@ public class ClientCredentialsAuthorizationServiceTests
         apiKey.ExpirationTime.Returns(DateTimeOffset.UtcNow.AddMinutes(1));
 
         _mockApiKeyService.GetByIdAndSecretOrDefaultAsync(
-                Arg.Is<IContext>(c => AssertDefaultContextIsValid(c, clientId, clientSecret)),
-                CancellationToken.None)
-            .Returns(call => Task.CompletedTask);
+                Arg.Is<IContext>(c => AssertDefaultContextIsValid(c, clientId, clientSecret)))
+            .Returns(_ => Task.CompletedTask);
 
         var context = Substitute.For<IContext>();
         var state = new ExpandoObject();
@@ -250,8 +248,7 @@ public class ClientCredentialsAuthorizationServiceTests
         apiKey.ExpirationTime.Returns(DateTimeOffset.UtcNow.AddMinutes(1));
 
         _mockApiKeyService.GetByIdAndSecretOrDefaultAsync(
-                Arg.Is<IContext>(c => AssertDefaultContextIsValid(c, clientId, clientSecret)),
-                CancellationToken.None)
+                Arg.Is<IContext>(c => AssertDefaultContextIsValid(c, clientId, clientSecret)))
             .Returns(call =>
             {
                 var context = call.Arg<IContext>();
@@ -307,8 +304,7 @@ public class ClientCredentialsAuthorizationServiceTests
         apiKey.ExpirationTime.Returns(DateTimeOffset.UtcNow.AddMinutes(-1));
 
         _mockApiKeyService.GetByIdAndSecretOrDefaultAsync(
-                Arg.Is<IContext>(c => AssertDefaultContextIsValid(c, clientId, clientSecret)),
-                CancellationToken.None)
+                Arg.Is<IContext>(c => AssertDefaultContextIsValid(c, clientId, clientSecret)))
             .Returns(call =>
             {
                 var context = call.Arg<IContext>();

@@ -15,6 +15,12 @@ public static class ContextExtensionMethods
         throw new InvalidCastException($"Param {nameof(context)} is not of type {nameof(IScimV2Context)}");
     }
     
+    public static void DisposeIfPossible(this IContext context)
+    {
+        if (context is IDisposable disposableContext)
+            disposableContext.Dispose();
+    }
+    
     public static T GetRouteValue<T>(this IContext context, string key)
     {
         var scimV2Context = context.AsScimV2Context();

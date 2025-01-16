@@ -10,6 +10,7 @@ using Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.Services;
 using Looplex.DotNet.Middlewares.OAuth2.Application.ExtensionMethods;
 using Looplex.DotNet.Middlewares.OAuth2.Domain;
 using Looplex.DotNet.Middlewares.OAuth2.Domain.Entities;
+using Looplex.DotNet.Middlewares.ScimV2.Domain.ExtensionMethods;
 using Looplex.OpenForExtension.Abstractions.Commands;
 using Looplex.OpenForExtension.Abstractions.Contexts;
 using Looplex.OpenForExtension.Abstractions.ExtensionMethods;
@@ -108,23 +109,24 @@ public class ClientCredentialsAuthorizationService(
         }
     }
 
-    private Task<IApiKey> GetApiKeyByIdAndSecretOrDefaultAsync(string clientId, string clientSecret,
+    private async Task<IApiKey> GetApiKeyByIdAndSecretOrDefaultAsync(string clientId, string clientSecret,
         IContext parentContext, CancellationToken cancellationToken)
     {
         var contextFactory = parentContext.Services.GetRequiredService<IContextFactory>();
-        var context = contextFactory.Create(["AuthorizationService.ValidateClientCredentials"]);
+        var context = contextFactory.Create([]);
 
         context.State.ParentContext = parentContext;
         context.State.ClientId = clientId;
         context.State.ClientSecret = clientSecret;
-
-        return GetApiKeyByIdAndSecretOrDefaultAsync(context, cancellationToken);
+        context.State.CancellationToken = parentContext.GetRequiredValue<CancellationToken>("CancellationToken");
+        var result = await GetApiKeyByIdAndSecretOrDefaultAsync(context);
+        context.DisposeIfPossible();
+        return result;
     }
 
-    private async Task<IApiKey> GetApiKeyByIdAndSecretOrDefaultAsync(IContext context,
-        CancellationToken cancellationToken)
+    private async Task<IApiKey> GetApiKeyByIdAndSecretOrDefaultAsync(IContext context)
     {
-        await _apiKeyService.GetByIdAndSecretOrDefaultAsync(context, cancellationToken);
+        await _apiKeyService.GetByIdAndSecretOrDefaultAsync(context);
         IApiKey? apiKey = default;
         if (context.Roles.TryGetValue("ApiKey", out var role))
         {

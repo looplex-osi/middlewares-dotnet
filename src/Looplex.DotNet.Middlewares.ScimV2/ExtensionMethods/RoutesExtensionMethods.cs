@@ -148,8 +148,7 @@ public static class RoutesExtensionMethods
             Resource = route,
             Service = typeof(TService)
         });
-        if (context is IDisposable disposableContext)
-            disposableContext.Dispose();
+        context.DisposeIfPossible();
         
         var id = $"{ToLowerFirstLetter(typeof(T).Name)}Id";
 

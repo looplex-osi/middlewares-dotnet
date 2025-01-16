@@ -5,5 +5,5 @@ namespace Looplex.DotNet.Middlewares.ApiKeys.Application.Abstractions.Services;
 
 public interface IApiKeyService : ICrudService
 {
-    Task GetByIdAndSecretOrDefaultAsync(IContext context, CancellationToken cancellationToken);
+    Task GetByIdAndSecretOrDefaultAsync(IContext context);
 }
