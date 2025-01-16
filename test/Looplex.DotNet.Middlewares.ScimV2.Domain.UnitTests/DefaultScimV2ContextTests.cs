@@ -1,8 +1,6 @@
-using System.Net;
 using FluentAssertions;
 using Looplex.DotNet.Core.Application.Abstractions.Providers;
 using Looplex.DotNet.Core.Application.Abstractions.Services;
-using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Messages;
 using NSubstitute;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.Domain.UnitTests;
