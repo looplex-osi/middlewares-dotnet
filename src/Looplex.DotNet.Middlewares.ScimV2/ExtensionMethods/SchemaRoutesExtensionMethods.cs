@@ -18,7 +18,6 @@ public static class SchemaRoutesExtensionMethods
     internal static MiddlewareDelegate GetMiddleware()
         => async (context, _) =>
         {
-            context.GetRequiredValue<CancellationToken>("CancellationToken");
             var httpContext = context.GetRequiredValue<HttpContext>("HttpContext");
             var service = httpContext.RequestServices.GetRequiredService<ISchemaService>();
 
@@ -30,7 +29,6 @@ public static class SchemaRoutesExtensionMethods
     internal static MiddlewareDelegate GetByIdMiddleware()
         => async (context, _) =>
         {
-            context.GetRequiredValue<CancellationToken>("CancellationToken");
             var httpContext = context.GetRequiredValue<HttpContext>("HttpContext");
             var service = httpContext.RequestServices.GetRequiredService<ISchemaService>();
 

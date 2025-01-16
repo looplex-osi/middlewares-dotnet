@@ -22,7 +22,6 @@ public static class RoutesExtensionMethods
     private static MiddlewareDelegate GetMiddleware<TService>()
         where TService : ICrudService => async (context, _) =>
     {
-        context.GetRequiredValue<CancellationToken>("CancellationToken");
         var httpContext = context.GetRequiredValue<HttpContext>("HttpContext");
         var service = httpContext.RequestServices.GetRequiredService<TService>();
 
@@ -34,7 +33,6 @@ public static class RoutesExtensionMethods
     private static MiddlewareDelegate GetByIdMiddleware<TService>()
         where TService : ICrudService => async (context, _) =>
     {
-        context.GetRequiredValue<CancellationToken>("CancellationToken");
         var httpContext = context.GetRequiredValue<HttpContext>("HttpContext");
         var service = httpContext.RequestServices.GetRequiredService<TService>();
 
@@ -99,7 +97,6 @@ public static class RoutesExtensionMethods
     private static MiddlewareDelegate DeleteMiddleware<TService>()
         where TService : ICrudService => async (context, _) =>
     {
-        context.GetRequiredValue<CancellationToken>("CancellationToken");
         var httpContext = context.GetRequiredValue<HttpContext>("HttpContext");
         var service = httpContext.RequestServices.GetRequiredService<TService>();
 
