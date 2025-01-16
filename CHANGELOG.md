@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="3.0.0"></a>
+## 3.0.0 (2025-01-16)
+
+### Features
+
+* **context:** removed cancellation token from services parameters
+
+### Bug Fixes
+
+* **context:** default scim context is now disposable
+* **dependencies:** upgrade core packages
+
+### Breaking Changes
+
+* **context:** removed cancellation token from services parameters
+
 <a name="2.5.3"></a>
 ## 2.5.3 (2025-01-15)
 
