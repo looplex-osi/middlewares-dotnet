@@ -15,7 +15,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Looplex.DotNet.Core.WebAPI" Version="4.0.0" />
+    <PackageReference Include="Looplex.DotNet.Core.WebAPI" Version="4.0.2" />
     <PackageReference Include="RestSharp" Version="112.1.0"/>
   </ItemGroup>
 

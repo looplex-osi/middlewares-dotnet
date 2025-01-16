@@ -309,7 +309,6 @@ public class ContextExtensionMethodsTests
     public void AttributesMiddleware_ShouldThrowException()
     {
         // Arrange
-        var cancellationToken = CancellationToken.None;
 
         var serviceProvider = Substitute.For<IServiceProvider>();
         var sqlDatabaseProvider = Substitute.For<ISqlDatabaseProvider>();

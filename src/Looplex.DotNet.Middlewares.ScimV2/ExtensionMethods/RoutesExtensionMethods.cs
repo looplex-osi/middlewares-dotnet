@@ -22,11 +22,11 @@ public static class RoutesExtensionMethods
     private static MiddlewareDelegate GetMiddleware<TService>()
         where TService : ICrudService => async (context, _) =>
     {
-        var cancellationToken = context.GetRequiredValue<CancellationToken>("CancellationToken");
+        context.GetRequiredValue<CancellationToken>("CancellationToken");
         var httpContext = context.GetRequiredValue<HttpContext>("HttpContext");
         var service = httpContext.RequestServices.GetRequiredService<TService>();
 
-        await service.GetAllAsync(context, cancellationToken);
+        await service.GetAllAsync(context);
 
         await httpContext.Response.WriteAsJsonAsync((string)context.GetResult()!, HttpStatusCode.OK);
     };
@@ -34,11 +34,11 @@ public static class RoutesExtensionMethods
     private static MiddlewareDelegate GetByIdMiddleware<TService>()
         where TService : ICrudService => async (context, _) =>
     {
-        var cancellationToken = context.GetRequiredValue<CancellationToken>("CancellationToken");
+        context.GetRequiredValue<CancellationToken>("CancellationToken");
         var httpContext = context.GetRequiredValue<HttpContext>("HttpContext");
         var service = httpContext.RequestServices.GetRequiredService<TService>();
 
-        await service.GetByIdAsync(context, cancellationToken);
+        await service.GetByIdAsync(context);
 
         await httpContext.Response.WriteAsJsonAsync((string)context.GetResult()!, HttpStatusCode.OK);
     };
@@ -53,7 +53,7 @@ public static class RoutesExtensionMethods
         using StreamReader reader = new(httpContext.Request.Body);
         context.State.Resource = await reader.ReadToEndAsync(cancellationToken);
 
-        await service.CreateAsync(context, cancellationToken);
+        await service.CreateAsync(context);
         var id = context.Result;
         httpContext.Response.StatusCode = (int)HttpStatusCode.Created;
         httpContext.Response.Headers.Location = $"{httpContext.Request.Path.Value}/{id}";
@@ -69,7 +69,7 @@ public static class RoutesExtensionMethods
         using StreamReader reader = new(httpContext.Request.Body);
         context.State.Resource = await reader.ReadToEndAsync(cancellationToken);
 
-        await service.UpdateAsync(context, cancellationToken);
+        await service.UpdateAsync(context);
 
         httpContext.Response.StatusCode = (int)HttpStatusCode.NoContent;
     };
@@ -84,7 +84,7 @@ public static class RoutesExtensionMethods
         using StreamReader reader = new(httpContext.Request.Body);
         context.State.Operations = await reader.ReadToEndAsync(cancellationToken);
 
-        await service.PatchAsync(context, cancellationToken);
+        await service.PatchAsync(context);
         
         // The server MUST return a 200 OK (and the model in the body)
         // if the "attributes" parameter is specified in the request.
@@ -99,11 +99,11 @@ public static class RoutesExtensionMethods
     private static MiddlewareDelegate DeleteMiddleware<TService>()
         where TService : ICrudService => async (context, _) =>
     {
-        var cancellationToken = context.GetRequiredValue<CancellationToken>("CancellationToken");
+        context.GetRequiredValue<CancellationToken>("CancellationToken");
         var httpContext = context.GetRequiredValue<HttpContext>("HttpContext");
         var service = httpContext.RequestServices.GetRequiredService<TService>();
 
-        await service.DeleteAsync(context, cancellationToken);
+        await service.DeleteAsync(context);
 
         httpContext.Response.StatusCode = (int)HttpStatusCode.NoContent;
     };
@@ -123,8 +123,9 @@ public static class RoutesExtensionMethods
         var serviceProviderConfiguration = app.ServiceProvider.GetRequiredService<ServiceProviderConfiguration>();
 
         var context = contextFactory.Create([]);
+        context.State.CancellationToken = cancellationToken;
         context.AsScimV2Context().RouteValues.Add("schemaId", jsonSchemaId);
-        await schemaService.CreateAsync(context, cancellationToken);
+        await schemaService.CreateAsync(context);
         var resourceTypeId = typeof(T).Name;
         context.State.ResourceType = new ResourceType
         {
@@ -140,14 +141,16 @@ public static class RoutesExtensionMethods
             Schema = jsonSchemaId,
             Schemas = [],
         };
-        await resourceTypeService.CreateAsync(context, cancellationToken);
+        await resourceTypeService.CreateAsync(context);
         serviceProviderConfiguration.Map.Add(new()
         {
             Type = typeof(T),
             Resource = route,
             Service = typeof(TService)
         });
-
+        if (context is IDisposable disposableContext)
+            disposableContext.Dispose();
+        
         var id = $"{ToLowerFirstLetter(typeof(T).Name)}Id";
 
         List<MiddlewareDelegate> getMiddlewares =

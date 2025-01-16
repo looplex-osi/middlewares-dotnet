@@ -46,7 +46,7 @@ public class RoutesExtensionMethodsTests
     public void Initialize()
     {
         _rbacService = Substitute.For<IRbacService>();
-        string directory = Directory.GetCurrentDirectory();
+        Directory.GetCurrentDirectory();
         _configurationMock = Substitute.For<IConfiguration>();
         _configurationMock["Audience"].Returns("testAudience");
         _configurationMock["Issuer"].Returns("testIssuer");
@@ -124,7 +124,7 @@ public class RoutesExtensionMethodsTests
     public async Task Get_Endpoint_Returns_Mock_Message()
     {
         // Arrange
-        _crudServiceMock.When(x => x.GetAllAsync(_context, Arg.Any<CancellationToken>()))
+        _crudServiceMock.When(x => x.GetAllAsync(_context))
             .Do(_ => { _context.State.Pagination.TotalCount = 0; });
         var url = "domains/admin/brands/ferrari/cars?startIndex=1&count=10&param1=1&param2=2";
         HttpContent content = new StringContent("resourceContent", Encoding.UTF8, "application/text");
@@ -177,7 +177,7 @@ public class RoutesExtensionMethodsTests
         Assert.AreEqual("2", _context.Query["param2"]);
         Assert.AreEqual("11", _context.Headers["Header-1"]);
         Assert.AreEqual("22", _context.Headers["Header-2"]);
-        await _crudServiceMock.Received(1).GetByIdAsync(_context, Arg.Any<CancellationToken>());
+        await _crudServiceMock.Received(1).GetByIdAsync(_context);
     }
 
     [TestMethod]
@@ -208,7 +208,7 @@ public class RoutesExtensionMethodsTests
         Assert.AreEqual("2", _context.Query["param2"]);
         Assert.AreEqual("11", _context.Headers["Header-1"]);
         Assert.AreEqual("22", _context.Headers["Header-2"]);
-        await _crudServiceMock.Received(1).CreateAsync(_context, Arg.Any<CancellationToken>());
+        await _crudServiceMock.Received(1).CreateAsync(_context);
     }
 
     [TestMethod]
@@ -237,7 +237,7 @@ public class RoutesExtensionMethodsTests
         Assert.AreEqual("2", _context.Query["param2"]);
         Assert.AreEqual("11", _context.Headers["Header-1"]);
         Assert.AreEqual("22", _context.Headers["Header-2"]);
-        await _crudServiceMock.Received(1).UpdateAsync(_context, Arg.Any<CancellationToken>());
+        await _crudServiceMock.Received(1).UpdateAsync(_context);
     }
 
     [TestMethod]
@@ -268,7 +268,7 @@ public class RoutesExtensionMethodsTests
         Assert.AreEqual("2", _context.Query["param2"]);
         Assert.AreEqual("11", _context.Headers["Header-1"]);
         Assert.AreEqual("22", _context.Headers["Header-2"]);
-        await _crudServiceMock.Received(1).PatchAsync(_context, Arg.Any<CancellationToken>());
+        await _crudServiceMock.Received(1).PatchAsync(_context);
     }
 
     [TestMethod]
@@ -300,7 +300,7 @@ public class RoutesExtensionMethodsTests
         Assert.AreEqual("a", _context.Query["excludedAttributes"]);
         Assert.AreEqual("11", _context.Headers["Header-1"]);
         Assert.AreEqual("22", _context.Headers["Header-2"]);
-        await _crudServiceMock.Received(1).PatchAsync(_context, Arg.Any<CancellationToken>());
+        await _crudServiceMock.Received(1).PatchAsync(_context);
     }
 
     [TestMethod]
@@ -327,7 +327,7 @@ public class RoutesExtensionMethodsTests
         Assert.AreEqual("2", _context.Query["param2"]);
         Assert.AreEqual("11", _context.Headers["Header-1"]);
         Assert.AreEqual("22", _context.Headers["Header-2"]);
-        await _crudServiceMock.Received(1).DeleteAsync(_context, Arg.Any<CancellationToken>());
+        await _crudServiceMock.Received(1).DeleteAsync(_context);
     }
 
     private class Car : Resource

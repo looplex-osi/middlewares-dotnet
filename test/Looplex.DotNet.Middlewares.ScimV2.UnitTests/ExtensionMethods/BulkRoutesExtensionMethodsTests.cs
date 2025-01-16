@@ -60,6 +60,6 @@ public class BulkRoutesExtensionMethodsTests
         // Assert
         Assert.AreEqual(requestBody, _context.State.Request);
         Assert.AreEqual(id, _context.State.Id);
-        await _bulkService.Received(1).ExecuteBulkOperationsAsync(_context, _cancellationToken);
+        await _bulkService.Received(1).ExecuteBulkOperationsAsync(_context);
     }
 }

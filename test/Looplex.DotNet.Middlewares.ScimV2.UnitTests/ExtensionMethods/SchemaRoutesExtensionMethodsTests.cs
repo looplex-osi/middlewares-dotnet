@@ -32,7 +32,7 @@ public class SchemaRoutesExtensionMethodsTests
         await middleware(context, () => Task.CompletedTask);
 
         // Assert
-        await schemaService.Received(1).GetAllAsync(context, CancellationToken.None);
+        await schemaService.Received(1).GetAllAsync(context);
     }
 
     [TestMethod]
@@ -63,6 +63,6 @@ public class SchemaRoutesExtensionMethodsTests
         await middleware(context, () => Task.CompletedTask);
 
         // Assert
-        await schemaService.Received(1).GetByIdAsync(context, CancellationToken.None);
+        await schemaService.Received(1).GetByIdAsync(context);
     }
 }

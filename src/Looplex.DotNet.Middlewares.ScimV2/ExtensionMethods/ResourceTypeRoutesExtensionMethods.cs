@@ -18,11 +18,11 @@ public static class ResourceTypeRoutesExtensionMethods
     internal static MiddlewareDelegate GetMiddleware()
         => async (context, _) =>
         {
-            var cancellationToken = context.GetRequiredValue<CancellationToken>("CancellationToken");
+            context.GetRequiredValue<CancellationToken>("CancellationToken");
             var httpContext = context.GetRequiredValue<HttpContext>("HttpContext");
             var service = httpContext.RequestServices.GetRequiredService<IResourceTypeService>();
 
-            await service.GetAllAsync(context, cancellationToken);
+            await service.GetAllAsync(context);
 
             await httpContext.Response.WriteAsJsonAsync((string)context.Result!, HttpStatusCode.OK);
         };
@@ -30,11 +30,11 @@ public static class ResourceTypeRoutesExtensionMethods
     internal static MiddlewareDelegate GetByIdMiddleware()
         => async (context, _) =>
         {
-            var cancellationToken = context.GetRequiredValue<CancellationToken>("CancellationToken");
+            context.GetRequiredValue<CancellationToken>("CancellationToken");
             var httpContext = context.GetRequiredValue<HttpContext>("HttpContext");
             var service = httpContext.RequestServices.GetRequiredService<IResourceTypeService>();
 
-            await service.GetByIdAsync(context, cancellationToken);
+            await service.GetByIdAsync(context);
 
             await httpContext.Response.WriteAsJsonAsync((string)context.Result!, HttpStatusCode.OK);
         };

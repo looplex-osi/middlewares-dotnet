@@ -169,12 +169,6 @@ public class ClientCredentialsAuthorizationServiceTests
         // Arrange
         var clientId = Guid.NewGuid();
         var clientSecret = "clientSecret";
-        var clientCredentialsDto = new ClientCredentialsDto
-        {
-            GrantType = "urn:ietf:params:oauth:grant-type:token-exchange",
-            SubjectToken = "validToken",
-            SubjectTokenType = "urn:ietf:params:oauth:token-type:access_token",
-        };
 
         _mockConfiguration["Audience"].Returns("audience");
         _mockConfiguration["Issuer"].Returns("issuer");
@@ -227,12 +221,6 @@ public class ClientCredentialsAuthorizationServiceTests
         // Arrange
         var clientId = Guid.NewGuid();
         var clientSecret = "clientSecret";
-        var clientCredentialsDto = new ClientCredentialsDto
-        {
-            GrantType = "urn:ietf:params:oauth:grant-type:token-exchange",
-            SubjectToken = "validToken",
-            SubjectTokenType = "urn:ietf:params:oauth:token-type:access_token",
-        };
 
         _mockConfiguration["Audience"].Returns("audience");
         _mockConfiguration["Issuer"].Returns("issuer");
@@ -290,12 +278,6 @@ public class ClientCredentialsAuthorizationServiceTests
         // Arrange
         var clientId = Guid.NewGuid();
         var clientSecret = "clientSecret";
-        var clientCredentialsDto = new ClientCredentialsDto
-        {
-            GrantType = "urn:ietf:params:oauth:grant-type:token-exchange",
-            SubjectToken = "validToken",
-            SubjectTokenType = "urn:ietf:params:oauth:token-type:access_token",
-        };
 
         _mockConfiguration["Audience"].Returns("audience");
         _mockConfiguration["Issuer"].Returns("issuer");

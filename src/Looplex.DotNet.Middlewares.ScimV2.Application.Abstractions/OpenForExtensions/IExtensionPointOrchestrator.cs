@@ -2,7 +2,7 @@ using Looplex.OpenForExtension.Abstractions.Contexts;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.Application.Abstractions.OpenForExtensions;
 
-public delegate Task ExtensionPointAsyncDelegate(IContext context, CancellationToken cancellationToken);
+public delegate Task ExtensionPointAsyncDelegate(IContext context);
 
 public interface IExtensionPointOrchestrator
 {
@@ -15,6 +15,5 @@ public interface IExtensionPointOrchestrator
         ExtensionPointAsyncDelegate beforeActionFunc,
         ExtensionPointAsyncDelegate defaultActionFunc,
         ExtensionPointAsyncDelegate afterActionFunc,
-        ExtensionPointAsyncDelegate releaseUnmanagedFunc,
-        CancellationToken cancellationToken);
+        ExtensionPointAsyncDelegate releaseUnmanagedFunc);
 }

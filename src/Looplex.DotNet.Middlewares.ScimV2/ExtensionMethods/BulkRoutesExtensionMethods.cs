@@ -27,7 +27,7 @@ public static class BulkRoutesExtensionMethods
         var id = (string)httpContext.Request.RouteValues["id"]!;
         context.State.Id = id;
 
-        await service.ExecuteBulkOperationsAsync(context, cancellationToken);
+        await service.ExecuteBulkOperationsAsync(context);
 
         await httpContext.Response.WriteAsJsonAsync((string)context.Result!, HttpStatusCode.OK);
     };

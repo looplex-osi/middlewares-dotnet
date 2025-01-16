@@ -34,7 +34,7 @@ public class BulkServiceTests
     private IContextFactory _contextFactory = null!;
     private IConfiguration _configuration = null!;
     private IJsonSchemaProvider _jsonSchemaProvider = null!;
-    private IExtensionPointOrchestrator _extensionPointOrchestrator = new DefaultExtensionPointOrchestrator();
+    private readonly IExtensionPointOrchestrator _extensionPointOrchestrator = new DefaultExtensionPointOrchestrator();
     private IRbacService _rbacService = null!;
     
     [TestInitialize]
@@ -316,7 +316,7 @@ public class BulkServiceTests
 
         // Act
         await BulkService.ExecutePostMethod(
-            _operationContext, operation, _service, _bulkResponse, resourceMap, CancellationToken.None);
+            _operationContext, operation, _service, _bulkResponse, resourceMap);
 
         // Assert
         var serializedData = JsonConvert.SerializeObject(operation.Data);
@@ -329,7 +329,7 @@ public class BulkServiceTests
         Assert.AreEqual("Users/12345", responseOperation.Location);
         Assert.AreEqual((int)HttpStatusCode.Created, responseOperation.Status);
 
-        await _service.Received(1).CreateAsync(_operationContext, CancellationToken.None);
+        await _service.Received(1).CreateAsync(_operationContext);
     }
 
     [TestMethod]
@@ -355,7 +355,7 @@ public class BulkServiceTests
         var createdId = "67890";
         _operationContext.Result = createdId;
         // Act
-        await BulkService.ExecutePostMethod(_operationContext, operation, _service, _bulkResponse, resourceMap, CancellationToken.None);
+        await BulkService.ExecutePostMethod(_operationContext, operation, _service, _bulkResponse, resourceMap);
 
         // Assert
         Assert.AreEqual("null", _operationContext.State.Resource);
@@ -367,7 +367,7 @@ public class BulkServiceTests
         Assert.AreEqual("Users/67890", responseOperation.Location);
         Assert.AreEqual((int)HttpStatusCode.Created, responseOperation.Status);
 
-        await _service.Received(1).CreateAsync(_operationContext, CancellationToken.None);
+        await _service.Received(1).CreateAsync(_operationContext);
     }
     
     [TestMethod]
@@ -398,7 +398,7 @@ public class BulkServiceTests
 
         // Act
         await BulkService.ExecutePutMethod(
-            _operationContext, operation, _service, _bulkResponse, resourceMap, resourceUniqueId, CancellationToken.None);
+            _operationContext, operation, _service, _bulkResponse, resourceMap, resourceUniqueId);
 
         // Assert
         var serializedData = JsonConvert.SerializeObject(operation.Data);
@@ -412,7 +412,7 @@ public class BulkServiceTests
         Assert.AreEqual("Users/123e4567-e89b-12d3-a456-426614174000", responseOperation.Location);
         Assert.AreEqual((int)HttpStatusCode.NoContent, responseOperation.Status);
 
-        await _service.Received(1).UpdateAsync(_operationContext, CancellationToken.None);
+        await _service.Received(1).UpdateAsync(_operationContext);
     }
 
     [TestMethod]
@@ -441,7 +441,7 @@ public class BulkServiceTests
 
         // Act
         await BulkService.ExecutePutMethod(
-            _operationContext, operation, _service, _bulkResponse, resourceMap, resourceUniqueId, CancellationToken.None);
+            _operationContext, operation, _service, _bulkResponse, resourceMap, resourceUniqueId);
 
         // Assert
         Assert.AreEqual("null", _operationContext.State.Resource);
@@ -454,7 +454,7 @@ public class BulkServiceTests
         Assert.AreEqual("Groups/456e1234-e89b-12d3-a456-426614174111", responseOperation.Location);
         Assert.AreEqual((int)HttpStatusCode.NoContent, responseOperation.Status);
 
-        await _service.Received(1).UpdateAsync(_operationContext, CancellationToken.None);
+        await _service.Received(1).UpdateAsync(_operationContext);
     }
     
     [TestMethod]
@@ -485,7 +485,7 @@ public class BulkServiceTests
 
         // Act
         await BulkService.ExecutePatchMethod(
-            _operationContext, operation, _service, _bulkResponse, resourceMap, resourceUniqueId, CancellationToken.None);
+            _operationContext, operation, _service, _bulkResponse, resourceMap, resourceUniqueId);
 
         // Assert
         var serializedData = JsonConvert.SerializeObject(operation.Data);
@@ -499,7 +499,7 @@ public class BulkServiceTests
         Assert.AreEqual("Users/123e4567-e89b-12d3-a456-426614174000", responseOperation.Location);
         Assert.AreEqual((int)HttpStatusCode.NoContent, responseOperation.Status);
 
-        await _service.Received(1).UpdateAsync(_operationContext, CancellationToken.None);
+        await _service.Received(1).UpdateAsync(_operationContext);
     }
 
     [TestMethod]
@@ -528,7 +528,7 @@ public class BulkServiceTests
 
         // Act
         await BulkService.ExecutePatchMethod(
-            _operationContext, operation, _service, _bulkResponse, resourceMap, resourceUniqueId, CancellationToken.None);
+            _operationContext, operation, _service, _bulkResponse, resourceMap, resourceUniqueId);
 
         // Assert
         Assert.AreEqual("null", _operationContext.State.Operations);
@@ -541,7 +541,7 @@ public class BulkServiceTests
         Assert.AreEqual("Groups/456e1234-e89b-12d3-a456-426614174111", responseOperation.Location);
         Assert.AreEqual((int)HttpStatusCode.NoContent, responseOperation.Status);
 
-        await _service.Received(1).UpdateAsync(_operationContext, CancellationToken.None);
+        await _service.Received(1).UpdateAsync(_operationContext);
     }
     
     [TestMethod]
@@ -558,7 +558,7 @@ public class BulkServiceTests
 
         // Act
         await BulkService.ExecuteDeleteMethod(
-            _operationContext, operation, _service, _bulkResponse, resourceUniqueId, CancellationToken.None);
+            _operationContext, operation, _service, _bulkResponse, resourceUniqueId);
 
         // Assert
         Assert.AreEqual(resourceUniqueId.ToString(), _operationContext.State.Id);
@@ -569,7 +569,7 @@ public class BulkServiceTests
         Assert.AreEqual("/Users/123e4567-e89b-12d3-a456-426614174000", responseOperation.Path);
         Assert.AreEqual((int)HttpStatusCode.NoContent, responseOperation.Status);
 
-        await _service.Received(1).DeleteAsync(_operationContext, CancellationToken.None);
+        await _service.Received(1).DeleteAsync(_operationContext);
     }
     
     [TestMethod]
@@ -656,7 +656,7 @@ public class BulkServiceTests
 
         var createdId = "12345";
         
-        _service.When(x => x.CreateAsync(Arg.Any<IContext>(), CancellationToken.None))
+        _service.When(x => x.CreateAsync(Arg.Any<IContext>()))
             .Do((_) =>
             {
                 _operationContext.Result = createdId;
@@ -664,7 +664,7 @@ public class BulkServiceTests
 
         // Act
         var executeTask = new BulkService(_rbacService, _extensionPointOrchestrator, _serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
-            .ExecuteBulkOperationsAsync(_context, CancellationToken.None);
+            .ExecuteBulkOperationsAsync(_context);
         await executeTask;
 
         // Assert
@@ -699,7 +699,7 @@ public class BulkServiceTests
 
         // Act
         await new BulkService(_rbacService, _extensionPointOrchestrator, _serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
-            .ExecuteBulkOperationsAsync(_context, CancellationToken.None);
+            .ExecuteBulkOperationsAsync(_context);
 
         // Assert
         var bulkResponse = JsonConvert.DeserializeObject<BulkResponse>((string)_context.Result!)!;
@@ -740,7 +740,7 @@ public class BulkServiceTests
 
         // Act
         await new BulkService(_rbacService, _extensionPointOrchestrator, _serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
-            .ExecuteBulkOperationsAsync(_context, CancellationToken.None);
+            .ExecuteBulkOperationsAsync(_context);
         
         // Assert
         var bulkResponse = JsonConvert.DeserializeObject<BulkResponse>((string)_context.Result!)!;
@@ -774,7 +774,7 @@ public class BulkServiceTests
 
         // Act
         await new BulkService(_rbacService, _extensionPointOrchestrator, _serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
-            .ExecuteBulkOperationsAsync(_context, CancellationToken.None);
+            .ExecuteBulkOperationsAsync(_context);
 
         // Assert
         var bulkResponse = JsonConvert.DeserializeObject<BulkResponse>((string)_context.Result!)!;
@@ -811,7 +811,7 @@ public class BulkServiceTests
         _context.Headers.Add("Ocp-Apim-Subscription-Key", "ocpApimSubscriptionKey");
         // Act
         await new BulkService(_rbacService, _extensionPointOrchestrator, _serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
-            .ExecuteBulkOperationsAsync(_context, CancellationToken.None);
+            .ExecuteBulkOperationsAsync(_context);
 
         // Assert
         var bulkResponse = JsonConvert.DeserializeObject<BulkResponse>((string)_context.Result!)!;
@@ -854,7 +854,7 @@ public class BulkServiceTests
         _context.Headers.Add("Ocp-Apim-Subscription-Key", "ocpApimSubscriptionKey");
 
         var createdUserId = Guid.NewGuid();
-        _service.When(x => x.CreateAsync(Arg.Any<IContext>(), CancellationToken.None))
+        _service.When(x => x.CreateAsync(Arg.Any<IContext>()))
             .Do((_) =>
             {
                 _operationContext.Result = createdUserId.ToString();
@@ -862,7 +862,7 @@ public class BulkServiceTests
 
         // Act
         await new BulkService(_rbacService, _extensionPointOrchestrator, _serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
-            .ExecuteBulkOperationsAsync(_context, CancellationToken.None);
+            .ExecuteBulkOperationsAsync(_context);
 
         // Assert
         var bulkResponse = JsonConvert.DeserializeObject<BulkResponse>((string)_context.Result!)!;
@@ -882,8 +882,7 @@ public class BulkServiceTests
         await _service
             .Received(1)
             .UpdateAsync(
-                Arg.Is<IContext>(c => AssertThatBulkIdWasReplaced(c, createdUserId)), 
-                Arg.Any<CancellationToken>());
+                Arg.Is<IContext>(c => AssertThatBulkIdWasReplaced(c, createdUserId)));
     }
 
     private bool AssertThatBulkIdWasReplaced(IContext context, Guid id)
@@ -924,7 +923,7 @@ public class BulkServiceTests
 
         // Act & Assert
         await new BulkService(_rbacService, _extensionPointOrchestrator, _serviceProvider, _contextFactory, _configuration, _jsonSchemaProvider)
-                .ExecuteBulkOperationsAsync(_context, CancellationToken.None);
+                .ExecuteBulkOperationsAsync(_context);
 
         var bulkResponse = JsonConvert.DeserializeObject<BulkResponse>((string)_context.Result!)!;
         Assert.AreEqual(2, bulkResponse.Operations.Count);

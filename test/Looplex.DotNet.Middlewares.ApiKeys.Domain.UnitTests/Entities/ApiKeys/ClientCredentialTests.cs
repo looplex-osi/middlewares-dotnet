@@ -20,7 +20,7 @@ public class ClientCredentialTests
         var jsonSchema = File.ReadAllText("./Entities/Schemas/ClientCredential.1.0.schema.json");
 
         // Act
-        var client = Resource.FromJson<ClientCredential>(json, jsonSchema, out var messages);
+        Resource.FromJson<ClientCredential>(json, jsonSchema, out var messages);
             
         // Assert
         Assert.IsFalse(messages.Count == 0);

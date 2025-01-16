@@ -45,6 +45,7 @@ public class SchemaServiceTests
         _context.State.Pagination = new ExpandoObject();
         _context.State.Pagination.StartIndex = 1;
         _context.State.Pagination.ItemsPerPage = 10;
+        _context.State.CancellationToken = CancellationToken.None;
         _context.Headers = new Dictionary<string, string>
         {
             {
@@ -58,7 +59,7 @@ public class SchemaServiceTests
             .Returns(["mockContent1", "mockContent2"]);
         
         // Act
-        await _schemaService.GetAllAsync(_context, CancellationToken.None);
+        await _schemaService.GetAllAsync(_context);
 
         // Assert
         var result = JsonConvert.DeserializeObject<ListResponse>((string)_context.Result!)!;
@@ -71,15 +72,14 @@ public class SchemaServiceTests
     public async Task CreateAsync_Should_Add_SchemaId_To_SchemaIds_List()
     {
         // Arrange
-        var cancellationToken = CancellationToken.None;
-
+        _context.State.CancellationToken = CancellationToken.None;
         _context.RouteValues = new Dictionary<string, object?>()
         {
             { "schemaId", "newSchema" }
         };
         
         // Act
-        await _schemaService.CreateAsync(_context, cancellationToken);
+        await _schemaService.CreateAsync(_context);
 
         // Assert
         Assert.IsTrue(SchemaService.SchemaIds.Contains("newSchema"));
@@ -91,24 +91,23 @@ public class SchemaServiceTests
     public async Task CreateAsync_Should_ThrowError()
     {
         // Arrange
-        var cancellationToken = CancellationToken.None;
-
+        _context.State.CancellationToken = CancellationToken.None;
         _context.RouteValues = new Dictionary<string, object?>()
         {
             { "schemaId", "" }
         };
         
         // Act & Assert
-        await _schemaService.CreateAsync(_context, cancellationToken);
+        await _schemaService.CreateAsync(_context);
     }
     
     [TestMethod]
     public async Task GetByIdAsync_Should_Throw_Exception_When_SchemaId_Not_Found()
     {
         // Arrange
-        var cancellationToken = CancellationToken.None;
         SchemaService.SchemaIds = new List<string> { "schema1" };
 
+        _context.State.CancellationToken = CancellationToken.None;
         _context.RouteValues = new Dictionary<string, object?>()
         {
             { "schemaId", "invalidSchema" }
@@ -122,6 +121,6 @@ public class SchemaServiceTests
         
         // Act & Assert
         await Assert.ThrowsExceptionAsync<InvalidOperationException>(() =>
-            _schemaService.GetByIdAsync(_context, cancellationToken));
+            _schemaService.GetByIdAsync(_context));
     }
 }

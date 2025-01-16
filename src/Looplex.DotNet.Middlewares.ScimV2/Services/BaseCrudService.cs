@@ -11,9 +11,9 @@ public abstract class BaseCrudService(
 {
     #region GetAll
     
-    public virtual Task GetAllAsync(IContext context, CancellationToken cancellationToken)
+    public virtual Task GetAllAsync(IContext context)
     {
-        rbacService.ThrowIfUnauthorized(context, GetType().Name, this.GetCallerName(), cancellationToken);
+        rbacService.ThrowIfUnauthorized(context, GetType().Name, this.GetCallerName());
         
         return extensionPointOrchestrator.OrchestrateAsync(
             context,
@@ -24,26 +24,25 @@ public abstract class BaseCrudService(
             GetAllBeforeActionAsync,
             GetAllDefaultActionAsync,
             GetAllAfterActionAsync,
-            GetAllReleaseUnmanagedResourcesAsync,
-            cancellationToken);
+            GetAllReleaseUnmanagedResourcesAsync);
     }
     
-    protected abstract Task GetAllHandleInputAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task GetAllValidateInputAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task GetAllDefineRolesAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task GetAllBindAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task GetAllBeforeActionAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task GetAllDefaultActionAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task GetAllAfterActionAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task GetAllReleaseUnmanagedResourcesAsync(IContext context, CancellationToken cancellationToken);
+    protected abstract Task GetAllHandleInputAsync(IContext context);
+    protected abstract Task GetAllValidateInputAsync(IContext context);
+    protected abstract Task GetAllDefineRolesAsync(IContext context);
+    protected abstract Task GetAllBindAsync(IContext context);
+    protected abstract Task GetAllBeforeActionAsync(IContext context);
+    protected abstract Task GetAllDefaultActionAsync(IContext context);
+    protected abstract Task GetAllAfterActionAsync(IContext context);
+    protected abstract Task GetAllReleaseUnmanagedResourcesAsync(IContext context);
     
     #endregion
     
     #region GetById
     
-    public virtual Task GetByIdAsync(IContext context, CancellationToken cancellationToken)
+    public virtual Task GetByIdAsync(IContext context)
     {
-        rbacService.ThrowIfUnauthorized(context, GetType().Name, this.GetCallerName(), cancellationToken);
+        rbacService.ThrowIfUnauthorized(context, GetType().Name, this.GetCallerName());
         
         return extensionPointOrchestrator.OrchestrateAsync(
             context,
@@ -53,31 +52,26 @@ public abstract class BaseCrudService(
             GetByIdBindAsync,
             GetByIdBeforeActionAsync,
             GetByIdDefaultActionAsync,
-            (_, _) =>
-            {
-                
-                return GetByIdAfterActionAsync(context, cancellationToken);
-            },
-            GetByIdReleaseUnmanagedResourcesAsync,
-            cancellationToken);
+            GetByIdAfterActionAsync,
+            GetByIdReleaseUnmanagedResourcesAsync);
     }
 
-    protected abstract Task GetByIdHandleInputAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task GetByIdValidateInputAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task GetByIdDefineRolesAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task GetByIdBindAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task GetByIdBeforeActionAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task GetByIdDefaultActionAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task GetByIdAfterActionAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task GetByIdReleaseUnmanagedResourcesAsync(IContext context, CancellationToken cancellationToken);
+    protected abstract Task GetByIdHandleInputAsync(IContext context);
+    protected abstract Task GetByIdValidateInputAsync(IContext context);
+    protected abstract Task GetByIdDefineRolesAsync(IContext context);
+    protected abstract Task GetByIdBindAsync(IContext context);
+    protected abstract Task GetByIdBeforeActionAsync(IContext context);
+    protected abstract Task GetByIdDefaultActionAsync(IContext context);
+    protected abstract Task GetByIdAfterActionAsync(IContext context);
+    protected abstract Task GetByIdReleaseUnmanagedResourcesAsync(IContext context);
     
     #endregion
     
     #region Create
     
-    public virtual Task CreateAsync(IContext context, CancellationToken cancellationToken)
+    public virtual Task CreateAsync(IContext context)
     {
-        rbacService.ThrowIfUnauthorized(context, GetType().Name, this.GetCallerName(), cancellationToken);
+        rbacService.ThrowIfUnauthorized(context, GetType().Name, this.GetCallerName());
         
         return extensionPointOrchestrator.OrchestrateAsync(
             context,
@@ -88,26 +82,25 @@ public abstract class BaseCrudService(
             CreateBeforeActionAsync,
             CreateDefaultActionAsync,
             CreateAfterActionAsync,
-            CreateReleaseUnmanagedResourcesAsync,
-            cancellationToken);
+            CreateReleaseUnmanagedResourcesAsync);
     }
 
-    protected abstract Task CreateHandleInputAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task CreateValidateInputAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task CreateDefineRolesAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task CreateBindAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task CreateBeforeActionAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task CreateDefaultActionAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task CreateAfterActionAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task CreateReleaseUnmanagedResourcesAsync(IContext context, CancellationToken cancellationToken);
+    protected abstract Task CreateHandleInputAsync(IContext context);
+    protected abstract Task CreateValidateInputAsync(IContext context);
+    protected abstract Task CreateDefineRolesAsync(IContext context);
+    protected abstract Task CreateBindAsync(IContext context);
+    protected abstract Task CreateBeforeActionAsync(IContext context);
+    protected abstract Task CreateDefaultActionAsync(IContext context);
+    protected abstract Task CreateAfterActionAsync(IContext context);
+    protected abstract Task CreateReleaseUnmanagedResourcesAsync(IContext context);
     
     #endregion
     
     #region Update
     
-    public virtual Task UpdateAsync(IContext context, CancellationToken cancellationToken)
+    public virtual Task UpdateAsync(IContext context)
     {
-        rbacService.ThrowIfUnauthorized(context, GetType().Name, this.GetCallerName(), cancellationToken);
+        rbacService.ThrowIfUnauthorized(context, GetType().Name, this.GetCallerName());
         
         return extensionPointOrchestrator.OrchestrateAsync(
             context,
@@ -118,26 +111,25 @@ public abstract class BaseCrudService(
             UpdateBeforeActionAsync,
             UpdateDefaultActionAsync,
             UpdateAfterActionAsync,
-            UpdateReleaseUnmanagedResourcesAsync,
-            cancellationToken);
+            UpdateReleaseUnmanagedResourcesAsync);
     }
 
-    protected abstract Task UpdateHandleInputAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task UpdateValidateInputAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task UpdateDefineRolesAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task UpdateBindAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task UpdateBeforeActionAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task UpdateDefaultActionAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task UpdateAfterActionAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task UpdateReleaseUnmanagedResourcesAsync(IContext context, CancellationToken cancellationToken);
+    protected abstract Task UpdateHandleInputAsync(IContext context);
+    protected abstract Task UpdateValidateInputAsync(IContext context);
+    protected abstract Task UpdateDefineRolesAsync(IContext context);
+    protected abstract Task UpdateBindAsync(IContext context);
+    protected abstract Task UpdateBeforeActionAsync(IContext context);
+    protected abstract Task UpdateDefaultActionAsync(IContext context);
+    protected abstract Task UpdateAfterActionAsync(IContext context);
+    protected abstract Task UpdateReleaseUnmanagedResourcesAsync(IContext context);
     
     #endregion
     
     #region Update
     
-    public virtual Task PatchAsync(IContext context, CancellationToken cancellationToken)
+    public virtual Task PatchAsync(IContext context)
     {
-        rbacService.ThrowIfUnauthorized(context, GetType().Name, this.GetCallerName(), cancellationToken);
+        rbacService.ThrowIfUnauthorized(context, GetType().Name, this.GetCallerName());
         
         return extensionPointOrchestrator.OrchestrateAsync(
             context,
@@ -148,26 +140,25 @@ public abstract class BaseCrudService(
             PatchBeforeActionAsync,
             PatchDefaultActionAsync,
             PatchAfterActionAsync,
-            PatchReleaseUnmanagedResourcesAsync,
-            cancellationToken);
+            PatchReleaseUnmanagedResourcesAsync);
     }
 
-    protected abstract Task PatchHandleInputAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task PatchValidateInputAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task PatchDefineRolesAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task PatchBindAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task PatchBeforeActionAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task PatchDefaultActionAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task PatchAfterActionAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task PatchReleaseUnmanagedResourcesAsync(IContext context, CancellationToken cancellationToken);
+    protected abstract Task PatchHandleInputAsync(IContext context);
+    protected abstract Task PatchValidateInputAsync(IContext context);
+    protected abstract Task PatchDefineRolesAsync(IContext context);
+    protected abstract Task PatchBindAsync(IContext context);
+    protected abstract Task PatchBeforeActionAsync(IContext context);
+    protected abstract Task PatchDefaultActionAsync(IContext context);
+    protected abstract Task PatchAfterActionAsync(IContext context);
+    protected abstract Task PatchReleaseUnmanagedResourcesAsync(IContext context);
     
     #endregion
     
     #region Delete
     
-    public virtual Task DeleteAsync(IContext context, CancellationToken cancellationToken)
+    public virtual Task DeleteAsync(IContext context)
     {
-        rbacService.ThrowIfUnauthorized(context, GetType().Name, this.GetCallerName(), cancellationToken);
+        rbacService.ThrowIfUnauthorized(context, GetType().Name, this.GetCallerName());
         
         return extensionPointOrchestrator.OrchestrateAsync(
             context,
@@ -178,18 +169,17 @@ public abstract class BaseCrudService(
             DeleteBeforeActionAsync,
             DeleteDefaultActionAsync,
             DeleteAfterActionAsync,
-            DeleteReleaseUnmanagedResourcesAsync,
-            cancellationToken);
+            DeleteReleaseUnmanagedResourcesAsync);
     }
 
-    protected abstract Task DeleteHandleInputAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task DeleteValidateInputAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task DeleteDefineRolesAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task DeleteBindAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task DeleteBeforeActionAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task DeleteDefaultActionAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task DeleteAfterActionAsync(IContext context, CancellationToken cancellationToken);
-    protected abstract Task DeleteReleaseUnmanagedResourcesAsync(IContext context, CancellationToken cancellationToken);
+    protected abstract Task DeleteHandleInputAsync(IContext context);
+    protected abstract Task DeleteValidateInputAsync(IContext context);
+    protected abstract Task DeleteDefineRolesAsync(IContext context);
+    protected abstract Task DeleteBindAsync(IContext context);
+    protected abstract Task DeleteBeforeActionAsync(IContext context);
+    protected abstract Task DeleteDefaultActionAsync(IContext context);
+    protected abstract Task DeleteAfterActionAsync(IContext context);
+    protected abstract Task DeleteReleaseUnmanagedResourcesAsync(IContext context);
     
     #endregion
 }

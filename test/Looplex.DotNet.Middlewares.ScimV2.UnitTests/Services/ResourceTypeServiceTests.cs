@@ -41,9 +41,10 @@ public class ResourceTypeServiceTests
         _context.State.Pagination = new ExpandoObject();
         _context.State.Pagination.StartIndex = 1;
         _context.State.Pagination.ItemsPerPage = 10;
-
+        _context.State.CancellationToken = _cancellationToken;
+        
         // Act
-        await _resourceTypeService.GetAllAsync(_context, _cancellationToken);
+        await _resourceTypeService.GetAllAsync(_context);
 
         // Assert
         var result = JsonConvert.DeserializeObject<ListResponse>((string)_context.Result!)!;
@@ -64,9 +65,10 @@ public class ResourceTypeServiceTests
         {
             { "resourceTypeId", "resource1" }
         };
-
+        _context.State.CancellationToken = _cancellationToken;
+        
         // Act
-        await _resourceTypeService.GetByIdAsync(_context, _cancellationToken);
+        await _resourceTypeService.GetByIdAsync(_context);
 
         // Assert
         Assert.IsNotNull(_context.Roles["ResourceType"]);
@@ -89,9 +91,10 @@ public class ResourceTypeServiceTests
         {
             { "resourceTypeId", "invalidId" }
         };
+        _context.State.CancellationToken = _cancellationToken;
         
         // Act
-        await _resourceTypeService.GetByIdAsync(_context, _cancellationToken);
+        await _resourceTypeService.GetByIdAsync(_context);
     }
 
     [TestMethod]
@@ -107,11 +110,12 @@ public class ResourceTypeServiceTests
             Schema = "urn:ietf:params:scim:schemas:core:2.0:NewResource"
         };
         _context.State.ResourceType = resourceType;
+        _context.State.CancellationToken = _cancellationToken;
 
         var count = ResourceTypeService.ResourceTypes.Count;
 
         // Act
-        await _resourceTypeService.CreateAsync(_context, _cancellationToken);
+        await _resourceTypeService.CreateAsync(_context);
 
         // Assert
         Assert.AreEqual(1 + count, ResourceTypeService.ResourceTypes.Count);

@@ -11,7 +11,6 @@ public static partial class ScimV2Middlewares
     
     public static readonly MiddlewareDelegate ScimV2ContextMiddleware = async (context, next) =>
     {
-        var cancellationToken = context.GetRequiredValue<CancellationToken>("CancellationToken");
         var httpContext = context.GetRequiredValue<HttpContext>("HttpContext");
         
         context.AsScimV2Context().RouteValues = httpContext.Request.RouteValues

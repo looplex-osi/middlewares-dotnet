@@ -30,9 +30,9 @@ public class BulkService(
     
     #region ExecuteBulkOperations
     
-    public Task ExecuteBulkOperationsAsync(IContext context, CancellationToken cancellationToken)
+    public Task ExecuteBulkOperationsAsync(IContext context)
     {
-        rbacService.ThrowIfUnauthorized(context, GetType().Name, this.GetCallerName(), cancellationToken);
+        rbacService.ThrowIfUnauthorized(context, GetType().Name, this.GetCallerName());
 
         return extensionPointOrchestrator.OrchestrateAsync(
             context,
@@ -43,11 +43,10 @@ public class BulkService(
             _getAllBeforeActionAsync,
             _getAllDefaultActionAsync,
             _getAllAfterActionAsync,
-            _getAllReleaseUnmanagedResourcesAsync,
-            cancellationToken);
+            _getAllReleaseUnmanagedResourcesAsync);
     }
 
-    private readonly ExtensionPointAsyncDelegate _getAllHandleInputAsync = async (context, _) =>
+    private readonly ExtensionPointAsyncDelegate _getAllHandleInputAsync = async (context) =>
     {
         var schemaId = configuration["JsonSchemaIdForBulkOperation"]!;
         var jsonSchema = await jsonSchemaProvider.ResolveJsonSchemaAsync(context, schemaId);
@@ -58,7 +57,7 @@ public class BulkService(
         context.State.BulkRequest = bulkRequest;
     };
     
-    private readonly ExtensionPointAsyncDelegate _getAllValidateInputAsync = (context, _) =>
+    private readonly ExtensionPointAsyncDelegate _getAllValidateInputAsync = (context) =>
     {
         var messages = context.GetRequiredValue<IList<string>>("Messages");
         var bulkRequest = context.GetRequiredValue<BulkRequest>("BulkRequest");
@@ -68,7 +67,7 @@ public class BulkService(
         ValidateBulkIdsUniqueness(bulkRequest);
         return Task.CompletedTask;
     };
-    private readonly ExtensionPointAsyncDelegate _getAllDefineRolesAsync = (context, _) =>
+    private readonly ExtensionPointAsyncDelegate _getAllDefineRolesAsync = (context) =>
     {
         var bulkRequest = context.GetRequiredValue<BulkRequest>("BulkRequest");
         var bulkResponse = new BulkResponse();
@@ -76,10 +75,10 @@ public class BulkService(
         context.Roles["BulkResponse"] = bulkResponse;
         return Task.CompletedTask;
     };
-    private readonly ExtensionPointAsyncDelegate _getAllBindAsync = (_, _) => Task.CompletedTask;
-    private readonly ExtensionPointAsyncDelegate _getAllBeforeActionAsync = (_, _) => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _getAllBindAsync = (_) => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _getAllBeforeActionAsync = (_) => Task.CompletedTask;
 
-    private readonly ExtensionPointAsyncDelegate _getAllDefaultActionAsync = async (context, cancellationToken) =>
+    private readonly ExtensionPointAsyncDelegate _getAllDefaultActionAsync = async (context) =>
     {
         var serviceProviderConfiguration = serviceProvider.GetRequiredService<ServiceProviderConfiguration>();
         var bulkRequest = (BulkRequest)context.Roles["BulkRequest"];
@@ -112,8 +111,7 @@ public class BulkService(
                             operation,
                             service,
                             bulkResponse,
-                            resourceMap,
-                            cancellationToken);
+                            resourceMap);
 
                         bulkIdCrossReference[operation.BulkId!] = id;
                     }
@@ -125,8 +123,7 @@ public class BulkService(
                             service,
                             bulkResponse,
                             resourceMap,
-                            resourceUniqueId!.Value,
-                            cancellationToken);
+                            resourceUniqueId!.Value);
                     }
                     else if (operation.Method == Method.Put)
                     {
@@ -136,8 +133,7 @@ public class BulkService(
                             service,
                             bulkResponse,
                             resourceMap,
-                            resourceUniqueId!.Value,
-                            cancellationToken);
+                            resourceUniqueId!.Value);
                     }
                     else if (operation.Method == Method.Delete)
                     {
@@ -146,8 +142,7 @@ public class BulkService(
                             operation,
                             service,
                             bulkResponse,
-                            resourceUniqueId!.Value,
-                            cancellationToken);
+                            resourceUniqueId!.Value);
                     }
                 }
                 catch (Exception e)
@@ -173,8 +168,8 @@ public class BulkService(
             context.Result = bulkResponse.ToJson();
     };
     
-    private readonly ExtensionPointAsyncDelegate _getAllAfterActionAsync = (_, _) => Task.CompletedTask;
-    private readonly ExtensionPointAsyncDelegate _getAllReleaseUnmanagedResourcesAsync = (_, _) => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _getAllAfterActionAsync = (_) => Task.CompletedTask;
+    private readonly ExtensionPointAsyncDelegate _getAllReleaseUnmanagedResourcesAsync = (_) => Task.CompletedTask;
     
     #endregion
 
@@ -204,11 +199,11 @@ public class BulkService(
 
     internal static async Task<string> ExecutePostMethod(
         IContext operationContext, BulkRequestOperation operation, ICrudService service, BulkResponse bulkResponse,
-        ResourceMap resourceMap, CancellationToken cancellationToken)
+        ResourceMap resourceMap)
     {
         operationContext.State.Resource = JsonConvert.SerializeObject(operation.Data!);
 
-        await service.CreateAsync(operationContext, cancellationToken);
+        await service.CreateAsync(operationContext);
         var id = (string)operationContext.Result!;
 
         bulkResponse.Operations.Add(new ()
@@ -224,12 +219,12 @@ public class BulkService(
     
     internal static async Task ExecutePutMethod(
         IContext operationContext, BulkRequestOperation operation, ICrudService service, BulkResponse bulkResponse,
-        ResourceMap resourceMap, Guid resourceUniqueId, CancellationToken cancellationToken)
+        ResourceMap resourceMap, Guid resourceUniqueId)
     {
         operationContext.State.Id = resourceUniqueId.ToString();
         operationContext.State.Resource = JsonConvert.SerializeObject(operation.Data!);
 
-        await service.UpdateAsync(operationContext, cancellationToken);
+        await service.UpdateAsync(operationContext);
         var id = (string)operationContext.Result!;
 
         bulkResponse.Operations.Add(new ()
@@ -243,12 +238,12 @@ public class BulkService(
     
     internal static async Task ExecutePatchMethod(
         IContext operationContext, BulkRequestOperation operation, ICrudService service, BulkResponse bulkResponse,
-        ResourceMap resourceMap, Guid resourceUniqueId, CancellationToken cancellationToken)
+        ResourceMap resourceMap, Guid resourceUniqueId)
     {
         operationContext.State.Id = resourceUniqueId.ToString();
         operationContext.State.Operations = JsonConvert.SerializeObject(operation.Data!);
 
-        await service.UpdateAsync(operationContext, cancellationToken);
+        await service.UpdateAsync(operationContext);
         var id = (string)operationContext.Result!;
 
         bulkResponse.Operations.Add(new ()
@@ -262,11 +257,11 @@ public class BulkService(
     
     internal static async Task ExecuteDeleteMethod(
         IContext operationContext, BulkRequestOperation operation, ICrudService service, BulkResponse bulkResponse,
-        Guid resourceUniqueId, CancellationToken cancellationToken)
+        Guid resourceUniqueId)
     {
         operationContext.State.Id = resourceUniqueId.ToString();
 
-        await service.DeleteAsync(operationContext, cancellationToken);
+        await service.DeleteAsync(operationContext);
 
         bulkResponse.Operations.Add(new ()
         {
