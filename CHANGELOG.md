@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="3.0.3"></a>
+## 3.0.3 (2025-02-06)
+
+### Bug Fixes
+
+* **scimv2:** fromJson json schema validation now adds child validation error to erros list
+
 <a name="3.0.2"></a>
 ## 3.0.2 (2025-01-16)
 
