@@ -41,7 +41,12 @@ public abstract partial class Resource
         if (!string.IsNullOrWhiteSpace(jsonSchema))
         {
             validatingReader.Schema = JSchema.Parse(jsonSchema);
-            validatingReader.ValidationEventHandler += (o, a) => localMessages.Add(a.Message);
+            validatingReader.ValidationEventHandler += (o, a) =>
+            {
+                localMessages.Add(a.Message);
+                foreach (var childError in a.ValidationError.ChildErrors)
+                    localMessages.Add(childError.Message);
+            };
         }
         messages = localMessages;
 
