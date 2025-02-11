@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 
@@ -14,14 +14,14 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="FluentAssertions" Version="8.0.0" />
-    <PackageReference Include="Looplex.DotNet.Core.Application.Abstractions" Version="4.0.2" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.1" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
-    <PackageReference Include="MSTest.TestAdapter" Version="3.7.1" />
-    <PackageReference Include="MSTest.TestFramework" Version="3.7.1" />
+    <PackageReference Include="FluentAssertions" Version="8.0.0"/>
+    <PackageReference Include="Looplex.DotNet.Core.Application.Abstractions" Version="4.0.4"/>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="8.0.1"/>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0"/>
+    <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1"/>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0"/>
+    <PackageReference Include="MSTest.TestAdapter" Version="3.7.1"/>
+    <PackageReference Include="MSTest.TestFramework" Version="3.7.1"/>
     <PackageReference Include="NSubstitute" Version="5.3.0"/>
   </ItemGroup>
 

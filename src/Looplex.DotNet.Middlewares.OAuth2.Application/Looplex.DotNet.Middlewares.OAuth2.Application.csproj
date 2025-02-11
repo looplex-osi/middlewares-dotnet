@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>true</IsPackable>
@@ -18,16 +18,16 @@
     <ProjectReference Include="..\Looplex.DotNet.Middlewares.ApiKeys.Application.Abstractions\Looplex.DotNet.Middlewares.ApiKeys.Application.Abstractions.csproj"/>
     <ProjectReference Include="..\Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions\Looplex.DotNet.Middlewares.OAuth2.Application.Abstractions.csproj"/>
     <ProjectReference Include="..\Looplex.DotNet.Middlewares.OAuth2.Domain\Looplex.DotNet.Middlewares.OAuth2.Domain.csproj"/>
-    <ProjectReference Include="..\Looplex.DotNet.Middlewares.ScimV2.Domain\Looplex.DotNet.Middlewares.ScimV2.Domain.csproj" />
+    <ProjectReference Include="..\Looplex.DotNet.Middlewares.ScimV2.Domain\Looplex.DotNet.Middlewares.ScimV2.Domain.csproj"/>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Looplex.DotNet.Core.Application" Version="4.0.2" />
-    <PackageReference Include="Looplex.DotNet.Core.Common" Version="4.0.2" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.1" />
-    <PackageReference Include="Microsoft.IdentityModel.Protocols" Version="8.3.0" />
-    <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.3.0" />
+    <PackageReference Include="Looplex.DotNet.Core.Application" Version="4.0.4"/>
+    <PackageReference Include="Looplex.DotNet.Core.Common" Version="4.0.4"/>
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.0"/>
+    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.1"/>
+    <PackageReference Include="Microsoft.IdentityModel.Protocols" Version="8.3.0"/>
+    <PackageReference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect" Version="8.3.0"/>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3"/>
   </ItemGroup>
 
