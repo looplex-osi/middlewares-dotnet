@@ -2,7 +2,6 @@
 using Looplex.DotNet.Middlewares.ScimV2.Middlewares;
 using Microsoft.AspNetCore.Http;
 using NSubstitute;
-using Looplex.DotNet.Core.Application.Abstractions.Providers;
 using Microsoft.AspNetCore.Routing;
 
 namespace Looplex.DotNet.Middlewares.ScimV2.UnitTests.Middlewares;
@@ -13,7 +12,6 @@ public class ScimV2ContextMiddlewareTests
     private IScimV2Context _context = null!;
     private Func<Task> _next = null!;
     private IServiceProvider _services = null!;
-    private ISqlDatabaseProvider _sqlDatabaseProvider = null!;
     
     [TestInitialize]
     public void Setup()
@@ -36,8 +34,7 @@ public class ScimV2ContextMiddlewareTests
         httpContext.Request.Returns(httpRequest);
         
         _services = Substitute.For<IServiceProvider>();
-        _sqlDatabaseProvider = Substitute.For<ISqlDatabaseProvider>();
-        _context = new DefaultScimV2Context(_services, _sqlDatabaseProvider);
+        _context = new DefaultScimV2Context(_services);
         _context.State.HttpContext = httpContext;
         _context.State.CancellationToken = CancellationToken.None;
         

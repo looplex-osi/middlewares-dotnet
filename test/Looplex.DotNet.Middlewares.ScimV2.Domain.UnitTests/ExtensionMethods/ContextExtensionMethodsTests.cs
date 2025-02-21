@@ -1,4 +1,3 @@
-using Looplex.DotNet.Core.Application.Abstractions.Providers;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.Entities.Messages;
 using Looplex.DotNet.Middlewares.ScimV2.Domain.ExtensionMethods;
 using Looplex.OpenForExtension.Abstractions.Contexts;
@@ -284,8 +283,7 @@ public class ContextExtensionMethodsTests
             }
         };
         var serviceProvider = Substitute.For<IServiceProvider>();
-        var sqlDatabaseProvider = Substitute.For<ISqlDatabaseProvider>();
-        IContext context = new DefaultScimV2Context(serviceProvider, sqlDatabaseProvider);
+        IContext context = new DefaultScimV2Context(serviceProvider);
         context.Result = JsonConvert.SerializeObject(originalJson);
         context.AsScimV2Context().Query.Add("excludedAttributes", "age,addresses[*].street,addresses[0].number");
 
@@ -311,8 +309,7 @@ public class ContextExtensionMethodsTests
         // Arrange
 
         var serviceProvider = Substitute.For<IServiceProvider>();
-        var sqlDatabaseProvider = Substitute.For<ISqlDatabaseProvider>();
-        IContext context = new DefaultScimV2Context(serviceProvider, sqlDatabaseProvider);
+        IContext context = new DefaultScimV2Context(serviceProvider);
         context.Result = "{ \"name\": \"John\" }";
         context.AsScimV2Context().Query.Add("attributes", "name,email"); 
 
