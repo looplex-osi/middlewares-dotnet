@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [versionize](https://github.com/versionize/versionize) for commit guidelines.
 
+<a name="3.0.5"></a>
+## 3.0.5 (2025-02-21)
+
+### Bug Fixes
+
+* upgrade core packages
+
 <a name="3.0.4"></a>
 ## 3.0.4 (2025-02-11)
 
